@@ -1,0 +1,10 @@
+{
+  "generator-openapi-repo": {
+    "importExistingSpec": false,
+    "name": "Labowlet",
+    "repo": "dannylekim/labowletApiDoc",
+    "splitSpec": true,
+    "samples": true,
+    "installSwaggerUI": true
+  }
+}
