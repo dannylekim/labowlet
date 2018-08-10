@@ -1,3 +1,5 @@
+package business;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class Room {
     }
 
     /* only host methods */
-    //todo could possibly not exist in this class and simply created as an api route that is fed into the Room constructor
+    //todo could possibly not exist in this class and simply created as an api route that is fed into the business.Room constructor
     public void setRounds(int maxRounds){
         //todo
     }

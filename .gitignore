@@ -1,3 +1,6 @@
 .gradle
 .idea
 labowlet.iml
+build
+out
+

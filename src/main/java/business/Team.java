@@ -1,3 +1,5 @@
+package business;
+
 public class Team {
     private String teamName;
     private Player teamMember1;
