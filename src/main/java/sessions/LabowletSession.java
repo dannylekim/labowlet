@@ -3,6 +3,7 @@ package sessions;
 import business.Player;
 import business.Room;
 import business.Team;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.session.Session;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
+//todo extend an expiring session
 public class LabowletSession implements Session, Serializable {
 
     // ------------ Business Implementation ---------- //

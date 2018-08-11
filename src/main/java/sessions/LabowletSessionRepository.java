@@ -2,7 +2,6 @@ package sessions;
 
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,6 +15,7 @@ public class LabowletSessionRepository implements SessionRepository {
 
     @Override
     public Session createSession() {
+        //todo verify if there is already a session in the block
         return new LabowletSession();
     }
 
@@ -27,7 +27,10 @@ public class LabowletSessionRepository implements SessionRepository {
      */
     @Override
     public void save(Session session) {
-        repository.put(session.getId(), session);
+        String sessionId = session.getId();
+        if(!repository.contains(sessionId)) {
+            repository.put(session.getId(), session);
+        }
     }
 
 

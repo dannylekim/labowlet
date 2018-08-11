@@ -25,12 +25,10 @@ repositories {
 
 
 dependencies {
-//	compile('org.springframework.boot:spring-boot-starter-cache')
-//	compile('org.springframework.boot:spring-boot-starter-validation')
 	compile('org.springframework.boot:spring-boot-starter-web')
-//	compile('org.springframework.boot:spring-boot-starter-websocket')
-	compile('org.springframework.session:spring-session-core')
+	compile('org.springframework.boot:spring-boot-starter-websocket')
 	runtime('org.springframework.boot:spring-boot-devtools')
+	compile('org.springframework.session:spring-session-core')
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.junit.jupiter:junit-jupiter-api')
