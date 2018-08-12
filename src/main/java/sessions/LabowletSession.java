@@ -11,9 +11,11 @@ import java.util.UUID;
 
 
 /***
- *
- * //todo
- *
+ * This is the application session, that is meant to be wrapping around the HttpSession. While it does not hold any new
+ * data constants for the time being (though the developer is allowed to do so and extend the functionality), the
+ * custom session allows the developer to extend, implement and fully customize how a session is handled by the
+ * servlet container. Additionally, this session is agnostic of the business logic so can be re-used and implemented
+ * elsewhere
  *
  */
 public class LabowletSession implements Session, Serializable {
@@ -30,7 +32,10 @@ public class LabowletSession implements Session, Serializable {
     private Instant creationTime;
     private Instant lastAccessedTime;
     private Duration maxInactiveInterval;
-    private boolean isExpired; //used if there will ever be a timer/listener interaction that will set isExpired to true
+    private boolean isExpired;
+
+
+    // ----------------- Constructor --------------------- //
 
     /***
      * Creates a new Labowlet Session. It will set the default settings by creating sessionId, attributes, creation
@@ -46,22 +51,21 @@ public class LabowletSession implements Session, Serializable {
     }
 
     /***
-     * Copy constructor for a Labowlet Session
+     * Copy constructor for a Labowlet Session used to allow concurrent connections all trying to create sessions
      *
      * @param session
      */
     LabowletSession(LabowletSession session){
-        this.attributes = new HashMap<>();
-        Set<String> attributeNames = session.getAttributeNames();
-        for (String attributeName: attributeNames) {
-            this.attributes.put(attributeName, session.getAttribute(attributeName));
-        }
-        this.creationTime = session.getCreationTime();
-        this.lastAccessedTime = session.getLastAccessedTime();
-        this.maxInactiveInterval = session.getMaxInactiveInterval();
-        this.isExpired = session.isExpired();
-        this.sessionId = session.getId();
+        this.attributes = session.attributes;
+        this.creationTime = session.creationTime;
+        this.lastAccessedTime = session.lastAccessedTime;
+        this.maxInactiveInterval = session.maxInactiveInterval;
+        this.sessionId = session.sessionId;
+        this.isExpired = session.isExpired;
     }
+
+
+    // ------------------------------- OVERRIDES ------------------------------------ //
 
     @Override
     public String getId() {
@@ -119,7 +123,7 @@ public class LabowletSession implements Session, Serializable {
     }
 
     @Override
-    public boolean isExpired() {
+    public boolean isExpired(){
         return isExpired;
     }
 }

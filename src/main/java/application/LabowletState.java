@@ -1,10 +1,7 @@
-package servlet;
+package application;
 
 import business.Room;
-import org.springframework.session.Session;
-import org.springframework.session.web.http.SessionRepositoryFilter;
-import sessions.GameSession;
-import sessions.LabowletSession;
+import sessions.PlayerSession;
 import sessions.LabowletSessionRepository;
 
 import javax.servlet.http.HttpSession;
@@ -12,12 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/***
+ *  This is the state of the application at all times. Essentially, the in-memory database implementation for Labowlet.
+ *  You can forcefully expire sessions with access to the session repository, manage rooms and manage global properties.
+ *  Application state is a singleton that can be retrieved at any point since there is only one state per container.
+ *  Tthe developer needs to be conscious about manipulating the state of the application as there can be large
+ *  repercussions that can affect multiple sessions.
+ *
+ */
 public class LabowletState {
 
     private static LabowletState labowletState = null;
     private LabowletSessionRepository labowletSessionRepository;
     private List<Room> activeRooms;
-    private Properties globalProperties;
+    private Properties globalProperties; //todo pull from application.properties?
 
     private LabowletState(){
         activeRooms = new ArrayList<>();
@@ -35,8 +40,8 @@ public class LabowletState {
         return labowletState;
     }
 
-    public GameSession getGameSession(HttpSession session){
-        return (GameSession) session.getAttribute("gameSession");
+    public PlayerSession getGameSession(HttpSession session){
+        return (PlayerSession) session.getAttribute("gameSession");
     }
 
     public void removeExpiredSessions(){

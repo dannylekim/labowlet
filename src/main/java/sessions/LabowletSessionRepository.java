@@ -5,7 +5,13 @@ import org.springframework.session.SessionRepository;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/***
+ * This class implements the Spring Session module and uses this custom implementation to handle the entire repository
+ * of sessions. Spring Session envelopes and wraps the HttpServletRequest with a wrapper that is backed by this
+ * implementation giving us full control of what session is being pushed, and how we handle it.
+ *
+ *
+ */
 public class LabowletSessionRepository implements SessionRepository {
     private ConcurrentHashMap<String, Session>  repository;
 
@@ -19,7 +25,6 @@ public class LabowletSessionRepository implements SessionRepository {
 
     @Override
     public Session createSession() {
-        //todo verify if there is already a session in the block
         return new LabowletSession();
     }
 

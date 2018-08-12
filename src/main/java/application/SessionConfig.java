@@ -1,4 +1,4 @@
-package servlet;
+package application;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @EnableSpringHttpSession
 @Configuration
-public class LabowletConfig {
+public class SessionConfig {
 
     @Bean
     public LabowletSessionRepository sessionRepository(){
@@ -27,5 +27,4 @@ public class LabowletConfig {
         return HeaderHttpSessionIdResolver.xAuthToken();
     }
 
-    //todo setup Filters
 }
