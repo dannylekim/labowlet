@@ -12,14 +12,14 @@ public class Room {
     private List<String> wordBowl;
     private List<Round> rounds;
 
-    public Room(Player host){
+    public Room(Player host, RoomSettings roomSettings){
         teams = new ArrayList<>();
         players = new ArrayList<>();
         wordBowl = new ArrayList<>();
         rounds = new ArrayList<>();
         this.host = host;
         this.roomCode = generateRoomCode();
-        roomSettings = new RoomSettings();
+        this.roomSettings = roomSettings;
         //todo
     }
 
@@ -55,6 +55,9 @@ public class Room {
         //todo
     }
 
+    public String getRoomCode() {
+        return roomCode;
+    }
 
     /* public methods */
 
@@ -86,6 +89,10 @@ public class Room {
 
     private String generateRoomCode(){
         return null;
+        //todo
+    }
+
+    public void createTeam(){
         //todo
     }
 

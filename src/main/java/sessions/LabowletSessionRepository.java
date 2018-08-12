@@ -13,6 +13,10 @@ public class LabowletSessionRepository implements SessionRepository {
         this.repository = repository;
     }
 
+    public void removeExpiredSessions(){
+        //todo
+    }
+
     @Override
     public Session createSession() {
         //todo verify if there is already a session in the block

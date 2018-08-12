@@ -1,9 +1,5 @@
 package sessions;
 
-import business.Player;
-import business.Room;
-import business.Team;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.session.Session;
 
 import java.io.Serializable;
@@ -13,14 +9,14 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
-//todo extend an expiring session
+
+/***
+ *
+ * //todo
+ *
+ *
+ */
 public class LabowletSession implements Session, Serializable {
-
-    // ------------ Business Implementation ---------- //
-
-    private Player player;
-    private Room currentRoom;
-    private Team currentTeam;
 
     // ---------- STATIC CONSTANTS ------------------- //
 
@@ -34,7 +30,7 @@ public class LabowletSession implements Session, Serializable {
     private Instant creationTime;
     private Instant lastAccessedTime;
     private Duration maxInactiveInterval;
-    private boolean isExpired;
+    private boolean isExpired; //used if there will ever be a timer/listener interaction that will set isExpired to true
 
     /***
      * Creates a new Labowlet Session. It will set the default settings by creating sessionId, attributes, creation
@@ -65,31 +61,7 @@ public class LabowletSession implements Session, Serializable {
         this.maxInactiveInterval = session.getMaxInactiveInterval();
         this.isExpired = session.isExpired();
         this.sessionId = session.getId();
-
     }
-
-    public void createPlayer(String name){
-        this.player = new Player(name);
-    }
-
-    public boolean joinRoom(String roomCode) {
-        return true;
-    }
-
-    public void createTeam(Player teammate, String teamName) {
-        currentTeam = new Team(teamName, player, teammate);
-        //todo
-    }
-
-    public void joinTeam(Team teamToJoin) {
-        teamToJoin.setTeamMember1(player);
-        //todo: how to choose which member to join as
-    }
-
-    public Player getPlayer(){
-        return player;
-    }
-
 
     @Override
     public String getId() {

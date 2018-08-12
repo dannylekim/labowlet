@@ -26,4 +26,6 @@ public class LabowletConfig {
     public HttpSessionIdResolver httpSessionIdResolver(){
         return HeaderHttpSessionIdResolver.xAuthToken();
     }
+
+    //todo setup Filters
 }
