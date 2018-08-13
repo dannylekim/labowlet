@@ -12,8 +12,18 @@ matrix:
 # Java 10 "Oracle JDK"
     - env: JDK='Oracle JDK 10'
       install: . ./install-jdk.sh -F 10 -L BCL
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
 script:
-# Display Gradle, Groovy, JVM and other versions
-  - ./gradle --version
-# Run all tests
-  - ./gradle test
+  - chmod +x ./gradlew
+  - ./gradlew build
+  - ./gradlew test
+
