@@ -2,62 +2,61 @@ package business;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Room {
+
+    // -------- DATA CONSTANTS ------------
     private List<Team> teams;
-    private List<Player> players;
+    private List<Player> benchPlayers;
     private Player host;
     private String roomCode;
     private RoomSettings roomSettings;
     private List<String> wordBowl;
     private List<Round> rounds;
 
+    // ------- STATIC CONSTANTS --------------------- //
+    private static final Random RANDOM = new Random();
+    private static final String CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
+    private static final int ROOM_CODE_LENGTH = 4;
+
     public Room(Player host, RoomSettings roomSettings){
         teams = new ArrayList<>();
-        players = new ArrayList<>();
+        benchPlayers = new ArrayList<>();
         wordBowl = new ArrayList<>();
         rounds = new ArrayList<>();
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
-        //todo
     }
 
-    /* only host methods */
-    //todo could possibly not exist in this class and simply created as an api route that is fed into the business.Room constructor
-    public void setRounds(int maxRounds){
-        //todo
-    }
-
-    public void addRoundType(String roundType){
-        //todo
-
-    }
-
-    public void deleteRoundType(String roundType){
-        //todo
-
-    }
-
-    public void setMaxTeams(int maxTeams){
-        //todo
-    }
-
-    public void setRoundTime(){
-        //todo
-    }
-
-    public void setAllowSkips(boolean allowSkips){
-        //todo
-    }
-
-    public void createRounds(){
-        //todo
-    }
-
+    // ----------------- GETTERS / SETTERS FOR PUBLIC JSON RETURN -------------------- //
     public String getRoomCode() {
         return roomCode;
     }
+
+    public List<Player> getBenchPlayers() {
+        return benchPlayers;
+    }
+
+    public List<Round> getRounds() {
+        return rounds;
+    }
+
+    public List<String> getWordBowl() {
+        return wordBowl;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public RoomSettings getRoomSettings(){
+        return roomSettings;
+    }
+
+    // ----------------------------------------------------------------------------------
+
 
     /* public methods */
 
@@ -67,16 +66,15 @@ public class Room {
     }
 
     public void addPlayer(Player player){
-        players.add(player);
+        benchPlayers.add(player);
         //todo
     }
 
     public void removePlayer(Player player){
-        players.remove(player);
-        //todo
+        //todo, find the player in the teams and bench players and remove that reference
     }
 
-    public Score getScoreBoard(){
+    public Score fetchScoreboard(){
         return null;
         //todo, return a scoreboard, not a score
     }
@@ -84,12 +82,15 @@ public class Room {
     public void addWordToBowl(String word){
         wordBowl.add(word);
         //todo
-
     }
 
     private String generateRoomCode(){
-        return null;
-        //todo
+        StringBuilder token = new StringBuilder(ROOM_CODE_LENGTH);
+        for (int i = 0; i < ROOM_CODE_LENGTH; i++) {
+            token.append(CHARS.charAt(RANDOM.nextInt(CHARS.length())));
+        }
+        String generatedRoomCode = token.toString();
+        return generatedRoomCode;
     }
 
     public void createTeam(){

@@ -18,11 +18,15 @@ apply plugin: 'io.spring.dependency-management'
 group = 'com.danken'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
 
 repositories {
 	mavenCentral()
 }
 
+bootJar {
+	launchScript()
+}
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')

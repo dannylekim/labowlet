@@ -5,8 +5,8 @@ import sessions.PlayerSession;
 import sessions.LabowletSessionRepository;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /***
@@ -21,11 +21,11 @@ public class LabowletState {
 
     private static LabowletState labowletState = null;
     private LabowletSessionRepository labowletSessionRepository;
-    private List<Room> activeRooms;
+    private Map<String, Room> activeRooms;
     private Properties globalProperties; //todo pull from application.properties?
 
     private LabowletState(){
-        activeRooms = new ArrayList<>();
+        activeRooms = new HashMap<>();
         globalProperties = new Properties();
     }
 
@@ -51,6 +51,18 @@ public class LabowletState {
     private boolean isSessionExpired(){
         return false;
         //todo
+    }
+
+    public Room getRoom(String roomCode){
+        return activeRooms.get(roomCode);
+    }
+
+    public void addActiveRoom(Room newActiveRoom){
+        activeRooms.put(newActiveRoom.getRoomCode(), newActiveRoom);
+    }
+
+    public void removeActiveRoom(Room expiredRoom){
+        activeRooms.remove(expiredRoom);
     }
 
 

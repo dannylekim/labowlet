@@ -1,10 +1,19 @@
 package business;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
+/***
+ *  This is a configuration class, meant to help initialize Room Object.
+ *
+ */
 public class RoomSettings {
     private int rounds;
     private List<String> roundTypes;
+    private int maxTeams;
+    private Duration roundTimeInSeconds;
+    private boolean allowSkips;
 
     //all the round types available
     private static String roundType1 = "DESCRIBE_IT";
@@ -12,47 +21,53 @@ public class RoomSettings {
     private static String roundType3 = "ACT_IT_OUT";
     private static String roundType4 = "SOUND_IT_OUT";
 
-    private int maxTeams;
-    private Object roundTime; //todo what's the Timer object going to be
-    private boolean allowSkips;
-
     public RoomSettings(){
-
+        this.roundTypes = new ArrayList<>();
     }
 
     public int getRounds() {
         return rounds;
     }
 
+    public void setRounds(int rounds) {
+        this.rounds = rounds;
+    }
+
     public int getMaxTeams() {
         return maxTeams;
-    }
-
-    public Object getRoundTime() {
-        return roundTime;
-    }
-
-    public List<String> getRoundTypes() {
-        return roundTypes;
-    }
-
-    public void setAllowSkips(boolean allowSkips) {
-        this.allowSkips = allowSkips;
     }
 
     public void setMaxTeams(int maxTeams) {
         this.maxTeams = maxTeams;
     }
 
-    public void setRounds(int rounds) {
-        this.rounds = rounds;
+
+    public List<String> getRoundTypes() {
+        return roundTypes;
     }
 
-    public void setRoundTime(Object roundTime) {
-        this.roundTime = roundTime;
+    public void setRoundTypes(List<String> roundTypes){
+        this.roundTypes = roundTypes;
     }
 
     public boolean getAllowSkips(){
         return allowSkips;
     }
+
+    public void setAllowSkips(boolean allowSkips) {
+        this.allowSkips = allowSkips;
+    }
+
+
+    public long getRoundTimeInSeconds() {
+        return roundTimeInSeconds.toSeconds();
+    }
+
+    public void setRoundTimeInSeconds(long roundTimeInSeconds) {
+        this.roundTimeInSeconds = Duration.ofSeconds(roundTimeInSeconds);
+    }
+
+
+
+
 }
