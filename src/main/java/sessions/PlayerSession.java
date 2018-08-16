@@ -28,4 +28,8 @@ public class PlayerSession {
     public String getRoomCode(){
         return currentRoom.getRoomCode();
     }
+
+    public Room getCurrentRoom(){
+        return currentRoom;
+    }
 }

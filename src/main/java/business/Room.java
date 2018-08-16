@@ -3,6 +3,7 @@ package business;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 public class Room {
 
@@ -20,7 +21,7 @@ public class Room {
     private static final String CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
     private static final int ROOM_CODE_LENGTH = 4;
 
-    public Room(Player host, RoomSettings roomSettings){
+    public Room(Player host, RoomSettings roomSettings) {
         teams = new ArrayList<>();
         benchPlayers = new ArrayList<>();
         wordBowl = new ArrayList<>();
@@ -51,7 +52,7 @@ public class Room {
         return teams;
     }
 
-    public RoomSettings getRoomSettings(){
+    public RoomSettings getRoomSettings() {
         return roomSettings;
     }
 
@@ -60,41 +61,91 @@ public class Room {
 
     /* public methods */
 
-    public void addTeam(Team team){
-        teams.add(team);
-        //todo verify if teams are there before adding
+    public boolean createTeam(String teamName, Player player) {
+        if (teams.size() < roomSettings.getMaxTeams()) {
+            Team newTeam = new Team(teamName, player);
+            teams.add(newTeam);
+            return true;
+        }
+        return false;
     }
 
-    public void addPlayer(Player player){
+    public void addPlayerToBench(Player player) {
         benchPlayers.add(player);
-        //todo
     }
 
-    public void removePlayer(Player player){
-        //todo, find the player in the teams and bench players and remove that reference
+    public boolean addPlayerToTeam(Team team, Player player){
+        boolean hasPlayerJoinedTeam = false;
+        boolean isPlayerInRoom = isPlayerInRoom(player);
+
+        if(isPlayerInRoom){
+            boolean isPlayerRemoved = removePlayer(player);
+            if(isPlayerRemoved) {
+                if(team.getTeamMember1() == null){
+                    team.setTeamMember1(player);
+                    hasPlayerJoinedTeam = true;
+                }
+                else if(team.getTeamMember2() == null){
+                    team.setTeamMember2(player);
+                    hasPlayerJoinedTeam = true;
+                }
+            }
+        }
+
+        return hasPlayerJoinedTeam;
+
     }
 
-    public Score fetchScoreboard(){
+    public boolean isPlayerInRoom(Player player){
+        boolean isPlayerInRoom = benchPlayers.contains(player);
+        if(isPlayerInRoom){return isPlayerInRoom;}
+
+        isPlayerInRoom = teams
+                .stream()
+                .anyMatch(team ->
+                        (team.getTeamMember1() == player || team.getTeamMember2() == player));
+
+
+        return isPlayerInRoom;
+    }
+
+    public Team getTeam(String teamId){
+        Team foundTeam = teams.stream()
+                .filter(team ->
+                        team.getTeamId().equals(teamId))
+                .findFirst()
+                .orElse(null);
+        return foundTeam;
+    }
+
+    public boolean removePlayer(Player player) {
+        boolean isPlayerFound = benchPlayers.remove(player);
+        if(isPlayerFound){return isPlayerFound;} //found in bench players, no need to parse any further
+
+        isPlayerFound = teams.removeIf(
+                team ->
+                        (team.getTeamMember2() == player || team.getTeamMember1() == player));
+
+        return isPlayerFound;
+    }
+
+    public Score fetchScoreboard() {
         return null;
         //todo, return a scoreboard, not a score
     }
 
-    public void addWordToBowl(String word){
+    public void addWordToBowl(String word) {
         wordBowl.add(word);
         //todo
     }
 
-    private String generateRoomCode(){
+    private String generateRoomCode() {
         StringBuilder token = new StringBuilder(ROOM_CODE_LENGTH);
         for (int i = 0; i < ROOM_CODE_LENGTH; i++) {
             token.append(CHARS.charAt(RANDOM.nextInt(CHARS.length())));
         }
         String generatedRoomCode = token.toString();
         return generatedRoomCode;
-    }
-
-    public void createTeam(){
-        //todo
     }
 
 

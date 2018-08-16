@@ -1,17 +1,22 @@
 package business;
 
+import java.util.UUID;
+
 public class Team {
     private String teamName;
     private Player teamMember1;
     private Player teamMember2;
     private Score teamScore;
+    private String teamId;
 
-    public Team(String teamName, Player teamMember1, Player teamMember2){
+    public Team(String teamName, Player teamMember1){
         this.teamName = teamName;
         this.teamMember1 = teamMember1;
-        this.teamMember2 = teamMember2;
         this.teamScore = new Score();
+        this.teamId = UUID.randomUUID().toString();
     }
+
+    public String getTeamId() {return this.teamId;}
 
     public String getTeamName(){
         return this.teamName;
