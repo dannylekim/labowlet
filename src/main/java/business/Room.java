@@ -16,6 +16,8 @@ public class Room {
     private List<String> wordBowl;
     private List<Round> rounds;
 
+    private boolean isInPlay;
+
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
     private static final String CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
@@ -29,6 +31,7 @@ public class Room {
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
+        isInPlay = false;
     }
 
     // ----------------- GETTERS / SETTERS FOR PUBLIC JSON RETURN -------------------- //
@@ -58,6 +61,9 @@ public class Room {
 
     // ----------------------------------------------------------------------------------
 
+    public boolean isInPlay(){
+        return isInPlay;
+    }
 
     /* public methods */
 
@@ -74,18 +80,17 @@ public class Room {
         benchPlayers.add(player);
     }
 
-    public boolean addPlayerToTeam(Team team, Player player){
+    public boolean addPlayerToTeam(Team team, Player player) {
         boolean hasPlayerJoinedTeam = false;
         boolean isPlayerInRoom = isPlayerInRoom(player);
 
-        if(isPlayerInRoom){
+        if (isPlayerInRoom) {
             boolean isPlayerRemoved = removePlayer(player);
-            if(isPlayerRemoved) {
-                if(team.getTeamMember1() == null){
+            if (isPlayerRemoved) {
+                if (team.getTeamMember1() == null) {
                     team.setTeamMember1(player);
                     hasPlayerJoinedTeam = true;
-                }
-                else if(team.getTeamMember2() == null){
+                } else if (team.getTeamMember2() == null) {
                     team.setTeamMember2(player);
                     hasPlayerJoinedTeam = true;
                 }
@@ -96,9 +101,11 @@ public class Room {
 
     }
 
-    public boolean isPlayerInRoom(Player player){
+    public boolean isPlayerInRoom(Player player) {
         boolean isPlayerInRoom = benchPlayers.contains(player);
-        if(isPlayerInRoom){return isPlayerInRoom;}
+        if (isPlayerInRoom) {
+            return isPlayerInRoom;
+        }
 
         isPlayerInRoom = teams
                 .stream()
@@ -109,7 +116,7 @@ public class Room {
         return isPlayerInRoom;
     }
 
-    public Team getTeam(String teamId){
+    public Team getTeam(String teamId) {
         Team foundTeam = teams.stream()
                 .filter(team ->
                         team.getTeamId().equals(teamId))
@@ -120,7 +127,9 @@ public class Room {
 
     public boolean removePlayer(Player player) {
         boolean isPlayerFound = benchPlayers.remove(player);
-        if(isPlayerFound){return isPlayerFound;} //found in bench players, no need to parse any further
+        if (isPlayerFound) {
+            return isPlayerFound;
+        } //found in bench players, no need to parse any further
 
         isPlayerFound = teams.removeIf(
                 team ->
@@ -138,6 +147,25 @@ public class Room {
         wordBowl.add(word);
         //todo
     }
+
+    public void updateRoom(RoomSettings roomSettings) {
+        this.roomSettings = roomSettings;
+
+        //If there are more teams than the new updated Max Teams, you must bench the newly joined ones until
+        //it is of equal sizing
+        int maxTeams = roomSettings.getMaxTeams();
+        int lastJoinedTeamIndex;
+        Team teamToBench;
+        while (teams.size() > maxTeams) {
+            lastJoinedTeamIndex = teams.size() - 1;
+            teamToBench = teams.get(lastJoinedTeamIndex);
+            benchPlayers.add(teamToBench.getTeamMember1());
+            benchPlayers.add(teamToBench.getTeamMember2());
+            teams.remove(teamToBench);
+        }
+    }
+
+    //========== private methods ================/
 
     private String generateRoomCode() {
         StringBuilder token = new StringBuilder(ROOM_CODE_LENGTH);

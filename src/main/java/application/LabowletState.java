@@ -6,6 +6,7 @@ import sessions.LabowletSessionRepository;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -22,7 +23,8 @@ public class LabowletState {
     private static LabowletState labowletState = null;
     private LabowletSessionRepository labowletSessionRepository;
     private Map<String, Room> activeRooms;
-    private Properties globalProperties; //todo pull from application.properties?
+    private Map<String, List<String>> activeSockets; //todo sockets/roomId
+    private Properties globalProperties; //todo pull from labowlet.properties
 
     private LabowletState(){
         activeRooms = new HashMap<>();
