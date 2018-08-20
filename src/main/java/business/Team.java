@@ -48,5 +48,9 @@ public class Team {
         //todo: handle error otherwise
     }
 
+    public boolean isPlayerInTeam(Player player){
+        return (this.teamMember1 == player || this.teamMember2 == player);
+    }
+
 
 }

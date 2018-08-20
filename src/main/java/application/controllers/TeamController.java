@@ -24,6 +24,9 @@ public class TeamController {
     @Autowired
     HttpSession session;
 
+    public TeamController(){
+        applicationState = LabowletState.getInstance();
+    }
 
     @RequestMapping(method = PUT, value = "/joinTeam/{teamId}")
     public Room joinTeam(@PathVariable("teamId") String teamId){
@@ -66,8 +69,34 @@ public class TeamController {
     }
 
     @RequestMapping(method = PUT, value = "/team/{teamId}") //add a teamId param
-    public Team updateTeam(@RequestParam String teamName, @PathVariable("teamId") String teamId){
-        return null; //todo
+    public Team updateTeam(@RequestParam(required = false) String teamName, @PathVariable("teamId") String teamId){
+
+        PlayerSession userGameSession = applicationState.getGameSession(session);
+        Player player = userGameSession.getPlayer();
+        Room currentRoom = userGameSession.getCurrentRoom();
+        if(currentRoom == null) {
+            //todo error handle
+        }
+
+        Team team = currentRoom.getTeam(teamId);
+        //if player is inside the team, then the only thing possible to update is the teamName.
+        boolean isPlayerInTeam = team.isPlayerInTeam(player);
+
+        if(isPlayerInTeam && teamName != null){
+            team.setTeamName(teamName); //you are only allowed to update teamName if you are ALREADY inside the team
+        }
+        else if (!isPlayerInTeam){
+            boolean playerHasJoined = currentRoom.addPlayerToTeam(team, player);
+            if(!playerHasJoined) {
+                //todo error handle
+            }
+        }
+        else {
+            //todo return either an error or nothing
+        }
+
+
+        return team;
     }
 
 }
