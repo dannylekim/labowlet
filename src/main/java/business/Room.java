@@ -3,6 +3,7 @@ package business;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Room {
@@ -67,13 +68,28 @@ public class Room {
 
     /* public methods */
 
-    public boolean createTeam(String teamName, Player player) {
-        if (teams.size() < roomSettings.getMaxTeams()) {
-            Team newTeam = new Team(teamName, player);
-            teams.add(newTeam);
-            return true;
+    public void createTeam(String teamName, Player player) {
+        if (teams.size() >= roomSettings.getMaxTeams()) {
+           throw new IllegalStateException("Can no longer add any more teams in this room!");
         }
-        return false;
+        if(!isPlayerInRoom(player)){
+            throw new IllegalStateException("This player must be in the room to create a team.");
+        }
+
+        boolean doesTeamNameExist = teams.stream().anyMatch(team -> team.getTeamName().equals(teamName));
+        if(doesTeamNameExist){
+            throw new IllegalArgumentException("This team name already exists in this room!");
+        }
+
+        benchPlayers.remove(player);
+        teams
+                .stream()
+                .forEach(team -> team.removePlayerFromTeam(player));
+
+        Team newTeam = new Team(teamName, player);
+
+
+        teams.add(newTeam);
     }
 
     public void addPlayerToBench(Player player) {

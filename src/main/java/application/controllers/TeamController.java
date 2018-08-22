@@ -59,13 +59,8 @@ public class TeamController {
             //todo errorhandle and return a message properly
             return null;
         }
-        boolean hasJoined = currentRoom.createTeam(teamName, player);
-        if (hasJoined) {
-            return currentRoom;
-        } else {
-            //todo error handle
-            return null;
-        }
+        currentRoom.createTeam(teamName, player);
+        return currentRoom;
     }
 
     @RequestMapping(method = PUT, value = "/team/{teamId}") //add a teamId param

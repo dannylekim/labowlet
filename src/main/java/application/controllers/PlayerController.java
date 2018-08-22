@@ -37,7 +37,7 @@ public class PlayerController {
     }
 
     @RequestMapping(method=POST, value="/word")
-    public Player createWordBowl(@RequestParam ArrayList<String> words){
+    public Player createWordBowl(@RequestParam List<String> words){
         Player player = applicationState
                 .getGameSession(session)
                 .getPlayer();

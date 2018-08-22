@@ -52,5 +52,16 @@ public class Team {
         return (this.teamMember1 == player || this.teamMember2 == player);
     }
 
+    public void removePlayerFromTeam(Player player){
+        if(teamMember2 == player){
+            teamMember2 = null;
+        }
+        if(teamMember1 == player){
+            teamMember1 = null;
+        }
+
+
+    }
+
 
 }
