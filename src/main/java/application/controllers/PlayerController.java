@@ -10,6 +10,10 @@ import sessions.PlayerSession;
 
 import javax.servlet.http.HttpSession;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
@@ -31,4 +35,16 @@ public class PlayerController {
         session.setAttribute("gameSession", userPlayerSession);
         return userPlayerSession.getPlayer();
     }
+
+    @RequestMapping(method=POST, value="/word")
+    public Player createWordBowl(@RequestParam ArrayList<String> words){
+        Player player = applicationState
+                .getGameSession(session)
+                .getPlayer();
+
+        player.createWordBowl(words);
+        return player;
+    }
+
 }
+

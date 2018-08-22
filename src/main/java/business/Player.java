@@ -1,6 +1,7 @@
 package business;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,8 +16,8 @@ public class Player {
         this.id = UUID.randomUUID().toString();
     }
 
-    public void addWord(String word){
-        words.add(word);
+    public void createWordBowl(ArrayList<String> inputWords){
+        this.words = inputWords;
     }
 
     public String getName() {
