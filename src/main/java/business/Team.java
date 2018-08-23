@@ -36,12 +36,26 @@ public class Team {
         return teamMember2;
     }
 
+    /***
+     * Set the first team member however, it will only set if and only if: the value you're trying to set is null,
+     * the value other team member is null or that the value you're setting isn't the same as the other member.
+     *
+     *
+     * @param teamMember1 the player to be set as the first teammember
+     */
     public void setTeamMember1(Player teamMember1) {
         if (teamMember1 == null || this.teamMember2 == null || (teamMember1 != this.teamMember2)) {
             this.teamMember1 = teamMember1;
         }
     }
 
+    /***
+     * Set the first team member however, it will only set if and only if: the value you're trying to set is null,
+     * the value other team member is null or that the value you're setting isn't the same as the other member.
+     *
+     *
+     * @param teamMember2 the player to be set as the first teammember
+     */
     public void setTeamMember2(Player teamMember2) {
         if (teamMember2 == null || this.teamMember1 == null || (teamMember2 != this.teamMember1)) {
             this.teamMember2 = teamMember2;

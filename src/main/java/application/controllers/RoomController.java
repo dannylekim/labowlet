@@ -34,6 +34,17 @@ public class RoomController {
                 .getGameSession(session)
                 .getPlayer();
         Room newRoom = new Room(host, newRoomSettings);
+        boolean isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
+
+        /*if the room code isn't unique, regenerate the room code and check again until there are no rooms with the same
+        room code.
+        */
+
+        while(!isRoomCodeUnique){
+            newRoom.regenerateRoomCode();
+            isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
+        }
+
         applicationState.addActiveRoom(newRoom);
         return newRoom;
     }

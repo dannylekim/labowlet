@@ -59,6 +59,10 @@ public class LabowletState {
         return activeRooms.get(roomCode);
     }
 
+    public boolean isRoomCodeUnique(String roomCode){
+        return (getRoom(roomCode) == null);
+    }
+
     public void addActiveRoom(Room newActiveRoom){
         activeRooms.put(newActiveRoom.getRoomCode(), newActiveRoom);
     }

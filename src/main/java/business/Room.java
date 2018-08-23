@@ -196,11 +196,20 @@ public class Room {
         }
     }
 
+    /***
+     * Regenerates a new unique room code and sets it as this room's room code.
+     *
+     * @return
+     */
+    public String regenerateRoomCode(){
+        this.roomCode = generateRoomCode();
+        return roomCode;
+    }
+
     //========== private methods ================/
 
     /***
      * Generate a room code as long as the ROOM_CODE_LENGTH
-     * //todo need to verify that the room Code isn't the same as any other room code
      *
      * @return a unique code that is as long as the ROOM_CODE_LENGTH
      */
