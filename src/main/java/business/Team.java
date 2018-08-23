@@ -37,13 +37,13 @@ public class Team {
     }
 
     public void setTeamMember1(Player teamMember1) {
-        if (teamMember1 == null || this.teamMember2 == null || (this.teamMember2 != null && teamMember1 != this.teamMember2)) {
+        if (teamMember1 == null || this.teamMember2 == null || (teamMember1 != this.teamMember2)) {
             this.teamMember1 = teamMember1;
         }
     }
 
     public void setTeamMember2(Player teamMember2) {
-        if (teamMember2 == null || this.teamMember1 == null || (this.teamMember1 != null && teamMember2 != this.teamMember1)) {
+        if (teamMember2 == null || this.teamMember1 == null || (teamMember2 != this.teamMember1)) {
             this.teamMember2 = teamMember2;
         }
 
@@ -56,8 +56,8 @@ public class Team {
     /***
      * Returns true if the player was found and removed.
      *
-     * @param player
-     * @return
+     * @param player the player to remove from the team
+     * @return boolean value if the removal was successful
      */
     public boolean removePlayerFromTeam(Player player) {
         boolean isRemoved = false;

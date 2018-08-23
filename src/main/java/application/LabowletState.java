@@ -14,7 +14,7 @@ import java.util.Properties;
  *  This is the state of the application at all times. Essentially, the in-memory database implementation for Labowlet.
  *  You can forcefully expire sessions with access to the session repository, manage rooms and manage global properties.
  *  Application state is a singleton that can be retrieved at any point since there is only one state per container.
- *  Tthe developer needs to be conscious about manipulating the state of the application as there can be large
+ *  The developer needs to be conscious about manipulating the state of the application as there can be large
  *  repercussions that can affect multiple sessions.
  *
  */

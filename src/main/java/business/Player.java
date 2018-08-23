@@ -32,8 +32,10 @@ public class Player {
     /***
      *  Creates a new word bowl with the input. Verifies that all the words are unique.
      *
-     * @param inputWords
+     * @param inputWords This is a list of words that the user has made to be placed in the word bowl
      */
+
+    //todo this needs to be checked against the max number of words in a word bowl somehow.
     public void createWordBowl(List<String> inputWords){
         this.wordBowl = new ArrayList<>();
         inputWords.stream().forEach(word -> {

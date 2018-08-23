@@ -32,7 +32,7 @@ public class LabowletSessionRepository implements SessionRepository {
      * Saves the current session into the repository. Please note that it uses the sessionId, therefore
      * only one session can be saved. This way, the user cannot have multiple sessions linked to one "game"
      *
-     * @param session
+     * @param session the session to save into the repository
      */
     @Override
     public void save(Session session) {

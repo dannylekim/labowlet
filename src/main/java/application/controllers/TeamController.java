@@ -56,7 +56,7 @@ public class TeamController {
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
         if (currentRoom == null) {
-            //todo errorhandle and return a message properly
+            //todo error handle and return a message properly
             return null;
         }
         currentRoom.createTeam(teamName, player);

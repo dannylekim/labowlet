@@ -3,8 +3,6 @@ package business;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Room {
 
@@ -74,8 +72,8 @@ public class Room {
      * Any player can create a group as long as they are in the same group. Cannot have the same name as another team.
      * It is assumed that the player creating the team will also join that team and leave their previous team.
      *
-     * @param teamName
-     * @param player
+     * @param teamName the team name
+     * @param player the player who is creating the team
      */
     public void createTeam(String teamName, Player player) {
         //Cannot have more teams than the max teams
@@ -110,9 +108,9 @@ public class Room {
      * error. It will then momentarily remove the player from other teams or the bench and set the player into the
      * specified team.
      *
-     * @param team
-     * @param player
-     * @return
+     * @param team the team to place a player in
+     * @param player the player who wants to join the team
+     * @return a boolean value if the player has successfully joined or not
      */
     public boolean addPlayerToTeam(Team team, Player player) {
         boolean hasPlayerJoinedTeam = false;
@@ -141,23 +139,22 @@ public class Room {
     /***
      * Gets the first instance (and generally the ONLY instance) of the team with the specified ID.
      *
-     * @param teamId
-     * @return
+     * @param teamId the unique ID of a team to find
+     * @return returns the team found or null if the ID was invalid
      */
     public Team getTeam(String teamId) {
-        Team foundTeam = teams.stream()
+        return teams.stream()
                 .filter(team ->
                         team.getTeamId().equals(teamId))
                 .findFirst()
                 .orElse(null);
-        return foundTeam;
     }
 
     /***
      *  This removes a player from the room and returns if the player has been removed.
      *
-     * @param player
-     * @return
+     * @param player the player to remove from the room
+     * @return a boolean if the removal was successful
      */
     public boolean removePlayer(Player player) {
         boolean isPlayerFound = benchPlayers.remove(player);
@@ -205,23 +202,23 @@ public class Room {
      * Generate a room code as long as the ROOM_CODE_LENGTH
      * //todo need to verify that the room Code isn't the same as any other room code
      *
-     * @return
+     * @return a unique code that is as long as the ROOM_CODE_LENGTH
      */
     private String generateRoomCode() {
         StringBuilder token = new StringBuilder(ROOM_CODE_LENGTH);
         for (int i = 0; i < ROOM_CODE_LENGTH; i++) {
             token.append(CHARS.charAt(RANDOM.nextInt(CHARS.length())));
         }
-        String generatedRoomCode = token.toString();
-        return generatedRoomCode;
+        return token.toString();
+
     }
 
 
     /***
      * Returns if the player is inside the room (either in the bench of the teams)
      *
-     * @param player
-     * @return
+     * @param player the player to verify if they are in the room
+     * @return a boolean value if player is in the room or not
      */
     private boolean isPlayerInRoom(Player player) {
         boolean isPlayerInRoom = benchPlayers.contains(player);

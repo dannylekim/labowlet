@@ -53,7 +53,7 @@ public class LabowletSession implements Session, Serializable {
     /***
      * Copy constructor for a Labowlet Session used to allow concurrent connections all trying to create sessions
      *
-     * @param session
+     * @param session The session to copy over
      */
     LabowletSession(LabowletSession session){
         this.attributes = session.attributes;
