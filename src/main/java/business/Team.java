@@ -35,14 +35,14 @@ public class Team {
     }
 
     public void setTeamMember1(Player teamMember1){
-        if(this.teamMember1 != teamMember1 && this.teamMember2 != teamMember1) {
+        if(this.teamMember1 != teamMember1) {
             this.teamMember1 = teamMember1;
         }
         //todo: handle error otherwise
     }
 
     public void setTeamMember2(Player teamMember2){
-        if(this.teamMember1 != teamMember2 && this.teamMember2 != teamMember2) {
+        if(this.teamMember1 != teamMember2) {
             this.teamMember2 = teamMember2;
         }
         //todo: handle error otherwise

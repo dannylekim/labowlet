@@ -27,6 +27,7 @@ public class Room {
     public Room(Player host, RoomSettings roomSettings) {
         teams = new ArrayList<>();
         benchPlayers = new ArrayList<>();
+        benchPlayers.add(host);
         wordBowl = new ArrayList<>();
         rounds = new ArrayList<>();
         this.host = host;
@@ -62,33 +63,45 @@ public class Room {
 
     // ----------------------------------------------------------------------------------
 
-    public boolean isInPlay(){
+    public boolean isInPlay() {
         return isInPlay;
     }
 
     /* public methods */
 
+    /***
+     * Create a team inside the group. You cannot have a team created if there's already the max number of teams.
+     * Any player can create a group as long as they are in the same group. Cannot have the same name as another team.
+     * It is assumed that the player creating the team will also join that team and leave their previous team.
+     *
+     * @param teamName
+     * @param player
+     */
     public void createTeam(String teamName, Player player) {
+        //Cannot have more teams than the max teams
         if (teams.size() >= roomSettings.getMaxTeams()) {
-           throw new IllegalStateException("Can no longer add any more teams in this room!");
+            throw new IllegalStateException("Can no longer add any more teams in this room!");
         }
-        if(!isPlayerInRoom(player)){
+
+        //Must be in the room to create a team
+        if (!isPlayerInRoom(player)) {
             throw new IllegalStateException("This player must be in the room to create a team.");
         }
 
+        //cannot have two of the same names
         boolean doesTeamNameExist = teams.stream().anyMatch(team -> team.getTeamName().equals(teamName));
-        if(doesTeamNameExist){
+        if (doesTeamNameExist) {
             throw new IllegalArgumentException("This team name already exists in this room!");
         }
 
+        //remove the player from previous team or bench
         benchPlayers.remove(player);
         teams
                 .stream()
                 .forEach(team -> team.removePlayerFromTeam(player));
 
+
         Team newTeam = new Team(teamName, player);
-
-
         teams.add(newTeam);
     }
 
@@ -117,20 +130,24 @@ public class Room {
 
     }
 
+    /***
+     * Returns if the player is inside the room (either in the bench of the teams)
+     *
+     * @param player
+     * @return
+     */
     public boolean isPlayerInRoom(Player player) {
         boolean isPlayerInRoom = benchPlayers.contains(player);
-        if (isPlayerInRoom) {
-            return isPlayerInRoom;
+        if (!isPlayerInRoom) {
+            isPlayerInRoom = teams
+                    .stream()
+                    .anyMatch(team ->
+                            (team.getTeamMember1() == player || team.getTeamMember2() == player));
         }
-
-        isPlayerInRoom = teams
-                .stream()
-                .anyMatch(team ->
-                        (team.getTeamMember1() == player || team.getTeamMember2() == player));
-
 
         return isPlayerInRoom;
     }
+
 
     public Team getTeam(String teamId) {
         Team foundTeam = teams.stream()
@@ -143,14 +160,22 @@ public class Room {
 
     public boolean removePlayer(Player player) {
         boolean isPlayerFound = benchPlayers.remove(player);
-        if (isPlayerFound) {
-            return isPlayerFound;
-        } //found in bench players, no need to parse any further
+        if (!isPlayerFound) {
 
-        isPlayerFound = teams.removeIf(
-                team ->
-                        (team.getTeamMember2() == player || team.getTeamMember1() == player));
+            //was not in bench therefore look in groups
+            for(Team team: teams){
+                if(team.getTeamMember1() == player){
+                    team.setTeamMember1(null);
+                    isPlayerFound = true;
+                }
+                else if (team.getTeamMember2() == player){
+                    team.setTeamMember2(null);
+                    isPlayerFound = true;
+                }
 
+                if(isPlayerFound){break;}
+            }
+        }
         return isPlayerFound;
     }
 
