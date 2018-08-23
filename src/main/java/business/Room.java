@@ -95,11 +95,7 @@ public class Room {
         }
 
         //remove the player from previous team or bench
-        benchPlayers.remove(player);
-        teams
-                .stream()
-                .forEach(team -> team.removePlayerFromTeam(player));
-
+        removePlayer(player);
 
         Team newTeam = new Team(teamName, player);
         teams.add(newTeam);
@@ -109,11 +105,23 @@ public class Room {
         benchPlayers.add(player);
     }
 
+    /***
+     * Add player to the team. It verifies if the player is in the room to begin with, then otherwise it will throw an
+     * error. It will then momentarily remove the player from other teams or the bench and set the player into the
+     * specified team.
+     *
+     * @param team
+     * @param player
+     * @return
+     */
     public boolean addPlayerToTeam(Team team, Player player) {
         boolean hasPlayerJoinedTeam = false;
-        boolean isPlayerInRoom = isPlayerInRoom(player);
+        boolean isPlayerInRoom = isPlayerInRoom(player);  //todo throw an error when false
 
+        //todo verify that the team has an open slot to begin with. Also verify that this team doesn't have the player as well
         if (isPlayerInRoom) {
+
+
             boolean isPlayerRemoved = removePlayer(player);
             if (isPlayerRemoved) {
                 if (team.getTeamMember1() == null) {
@@ -131,24 +139,11 @@ public class Room {
     }
 
     /***
-     * Returns if the player is inside the room (either in the bench of the teams)
+     * Gets the first instance (and generally the ONLY instance) of the team with the specified ID.
      *
-     * @param player
+     * @param teamId
      * @return
      */
-    public boolean isPlayerInRoom(Player player) {
-        boolean isPlayerInRoom = benchPlayers.contains(player);
-        if (!isPlayerInRoom) {
-            isPlayerInRoom = teams
-                    .stream()
-                    .anyMatch(team ->
-                            (team.getTeamMember1() == player || team.getTeamMember2() == player));
-        }
-
-        return isPlayerInRoom;
-    }
-
-
     public Team getTeam(String teamId) {
         Team foundTeam = teams.stream()
                 .filter(team ->
@@ -158,21 +153,19 @@ public class Room {
         return foundTeam;
     }
 
+    /***
+     *  This removes a player from the room and returns if the player has been removed.
+     *
+     * @param player
+     * @return
+     */
     public boolean removePlayer(Player player) {
         boolean isPlayerFound = benchPlayers.remove(player);
         if (!isPlayerFound) {
 
             //was not in bench therefore look in groups
             for(Team team: teams){
-                if(team.getTeamMember1() == player){
-                    team.setTeamMember1(null);
-                    isPlayerFound = true;
-                }
-                else if (team.getTeamMember2() == player){
-                    team.setTeamMember2(null);
-                    isPlayerFound = true;
-                }
-
+                isPlayerFound = team.removePlayerFromTeam(player);
                 if(isPlayerFound){break;}
             }
         }
@@ -208,6 +201,12 @@ public class Room {
 
     //========== private methods ================/
 
+    /***
+     * Generate a room code as long as the ROOM_CODE_LENGTH
+     * //todo need to verify that the room Code isn't the same as any other room code
+     *
+     * @return
+     */
     private String generateRoomCode() {
         StringBuilder token = new StringBuilder(ROOM_CODE_LENGTH);
         for (int i = 0; i < ROOM_CODE_LENGTH; i++) {
@@ -215,6 +214,25 @@ public class Room {
         }
         String generatedRoomCode = token.toString();
         return generatedRoomCode;
+    }
+
+
+    /***
+     * Returns if the player is inside the room (either in the bench of the teams)
+     *
+     * @param player
+     * @return
+     */
+    private boolean isPlayerInRoom(Player player) {
+        boolean isPlayerInRoom = benchPlayers.contains(player);
+        if (!isPlayerInRoom) {
+            isPlayerInRoom = teams
+                    .stream()
+                    .anyMatch(team ->
+                            (team.isPlayerInTeam(player)));
+        }
+
+        return isPlayerInRoom;
     }
 
 

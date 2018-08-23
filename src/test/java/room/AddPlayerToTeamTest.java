@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -31,9 +32,8 @@ public class AddPlayerToTeamTest {
 
     @Test
     public void returnFalseIfPlayerNotIn(){
-        doReturn(false).when(room).isPlayerInRoom(any());
-        assertFalse(room.addPlayerToTeam(team, host));
-        assertTrue(team.getTeamMember1() != host && team.getTeamMember2() != host);
+        Player player = new Player("test");
+        assertFalse(room.addPlayerToTeam(team, player));
     }
 
     @Test
@@ -42,23 +42,20 @@ public class AddPlayerToTeamTest {
         Team testTeam = new Team("test", teamPlayer);
         assertTrue(room.addPlayerToTeam(testTeam, host));
         assertTrue(testTeam.getTeamMember1() == host || testTeam.getTeamMember2() == host);
-        assertTrue(room.getBenchPlayers().size() == 0);
+        assertEquals(room.getBenchPlayers().size(), 0);
     }
 
     @Test
     public void returnTrueIfInTeam(){
-        doCallRealMethod().when(team).setTeamMember1(any());
-        doCallRealMethod().when(team).getTeamMember1();
-        doCallRealMethod().when(team).getTeamMember2();
+        Team hostTeam = new Team("one", host);
 
         Player initialTeamMember = mock(Player.class);
-        Team testTeam = new Team("test", initialTeamMember);
+        Team testTeam = new Team("two", initialTeamMember);
 
-        team.setTeamMember1(host);
         room.getBenchPlayers().remove(host);
 
+        room.getTeams().add(hostTeam);
         room.getTeams().add(testTeam);
-        room.getTeams().add(team);
 
         assertTrue(room.addPlayerToTeam(testTeam, host));
         assertTrue(room.getTeams().size() == 2);
