@@ -8,12 +8,12 @@ import business.Room;
  *  so does this session and all of its traces.
  *
  */
-public class PlayerSession {
+public class GameSession {
 
     private Player player;
     private Room currentRoom;
 
-    public PlayerSession(String name){
+    public GameSession(String name){
         this.player = new Player(name);
     }
 

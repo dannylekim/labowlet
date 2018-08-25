@@ -12,6 +12,10 @@ import static org.mockito.Mockito.mock;
 public class addPlayerInTeamTest {
 
 
+    /***
+     *  Player should be added to the first slot if not full
+     *
+     */
     @Test
     public void setTeamMember1IfNotFull(){
         Team team = new Team("test", mock(Player.class));
@@ -21,6 +25,10 @@ public class addPlayerInTeamTest {
         assertEquals(secondPlayer, team.getTeamMember1());
     }
 
+    /***
+     * Player should be added to the second slot if you add a player immediately after instantiation
+     *
+     */
     @Test
     public void setTeamMember2IfSetAfterStart(){
         Team team = new Team("test", mock(Player.class));
@@ -29,6 +37,10 @@ public class addPlayerInTeamTest {
         assertEquals(secondPlayer, team.getTeamMember2());
     }
 
+    /***
+     *
+     * Player should be added to second slot if not null
+     */
     @Test
     public void setTeamMember2IfNotNull(){
         Team team = new Team("test", mock(Player.class));
@@ -40,6 +52,11 @@ public class addPlayerInTeamTest {
         assertEquals(thirdPlayer, team.getTeamMember2());
     }
 
+
+    /***
+     * return false when the team is full
+     *
+     */
     @Test
     public void returnFalseIfFull(){
         Team team = new Team("test", mock(Player.class));

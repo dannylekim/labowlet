@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sessions.PlayerSession;
+import sessions.GameSession;
 
 import javax.servlet.http.HttpSession;
 
@@ -31,7 +31,7 @@ public class TeamController {
     @RequestMapping(method = PUT, value = "/joinTeam/{teamId}")
     public Room joinTeam(@PathVariable("teamId") String teamId) throws Exception{
 
-        PlayerSession userGameSession = applicationState.getGameSession(session);
+        GameSession userGameSession = applicationState.getGameSession(session);
         Room room = userGameSession.getCurrentRoom();
 
         if(room != null){
@@ -52,7 +52,7 @@ public class TeamController {
 
     @RequestMapping(method = POST, value = "/team")
     public Room createTeam(@RequestParam String teamName) {
-        PlayerSession userGameSession = applicationState.getGameSession(session);
+        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
         if (currentRoom == null) {
@@ -66,7 +66,7 @@ public class TeamController {
     @RequestMapping(method = PUT, value = "/team/{teamId}") //add a teamId param
     public Team updateTeam(@RequestParam(required = false) String teamName, @PathVariable("teamId") String teamId) throws Exception{
 
-        PlayerSession userGameSession = applicationState.getGameSession(session);
+        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
         if(currentRoom == null) {
@@ -81,10 +81,7 @@ public class TeamController {
             team.setTeamName(teamName); //you are only allowed to update teamName if you are ALREADY inside the team
         }
         else if (!isPlayerInTeam){
-            boolean playerHasJoined = currentRoom.addPlayerToTeam(team, player);
-            if(!playerHasJoined) {
-                //todo error handle
-            }
+            currentRoom.addPlayerToTeam(team, player);
         }
         else {
             //todo return either an error or nothing

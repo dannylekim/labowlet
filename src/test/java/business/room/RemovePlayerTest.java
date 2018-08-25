@@ -24,7 +24,11 @@ public class RemovePlayerTest {
     }
 
 
-
+    /***
+     *
+     * Checks that the player has been removed, and has been removed from the bench
+     *
+     */
     @Test
     public void removePlayerFromBench(){
         Player benchPlayer = new Player("Bench");
@@ -35,6 +39,11 @@ public class RemovePlayerTest {
         assertSame(room.getBenchPlayers().get(0), host);
     }
 
+    /***
+     *
+     * Checks that the player has been removed, and has been removed from the team
+     *
+     */
     @Test
     public void removePlayerFromTeam(){
         Player teamPlayer = new Player("business/team");
@@ -46,6 +55,10 @@ public class RemovePlayerTest {
         assertNull(testTeam.getTeamMember2());
     }
 
+    /***
+     * Returns false if there is not the specified player in the room
+     *
+     */
     @Test
     public void playerNotInRoom(){
         Player playerNotInRoom = new Player("notInRoom");

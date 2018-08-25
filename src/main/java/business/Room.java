@@ -1,8 +1,6 @@
 package business;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Room {
 
@@ -13,9 +11,14 @@ public class Room {
     private String roomCode;
     private RoomSettings roomSettings;
     private List<String> wordBowl;
+    private Map<Player, List<String>> wordsMadePerPlayer;
     private List<Round> rounds;
 
-    private boolean isInPlay;
+    //Game state -> fixme should this be refactored into its own object
+    private boolean isLocked; //Locked in players and now must input words
+    private boolean canStart; //All the words have now been inputted and all the players have readied up
+    private boolean isInPlay; //Is the game in play
+
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
@@ -27,11 +30,16 @@ public class Room {
         benchPlayers = new ArrayList<>();
         benchPlayers.add(host);
         wordBowl = new ArrayList<>();
+        wordsMadePerPlayer = new HashMap<>();
         rounds = new ArrayList<>();
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
+
+        //set State//
         isInPlay = false;
+        canStart = false;
+        isLocked = false;
     }
 
     // ----------------- GETTERS / SETTERS FOR PUBLIC JSON RETURN -------------------- //
@@ -59,11 +67,25 @@ public class Room {
         return roomSettings;
     }
 
+    public Map<Player, List<String>> getWordsMadePerPlayer() {
+        return wordsMadePerPlayer;
+    }
+
     // ----------------------------------------------------------------------------------
 
     public boolean isInPlay() {
         return isInPlay;
     }
+
+    public boolean canStart() {
+        return canStart;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    // -----------------------------------------------------------------------------------
 
     /* public methods */
 
@@ -112,9 +134,7 @@ public class Room {
      * @param player the player who wants to join the team
      * @return a boolean value if the player has successfully joined or not
      */
-
-    //todo should be a void method
-    public boolean addPlayerToTeam(Team team, Player player) throws Exception{
+    public void addPlayerToTeam(Team team, Player player) throws Exception{
         boolean isPlayerInRoom = isPlayerInRoom(player);
 
         if(team.getTeamMember1() != null && team.getTeamMember2() != null){
@@ -134,7 +154,10 @@ public class Room {
             throw new Exception("Player could not be moved to another group. Reason Unknown");
         }
 
-        return team.addPlayerInTeam(player);
+        boolean hasPlayerBeenAdded = team.addPlayerInTeam(player);
+        if(!hasPlayerBeenAdded){
+            throw new Exception("Player could not be added into the team. Reason Unknown.");
+        }
 
     }
 
@@ -176,9 +199,47 @@ public class Room {
         //todo, return a scoreboard, not a score
     }
 
-    public void addWordsToBowl(List<String> words) {
-        wordBowl.addAll(words);
-        //todo
+
+    public void setIsLocked(boolean isLocked){
+        this.isLocked = isLocked;
+    }
+
+
+    /***
+     *  Creates a new word bowl with the input. Verifies that all the words are unique.
+     *
+     * @param inputWords This is a list of words that the user has made to be placed in the word bowl
+     */
+
+    public void addWordBowl(List<String> inputWords, Player player){
+
+        if(!isPlayerInATeam(player)){
+            throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
+        }
+
+        if(!isLocked){
+            throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
+        }
+
+        if(inputWords.size() != roomSettings.getWordsPerPerson()){
+            throw new IllegalArgumentException("Missing word entries! You need to have " + roomSettings.getWordsPerPerson() + " entries!");
+        }
+
+
+        List<String> playerWordBowl = new ArrayList<>();
+
+        inputWords.stream().forEach(word -> {
+
+            //checking for uniqueness
+            if(playerWordBowl.contains(word)){
+                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
+            }
+            playerWordBowl.add(word);
+        });
+
+        this.wordsMadePerPlayer.remove(player);
+        this.wordsMadePerPlayer.put(player, playerWordBowl);
+
     }
 
     public void updateRoom(RoomSettings roomSettings) {
@@ -226,7 +287,7 @@ public class Room {
 
 
     /***
-     * Returns if the player is inside the room (either in the bench of the teams)
+     * Returns true if the player is inside the room (either in the bench of the teams)
      *
      * @param player the player to verify if they are in the room
      * @return a boolean value if player is in the room or not
@@ -234,13 +295,24 @@ public class Room {
     private boolean isPlayerInRoom(Player player) {
         boolean isPlayerInRoom = benchPlayers.contains(player);
         if (!isPlayerInRoom) {
-            isPlayerInRoom = teams
-                    .stream()
-                    .anyMatch(team ->
-                            (team.isPlayerInTeam(player)));
+            isPlayerInRoom = isPlayerInATeam(player);
         }
 
         return isPlayerInRoom;
+    }
+
+    /***
+     *
+     * Returns true if the player is inside a team.
+     *
+     * @param player the player to check all teams with
+     * @return a boolean value if the player is in a team or not
+     */
+    private boolean isPlayerInATeam(Player player){
+        return teams
+                .stream()
+                .anyMatch(team ->
+                        (team.isPlayerInTeam(player)));
     }
 
 

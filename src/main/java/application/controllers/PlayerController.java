@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import application.LabowletState;
-import sessions.PlayerSession;
+import sessions.GameSession;
 
 import javax.servlet.http.HttpSession;
 
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -29,19 +28,9 @@ public class PlayerController {
 
     @RequestMapping(method=POST, value="/player")
     public Player createPlayer(@RequestParam String name){
-        PlayerSession userPlayerSession = new PlayerSession(name);
-        session.setAttribute("gameSession", userPlayerSession);
-        return userPlayerSession.getPlayer();
-    }
-
-    @RequestMapping(method=POST, value="/word")
-    public Player createWordBowl(@RequestParam List<String> words){
-        Player player = applicationState
-                .getGameSession(session)
-                .getPlayer();
-
-        player.createWordBowl(words);
-        return player;
+        GameSession userGameSession = new GameSession(name);
+        session.setAttribute("gameSession", userGameSession);
+        return userGameSession.getPlayer();
     }
 
 }

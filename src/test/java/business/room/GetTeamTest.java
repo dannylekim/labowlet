@@ -30,6 +30,10 @@ public class GetTeamTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    /***
+     *  You should be getting that team you're looking for
+     *
+     */
     @Test
     public void getTeamInside(){
         Team teamToBeFound = new Team("findMe", host);
@@ -45,6 +49,10 @@ public class GetTeamTest {
 
     }
 
+    /***
+     *  if the team isn't there, then you return null
+     *
+     */
     @Test
     public void returnNullIfNone(){
         Team teamToNotBeFound = new Team("returnNull", host);

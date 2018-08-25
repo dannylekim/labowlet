@@ -6,12 +6,10 @@ import java.util.UUID;
 
 public class Player {
     private String name;
-    private List<String> wordBowl;
     private String id;
 
     public Player(String name){
         this.name = name;
-        this.wordBowl = new ArrayList<>();
         this.id = UUID.randomUUID().toString();
     }
 
@@ -21,32 +19,9 @@ public class Player {
         return name;
     }
 
-    public List<String> getWordBowl() {
-        return wordBowl;
-    }
 
     public String getId(){
         return id;
-    }
-
-    /***
-     *  Creates a new word bowl with the input. Verifies that all the words are unique.
-     *
-     * @param inputWords This is a list of words that the user has made to be placed in the word bowl
-     */
-
-    //todo this needs to be checked against the max number of words in a word bowl somehow.
-    public void createWordBowl(List<String> inputWords){
-        this.wordBowl = new ArrayList<>();
-        inputWords.stream().forEach(word -> {
-
-            //checking for uniqueness
-            if(this.wordBowl.contains(word)){
-                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
-            }
-            this.wordBowl.add(word);
-        });
-
     }
 
 

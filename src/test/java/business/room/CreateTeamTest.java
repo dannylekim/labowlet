@@ -6,18 +6,15 @@ import business.RoomSettings;
 import business.Team;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static junit.framework.TestCase.assertTrue;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
 public class CreateTeamTest {
 
 
@@ -35,19 +32,26 @@ public class CreateTeamTest {
 
     }
 
+    /***
+     * You cannot create more than what the settings has stated
+     *
+     */
     @Test
     public void maxTeamsTest(){
         doReturn(0).when(roomSettings).getMaxTeams();
         assertThrows(IllegalStateException.class, () -> room.createTeam("test", host));
     }
 
+    /***
+     *
+     * You can not have the same player in two teams via some creation bug ie if a player is in a team, he will leave
+     * that team when he creates a new one
+     */
     @Test
     public void noDuplicatePlayerTest(){
         doReturn(5).when(roomSettings).getMaxTeams();
         room.createTeam("One", host);
         room.createTeam("Two", host);
-
-        assertTrue(room.getBenchPlayers().size() == 0);
 
         List<Team> teamsWithMock = room
                 .getTeams()
@@ -58,6 +62,21 @@ public class CreateTeamTest {
         assertTrue(teamsWithMock.size() == 1);
     }
 
+    /***
+     * The player must leave the bench if he creates a team
+     *
+     */
+    @Test
+    public void playerLeavesBenchIfHeCreatesATeam(){
+        doReturn(5).when(roomSettings).getMaxTeams();
+        room.createTeam("One", host);
+        assertTrue(room.getBenchPlayers().size() == 0);
+    }
+
+    /***
+     * No two teams can have the same team name
+     *
+     */
     @Test
     public void noSameTeamNameTest(){
         doReturn(2).when(roomSettings).getMaxTeams();
@@ -65,6 +84,10 @@ public class CreateTeamTest {
         assertThrows(IllegalArgumentException.class, () -> room.createTeam("One", host));
     }
 
+    /***
+     *  Players must be in the room to even create a room.
+     *
+     */
     @Test
     public void playerMustBeInRoomTest(){
         doReturn(2).when(roomSettings).getMaxTeams();

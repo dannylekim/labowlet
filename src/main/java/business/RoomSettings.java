@@ -14,6 +14,7 @@ public class RoomSettings {
     private int maxTeams;
     private Duration roundTimeInSeconds;
     private boolean allowSkips;
+    private int wordsPerPerson; //how many words can each person put into the wordbowl.
 
     //all the round types available
     private static String roundType1 = "DESCRIBE_IT";
@@ -27,6 +28,14 @@ public class RoomSettings {
 
     public int getRounds() {
         return rounds;
+    }
+
+    public int getWordsPerPerson() {
+        return wordsPerPerson;
+    }
+
+    public void setWordsPerPerson(int wordsPerPerson) {
+        this.wordsPerPerson = wordsPerPerson;
     }
 
     public void setRounds(int rounds) {

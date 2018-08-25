@@ -1,7 +1,7 @@
 package application;
 
 import business.Room;
-import sessions.PlayerSession;
+import sessions.GameSession;
 import sessions.LabowletSessionRepository;
 
 import javax.servlet.http.HttpSession;
@@ -42,8 +42,8 @@ public class LabowletState {
         return labowletState;
     }
 
-    public PlayerSession getGameSession(HttpSession session){
-        return (PlayerSession) session.getAttribute("gameSession");
+    public GameSession getGameSession(HttpSession session){
+        return (GameSession) session.getAttribute("gameSession");
     }
 
     public void removeExpiredSessions(){

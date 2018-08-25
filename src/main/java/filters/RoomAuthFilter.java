@@ -1,7 +1,7 @@
 package filters;
 
 import application.LabowletState;
-import sessions.PlayerSession;
+import sessions.GameSession;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +21,8 @@ public class RoomAuthFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         HttpSession session = ((HttpServletRequest) request).getSession(false);
-        PlayerSession requestPlayerSession = applicationState.getGameSession(session);
-        String roomCode = requestPlayerSession.getRoomCode();
+        GameSession requestGameSession = applicationState.getGameSession(session);
+        String roomCode = requestGameSession.getRoomCode();
         String requestRoomCode = request.getParameter("roomCode");
         if(roomCode.equals(requestRoomCode)){
             chain.doFilter(request,response);

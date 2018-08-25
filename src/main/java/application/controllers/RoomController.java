@@ -7,7 +7,7 @@ import business.RoomSettings;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sessions.PlayerSession;
+import sessions.GameSession;
 
 import javax.servlet.http.HttpSession;
 
@@ -52,7 +52,7 @@ public class RoomController {
     @RequestMapping(method = PUT, value = "/room")
     public Room updateRoom(RoomSettings updatedRoomSettings){
 
-        PlayerSession userGameSession = applicationState.getGameSession(session);
+        GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
 
         if(currentRoom.isInPlay()) {
@@ -65,7 +65,7 @@ public class RoomController {
 
     @RequestMapping(method = POST, value = "/join")
     public Room joinRoom(@RequestParam String roomCode) {
-        PlayerSession userGameSession = applicationState.getGameSession(session);
+        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room roomToJoin = applicationState.getRoom(roomCode);
 

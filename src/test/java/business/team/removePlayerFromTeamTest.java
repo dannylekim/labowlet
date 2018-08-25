@@ -4,15 +4,17 @@ import business.Player;
 import business.Team;
 import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class removePlayerFromTeamTest {
 
 
+    /***
+     * Test to check that the player is removed from the first slot that he was placed in after instantiation
+     *
+     */
     @Test
-    public void playerInTeamMember1(){
+    public void removePlayerInTeamMember1(){
         Player player = new Player("test");
 
         Team team = new Team("test", player);
@@ -21,6 +23,10 @@ public class removePlayerFromTeamTest {
 
     }
 
+    /***
+     * Test to check that the player is removed from the second slot after being placed into it
+     *
+     */
     @Test
     public void playerInTeamMember2(){
         Player player = new Player("test");
@@ -33,6 +39,10 @@ public class removePlayerFromTeamTest {
         assertNull(team.getTeamMember2());
     }
 
+    /***
+     *  Return false because no player was removed from the team
+     *
+     */
     @Test
     public void playerNotInTeam(){
         Player player = new Player("inTeam");
