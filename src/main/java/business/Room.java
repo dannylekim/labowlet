@@ -112,27 +112,29 @@ public class Room {
      * @param player the player who wants to join the team
      * @return a boolean value if the player has successfully joined or not
      */
-    public boolean addPlayerToTeam(Team team, Player player) {
-        boolean hasPlayerJoinedTeam = false;
-        boolean isPlayerInRoom = isPlayerInRoom(player);  //todo throw an error when false
 
-        //todo verify that the team has an open slot to begin with. Also verify that this team doesn't have the player as well
-        if (isPlayerInRoom) {
+    //todo should be a void method
+    public boolean addPlayerToTeam(Team team, Player player) throws Exception{
+        boolean isPlayerInRoom = isPlayerInRoom(player);
 
-
-            boolean isPlayerRemoved = removePlayer(player);
-            if (isPlayerRemoved) {
-                if (team.getTeamMember1() == null) {
-                    team.setTeamMember1(player);
-                    hasPlayerJoinedTeam = true;
-                } else if (team.getTeamMember2() == null) {
-                    team.setTeamMember2(player);
-                    hasPlayerJoinedTeam = true;
-                }
-            }
+        if(team.getTeamMember1() != null && team.getTeamMember2() != null){
+            throw new IllegalStateException("This team is already full!");
         }
 
-        return hasPlayerJoinedTeam;
+        if(team.isPlayerInTeam(player)){
+            throw new IllegalArgumentException("This player is already a part of this team!");
+        }
+
+        if (!isPlayerInRoom) {
+            throw new IllegalStateException("Cannot add a player that's not joined in this room!");
+        }
+
+        boolean isPlayerRemoved = removePlayer(player);
+        if (!isPlayerRemoved) {
+            throw new Exception("Player could not be moved to another group. Reason Unknown");
+        }
+
+        return team.addPlayerInTeam(player);
 
     }
 
@@ -157,16 +159,16 @@ public class Room {
      * @return a boolean if the removal was successful
      */
     public boolean removePlayer(Player player) {
-        boolean isPlayerFound = benchPlayers.remove(player);
-        if (!isPlayerFound) {
+        boolean isPlayerRemoved = benchPlayers.remove(player);
+        if (!isPlayerRemoved) {
 
             //was not in bench therefore look in groups
             for(Team team: teams){
-                isPlayerFound = team.removePlayerFromTeam(player);
-                if(isPlayerFound){break;}
+                isPlayerRemoved = team.removePlayerFromTeam(player);
+                if(isPlayerRemoved){break;}
             }
         }
-        return isPlayerFound;
+        return isPlayerRemoved;
     }
 
     public Score fetchScoreboard() {
@@ -174,8 +176,8 @@ public class Room {
         //todo, return a scoreboard, not a score
     }
 
-    public void addWordToBowl(String word) {
-        wordBowl.add(word);
+    public void addWordsToBowl(List<String> words) {
+        wordBowl.addAll(words);
         //todo
     }
 
@@ -197,7 +199,7 @@ public class Room {
     }
 
     /***
-     * Regenerates a new unique room code and sets it as this room's room code.
+     * Regenerates a new unique room code and sets it as this room's code.
      *
      * @return
      */

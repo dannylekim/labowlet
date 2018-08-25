@@ -29,7 +29,7 @@ public class TeamController {
     }
 
     @RequestMapping(method = PUT, value = "/joinTeam/{teamId}")
-    public Room joinTeam(@PathVariable("teamId") String teamId){
+    public Room joinTeam(@PathVariable("teamId") String teamId) throws Exception{
 
         PlayerSession userGameSession = applicationState.getGameSession(session);
         Room room = userGameSession.getCurrentRoom();
@@ -64,7 +64,7 @@ public class TeamController {
     }
 
     @RequestMapping(method = PUT, value = "/team/{teamId}") //add a teamId param
-    public Team updateTeam(@RequestParam(required = false) String teamName, @PathVariable("teamId") String teamId){
+    public Team updateTeam(@RequestParam(required = false) String teamName, @PathVariable("teamId") String teamId) throws Exception{
 
         PlayerSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();

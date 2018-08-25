@@ -1,4 +1,4 @@
-package team;
+package business.team;
 
 import business.Player;
 import business.Team;

@@ -1,4 +1,4 @@
-package player;
+package business.player;
 
 import business.Player;
 import org.junit.jupiter.api.Test;

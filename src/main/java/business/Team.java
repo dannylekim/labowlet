@@ -88,5 +88,24 @@ public class Team {
 
     }
 
+    /***
+     *  Returns true if the player has joined the team.
+     *
+     * @param player the player to join this team
+     * @return true if joined
+     */
+    public boolean addPlayerInTeam(Player player){
+        boolean hasPlayerJoinedTeam = false;
+        if (teamMember1 == null) {
+            setTeamMember1(player);
+            hasPlayerJoinedTeam = true;
+        } else if (teamMember2 == null) {
+            setTeamMember2(player);
+            hasPlayerJoinedTeam = true;
+        }
+
+        return hasPlayerJoinedTeam;
+    }
+
 
 }

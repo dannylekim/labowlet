@@ -1,4 +1,4 @@
-package room;
+package business.room;
 
 import business.Player;
 import business.Room;

@@ -1,4 +1,4 @@
-package room;
+package business.room;
 
 public class UpdateRoomTest {
 }
