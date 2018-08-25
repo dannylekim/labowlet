@@ -14,10 +14,16 @@ import javax.servlet.http.HttpSession;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+/***
+ *
+ * This controller handles all requests that refer to the room and its state.
+ *
+ */
 @RestController
 public class RoomController {
 
     private LabowletState applicationState;
+    //todo logger
 
     @Autowired
     HttpSession session;
@@ -55,7 +61,8 @@ public class RoomController {
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
 
-        if(currentRoom.isInPlay()) {
+        //You cannot update a room if it is currently in play or locked
+        if(currentRoom.isInPlay() || currentRoom.isLocked()) {
             //todo log and error handle
         }
 

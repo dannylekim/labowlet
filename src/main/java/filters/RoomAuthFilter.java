@@ -8,7 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-
+/***
+ *
+ * This filter deals with all authorization that the room may need such as are you doing a change to a room that you are
+ * currently in or not.
+ *
+ *
+ */
 public class RoomAuthFilter implements Filter {
     private LabowletState applicationState;
 

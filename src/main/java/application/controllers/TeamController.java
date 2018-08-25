@@ -16,38 +16,24 @@ import javax.servlet.http.HttpSession;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+//todo rather than in every method check if the room is null, have it inside a filter that verifies these paths.
+
+/***
+ *
+ * This controller is responsible for all paths regarding the team.
+ *
+ */
 @RestController
 public class TeamController {
 
     private LabowletState applicationState;
+    //todo logger
 
     @Autowired
     HttpSession session;
 
     public TeamController(){
         applicationState = LabowletState.getInstance();
-    }
-
-    @RequestMapping(method = PUT, value = "/joinTeam/{teamId}")
-    public Room joinTeam(@PathVariable("teamId") String teamId) throws Exception{
-
-        GameSession userGameSession = applicationState.getGameSession(session);
-        Room room = userGameSession.getCurrentRoom();
-
-        if(room != null){
-            Team teamToJoin = room.getTeam(teamId);
-            if(teamToJoin != null) {
-                room.addPlayerToTeam(teamToJoin, userGameSession.getPlayer());
-            }
-            else {
-                //todo error
-            }
-        }
-        else {
-            //todo error
-        }
-
-        return room;
     }
 
     @RequestMapping(method = POST, value = "/team")
@@ -57,7 +43,6 @@ public class TeamController {
         Room currentRoom = userGameSession.getCurrentRoom();
         if (currentRoom == null) {
             //todo error handle and return a message properly
-            return null;
         }
         currentRoom.createTeam(teamName, player);
         return currentRoom;
@@ -74,6 +59,9 @@ public class TeamController {
         }
 
         Team team = currentRoom.getTeam(teamId);
+        if(team == null){
+            //todo error handle
+        }
         //if player is inside the team, then the only thing possible to update is the teamName.
         boolean isPlayerInTeam = team.isPlayerInTeam(player);
 
@@ -85,6 +73,7 @@ public class TeamController {
         }
         else {
             //todo return either an error or nothing
+            //this is an error that should not occur, and if it does then you have to fail gracefully
         }
 
 

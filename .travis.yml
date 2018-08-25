@@ -13,6 +13,7 @@ matrix:
     - env: JDK='Oracle JDK 10'
       install: . ./install-jdk.sh -F 10 -L BCL
 
+# Caching -> Remove previous modules in cache and then cache the rest.
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -22,6 +23,10 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+
+# Allow execution of the gradlew included in this project
+# Build the project
+# Test the project
 script:
   - chmod +x ./gradlew
   - ./gradlew build
