@@ -77,7 +77,7 @@ public class AddPlayerToTeamTest {
 
         room.addPlayerToTeam(testTeam, host);
 
-        assertTrue(room.getTeams().size() == 2);
+        assertTrue(room.getTeams().size() == 1);
 
         //the player should only be found in 1 team.
         assertTrue(room
@@ -119,7 +119,6 @@ public class AddPlayerToTeamTest {
         Team fullTeam = new Team("fullTeam",  new Player("one"));
         fullTeam.addPlayerInTeam(new Player("anotherOne"));
         room.getTeams().add(fullTeam);
-
         assertThrows(IllegalStateException.class, () -> room.addPlayerToTeam(fullTeam, host));
 
 

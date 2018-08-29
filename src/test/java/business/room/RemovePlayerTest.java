@@ -45,14 +45,28 @@ public class RemovePlayerTest {
      *
      */
     @Test
-    public void removePlayerFromTeam(){
+    public void removePlayerFromTeam() throws Exception{
+        Player teamPlayer = new Player("business/team");
+        Team testTeam = new Team("test", teamPlayer);
+        room.getTeams().add(testTeam);
+
+        Player mockPlayer = mock(Player.class);
+        room.getBenchPlayers().add(mockPlayer);
+        room.addPlayerToTeam(testTeam, mockPlayer);
+        assertTrue(room.removePlayer(teamPlayer));
+        assertNotEquals(testTeam.getTeamMember1(), teamPlayer);
+        assertNotEquals(testTeam.getTeamMember2(), teamPlayer);
+    }
+
+    @Test 
+    public void removeTeamIfLastPlayer(){
         Player teamPlayer = new Player("business/team");
         Team testTeam = new Team("test", teamPlayer);
         room.getTeams().add(testTeam);
 
         assertTrue(room.removePlayer(teamPlayer));
-        assertNull(testTeam.getTeamMember1());
-        assertNull(testTeam.getTeamMember2());
+        assertTrue(room.getTeams().size() == 0);
+
     }
 
     /***

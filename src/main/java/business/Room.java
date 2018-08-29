@@ -184,11 +184,15 @@ public class Room {
     public boolean removePlayer(Player player) {
         boolean isPlayerRemoved = benchPlayers.remove(player);
         if (!isPlayerRemoved) {
-
             //was not in bench therefore look in groups
             for(Team team: teams){
                 isPlayerRemoved = team.removePlayerFromTeam(player);
-                if(isPlayerRemoved){break;}
+                if(isPlayerRemoved){
+                    if(team.getTeamMember1() == null || team.getTeamMember2() == null){
+                        teams.remove(team);
+                    }    
+                    break;
+                }
             }
         }
         return isPlayerRemoved;
