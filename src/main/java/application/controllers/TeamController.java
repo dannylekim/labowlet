@@ -77,7 +77,7 @@ public class TeamController {
         else {
             //todo return either an error or nothing
             //this is an error that should not occur, and if it does then you have to fail gracefully
-            throw new Exception("Unknown Error. Failing gracefully..."); 
+            throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team."); 
         }
 
 
