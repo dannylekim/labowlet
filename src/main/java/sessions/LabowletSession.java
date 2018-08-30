@@ -1,8 +1,5 @@
 package sessions;
 
-import business.Player;
-import business.Room;
-import business.Team;
 import org.springframework.session.Session;
 
 import java.io.Serializable;
@@ -12,13 +9,16 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
+
+/***
+ * This is the application session, that is meant to be wrapping around the HttpSession. While it does not hold any new
+ * data constants for the time being (though the developer is allowed to do so and extend the functionality), the
+ * custom session allows the developer to extend, implement and fully customize how a session is handled by the
+ * servlet container. Additionally, this session is agnostic of the business logic so can be re-used and implemented
+ * elsewhere
+ *
+ */
 public class LabowletSession implements Session, Serializable {
-
-    // ------------ Business Implementation ---------- //
-
-    private Player player;
-    private Room currentRoom;
-    private Team currentTeam;
 
     // ---------- STATIC CONSTANTS ------------------- //
 
@@ -34,6 +34,9 @@ public class LabowletSession implements Session, Serializable {
     private Duration maxInactiveInterval;
     private boolean isExpired;
 
+
+    // ----------------- Constructor --------------------- //
+
     /***
      * Creates a new Labowlet Session. It will set the default settings by creating sessionId, attributes, creation
      * time, lastAccessedTime, maxInactiveInterval and isExpired.
@@ -48,46 +51,21 @@ public class LabowletSession implements Session, Serializable {
     }
 
     /***
-     * Copy constructor for a Labowlet Session
+     * Copy constructor for a Labowlet Session used to allow concurrent connections all trying to create sessions
      *
-     * @param session
+     * @param session The session to copy over
      */
     LabowletSession(LabowletSession session){
-        this.attributes = new HashMap<>();
-        Set<String> attributeNames = session.getAttributeNames();
-        for (String attributeName: attributeNames) {
-            this.attributes.put(attributeName, session.getAttribute(attributeName));
-        }
-        this.creationTime = session.getCreationTime();
-        this.lastAccessedTime = session.getLastAccessedTime();
-        this.maxInactiveInterval = session.getMaxInactiveInterval();
-        this.isExpired = session.isExpired();
-        this.sessionId = session.getId();
-
+        this.attributes = session.attributes;
+        this.creationTime = session.creationTime;
+        this.lastAccessedTime = session.lastAccessedTime;
+        this.maxInactiveInterval = session.maxInactiveInterval;
+        this.sessionId = session.sessionId;
+        this.isExpired = session.isExpired;
     }
 
-    public void createPlayer(String name){
-        this.player = new Player(name);
-    }
 
-    public boolean joinRoom(String roomCode) {
-        return true;
-    }
-
-    public void createTeam(Player teammate, String teamName) {
-        currentTeam = new Team(teamName, player, teammate);
-        //todo
-    }
-
-    public void joinTeam(Team teamToJoin) {
-        teamToJoin.setTeamMember1(player);
-        //todo: how to choose which member to join as
-    }
-
-    public Player getPlayer(){
-        return player;
-    }
-
+    // ------------------------------- OVERRIDES ------------------------------------ //
 
     @Override
     public String getId() {
@@ -145,7 +123,7 @@ public class LabowletSession implements Session, Serializable {
     }
 
     @Override
-    public boolean isExpired() {
+    public boolean isExpired(){
         return isExpired;
     }
 }
