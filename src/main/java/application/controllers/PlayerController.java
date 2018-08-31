@@ -40,6 +40,7 @@ public class PlayerController {
         GameSession userGameSession = new GameSession(name);
         session.setAttribute("gameSession", userGameSession);
         return userGameSession.getPlayer();
+
     }
 
 }
