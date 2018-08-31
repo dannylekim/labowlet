@@ -36,9 +36,8 @@ public class RoomController {
 
     @RequestMapping(method = POST, value = "/room")
     public Room createRoom(RoomSettings newRoomSettings) {
-        Player host = applicationState
-                .getGameSession(session)
-                .getPlayer();
+        GameSession userSession = applicationState.getGameSession(session);
+        Player host = userSession.getPlayer();
         Room newRoom = new Room(host, newRoomSettings);
         boolean isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
 
@@ -52,6 +51,8 @@ public class RoomController {
         }
 
         applicationState.addActiveRoom(newRoom);
+        userSession.setCurrentRoom(newRoom);
+
         return newRoom;
     }
 
@@ -64,6 +65,7 @@ public class RoomController {
         //You cannot update a room if it is currently in play or locked
         if(currentRoom.isInPlay() || currentRoom.isLocked()) {
             //todo log and error handle
+            throw new IllegalStateException("This room is no longer able to be modified as it has already started.");
         }
 
         currentRoom.updateRoom(updatedRoomSettings);
@@ -78,6 +80,7 @@ public class RoomController {
 
         if(roomToJoin == null) {
             //todo log and error handle
+            throw new IllegalArgumentException("There is no room with that room code. Please try again!");
         }
 
         roomToJoin.addPlayerToBench(player);
