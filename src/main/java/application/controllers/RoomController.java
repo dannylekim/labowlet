@@ -28,6 +28,7 @@ public class RoomController {
     @Autowired
     HttpSession session;
 
+
     public RoomController() {
         applicationState = LabowletState.getInstance();
     }
@@ -52,11 +53,10 @@ public class RoomController {
 
         applicationState.addActiveRoom(newRoom);
         userSession.setCurrentRoom(newRoom);
-
         return newRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/room")
+    @RequestMapping(method = PUT, value = "/update")
     public Room updateRoom(RoomSettings updatedRoomSettings){
 
         GameSession userGameSession = applicationState.getGameSession(session);
