@@ -12,5 +12,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(new HostAuthInterceptor()).addPathPatterns("/host");
+        registry.addInterceptor(new RoomExistenceInterceptor())
+        .addPathPatterns("/rooms")
+        .addPathPatterns("/rooms/*")
+        .addPathPatterns("/teams")
+        .addPathPatterns("teams/*"); 
     }
 }

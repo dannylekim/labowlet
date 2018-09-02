@@ -32,7 +32,7 @@ public class PlayerController {
         applicationState = LabowletState.getInstance();
     }
 
-    @RequestMapping(method=POST, value="/player")
+    @RequestMapping(method=POST, value="/players")
     public Player createPlayer(@RequestParam String name){
         //A game session creates a player on instantiation.
         //fixme should this be a separate call to have proper separation of concerns or because players can only be

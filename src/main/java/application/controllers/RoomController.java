@@ -35,7 +35,7 @@ public class RoomController {
 
 
 
-    @RequestMapping(method = POST, value = "/room")
+    @RequestMapping(method = POST, value = "/rooms")
     public Room createRoom(RoomSettings newRoomSettings) {
         GameSession userSession = applicationState.getGameSession(session);
         Player host = userSession.getPlayer();
@@ -56,7 +56,7 @@ public class RoomController {
         return newRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/update")
+    @RequestMapping(method = PUT, value = "/rooms")
     public Room updateRoom(RoomSettings updatedRoomSettings){
 
         GameSession userGameSession = applicationState.getGameSession(session);
