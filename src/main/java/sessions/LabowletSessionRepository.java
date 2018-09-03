@@ -20,12 +20,17 @@ public class LabowletSessionRepository implements SessionRepository {
     }
 
     public void removeExpiredSessions(){
-        //todo
+
     }
 
     @Override
     public Session createSession() {
         return new LabowletSession();
+    }
+
+    private boolean isSessionExpired(Session session){
+        return false;
+        //todo
     }
 
     /***

@@ -36,9 +36,9 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(!request.getMethod().equals("POST") || request.getRequestURI().contains("team")) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession(false);
+        String requestUri = request.getRequestURI();
+        if(!request.getMethod().equals("POST") && requestUri.contains("room") || requestUri.contains("team")) {
+            HttpSession session = request.getSession(false);
             GameSession userSession = LabowletState.getInstance().getGameSession(session);
             Room currentRoom = userSession.getCurrentRoom();
             if(currentRoom == null) {

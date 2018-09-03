@@ -47,13 +47,10 @@ public class LabowletState {
     }
 
     public void removeExpiredSessions(){
-        //todo
+        
     }
 
-    private boolean isSessionExpired(){
-        return false;
-        //todo
-    }
+
 
     public Room getRoom(String roomCode){
         return activeRooms.get(roomCode);

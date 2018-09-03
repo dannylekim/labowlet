@@ -38,13 +38,12 @@ public class HostAuthInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpSession session = httpRequest.getSession(false);
+        HttpSession session = request.getSession(false);
         GameSession userSession = LabowletState.getInstance().getGameSession(session);
         Room currentRoom = userSession.getCurrentRoom();
         Player host = currentRoom.getHost();
         Player currentPlayer = userSession.getPlayer();
-        if(host.equals(currentPlayer)){
+        if(!host.equals(currentPlayer)){
             JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.FORBIDDEN, new IllegalAccessError("You are not authorized to perform this request!"));
             return false;
         }

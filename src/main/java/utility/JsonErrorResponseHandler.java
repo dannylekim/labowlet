@@ -1,5 +1,7 @@
 package utility;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,9 +26,9 @@ public class JsonErrorResponseHandler {
      * @param response the HttpServletResponse used to print out a reply to client
      * @param errorStatus an HttpStatus that should correspond to an error HttpStatus 
      * @param ex The runtime Exception used 
-     * @throws Exception
+     * @throws Exception 
      */
-    public static void sendErrorResponse(HttpServletResponse response, HttpStatus errorStatus, Throwable ex) throws Exception{
+    public static void sendErrorResponse(HttpServletResponse response, HttpStatus errorStatus, Throwable ex) throws IOException{
         LabowletError error = new LabowletError(errorStatus, ex);
         String serializedError = new ObjectMapper()
         .registerModule(new JavaTimeModule())
