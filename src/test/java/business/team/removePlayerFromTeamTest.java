@@ -18,8 +18,11 @@ public class removePlayerFromTeamTest {
         Player player = new Player("test");
 
         Team team = new Team("test", player);
-        assertTrue(team.removePlayerFromTeam(player));
-        assertNull(team.getTeamMember1());
+        assertAll(() -> {
+            assertTrue(team.removePlayerFromTeam(player));
+            assertNull(team.getTeamMember1());
+        });
+       
 
     }
 
@@ -35,8 +38,11 @@ public class removePlayerFromTeamTest {
         team.setTeamMember1(null);
         team.setTeamMember2(player);
 
-        assertTrue(team.removePlayerFromTeam(player));
-        assertNull(team.getTeamMember2());
+        assertAll(() -> {
+            assertTrue(team.removePlayerFromTeam(player));
+            assertNull(team.getTeamMember2());
+        });
+       
     }
 
     /***

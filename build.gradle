@@ -42,4 +42,12 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+
+	beforeTest { descriptor ->
+    	logger.lifecycle("Running test: " + descriptor)
+	}
+	
+	afterTest { descriptor, result -> 
+		logger.lifecycle("Result: " + result)
+	}
 }

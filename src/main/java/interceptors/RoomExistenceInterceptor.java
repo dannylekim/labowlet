@@ -39,12 +39,24 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
         String requestUri = request.getRequestURI();
         if(!request.getMethod().equals("POST") && requestUri.contains("room") || requestUri.contains("team")) {
             HttpSession session = request.getSession(false);
-            GameSession userSession = LabowletState.getInstance().getGameSession(session);
+            LabowletState applicationState = LabowletState.getInstance();
+            GameSession userSession = applicationState.getGameSession(session);
             Room currentRoom = userSession.getCurrentRoom();
+            
+            //There needs to be a room associated to the session to be able to call these methods
             if(currentRoom == null) {
                 JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.BAD_REQUEST, new IllegalStateException("You cannot perform this request because you haven't joined or created a room yet!"));
                 return false;
             }
+
+            //Check if the room is active in the application state
+            boolean isRoomActive = (applicationState.getRoom(currentRoom.getRoomCode()) != null);
+            if(!isRoomActive){
+                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.BAD_REQUEST, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
+                return false;
+            }
+
+
         }
       
        

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import application.LabowletState;
-import business.Player;
 import business.Room;
 import interceptors.RoomExistenceInterceptor;
 import sessions.GameSession;
@@ -33,6 +32,7 @@ public class PreHandleTests {
         response = mock(HttpServletResponse.class);
         userSession = mock(GameSession.class);
         session = mock(HttpSession.class);
+        state = LabowletState.getInstance();
         doReturn(session).when(request).getSession(false);
         doReturn(userSession).when(session).getAttribute(any());
 
@@ -44,10 +44,12 @@ public class PreHandleTests {
 
     @Test
     public void roomIsNull() throws Exception{
-        Room room = mock(Room.class);
-        doReturn(room).when(userSession).getCurrentRoom();
+        Room mockRoom = mock(Room.class);
+        doReturn(mockRoom).when(userSession).getCurrentRoom();
         doReturn("PUT").when(request).getMethod();
         doReturn("room").when(request).getRequestURI();
+        doReturn("test").when(mockRoom).getRoomCode();
+        state.addActiveRoom(mockRoom);
 
         RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
         
@@ -70,6 +72,7 @@ public class PreHandleTests {
         doReturn("POST").when(request).getMethod();
         doReturn("room").when(request).getRequestURI();
         RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
+        
         
         assertTrue(interceptor.preHandle(request, response, null));
     }
@@ -96,7 +99,20 @@ public class PreHandleTests {
         assertTrue(interceptor.preHandle(request, response, null));
     }
 
-    //ANY OTHER URI
+    @Test
+    public void notActiveRoom() throws Exception {
+        Room room = mock(Room.class);
+        doReturn(room).when(userSession).getCurrentRoom();
+        doReturn("PUT").when(request).getMethod();
+        doReturn("room").when(request).getRequestURI();
+        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
+        
+        assertFalse(interceptor.preHandle(request, response, null));
+
+
+    
+    } 
+
 
 
 

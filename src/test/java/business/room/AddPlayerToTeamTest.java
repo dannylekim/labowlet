@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,9 +52,11 @@ public class AddPlayerToTeamTest {
         //should be successful and not throw
         room.addPlayerToTeam(testTeam, benchPlayer);
 
-
-        assertTrue(testTeam.getTeamMember1() == benchPlayer || testTeam.getTeamMember2() == benchPlayer);
-        assertEquals(room.getBenchPlayers().size(), 1); //assuming that the host is automatically added in
+        assertAll(() -> {
+            assertTrue(testTeam.getTeamMember1() == benchPlayer || testTeam.getTeamMember2() == benchPlayer);
+            assertEquals(room.getBenchPlayers().size(), 1); //assuming that the host is automatically added in
+        });
+      
     }
 
     /***
@@ -79,16 +82,21 @@ public class AddPlayerToTeamTest {
 
         assertTrue(room.getTeams().size() == 1);
 
-        //the player should only be found in 1 team.
-        assertTrue(room
-                .getTeams()
-                .stream()
-                .filter(team -> team.getTeamMember2() == host || team.getTeamMember1() == host)
-                .collect(toList())
-                .size() == 1);
+        assertAll(() -> {
+            //the player should only be found in 1 team.
+            assertTrue(room
+            .getTeams()
+            .stream()
+            .filter(team -> team.getTeamMember2() == host || team.getTeamMember1() == host)
+            .collect(toList())
+            .size() == 1);
 
-        //the player should be found in the team that he was supposed to be added in
-        assertTrue(testTeam.getTeamMember2() == host || testTeam.getTeamMember1() == host);
+            //the player should be found in the team that he was supposed to be added in
+            assertTrue(testTeam.getTeamMember2() == host || testTeam.getTeamMember1() == host);
+        });
+
+        
+    
     }
 
 

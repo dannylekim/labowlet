@@ -34,9 +34,12 @@ public class RemovePlayerTest {
         Player benchPlayer = new Player("Bench");
         room.getBenchPlayers().add(benchPlayer);
 
-        assertTrue(room.removePlayer(benchPlayer));
-        assertEquals(room.getBenchPlayers().size(), 1);
-        assertSame(room.getBenchPlayers().get(0), host);
+        assertAll(() -> {
+            assertTrue(room.removePlayer(benchPlayer));
+            assertEquals(room.getBenchPlayers().size(), 1);
+            assertSame(room.getBenchPlayers().get(0), host);
+        });
+       
     }
 
     /***
@@ -53,9 +56,13 @@ public class RemovePlayerTest {
         Player mockPlayer = mock(Player.class);
         room.getBenchPlayers().add(mockPlayer);
         room.addPlayerToTeam(testTeam, mockPlayer);
-        assertTrue(room.removePlayer(teamPlayer));
-        assertNotEquals(testTeam.getTeamMember1(), teamPlayer);
-        assertNotEquals(testTeam.getTeamMember2(), teamPlayer);
+
+        assertAll(() -> {
+            assertTrue(room.removePlayer(teamPlayer));
+            assertNotEquals(testTeam.getTeamMember1(), teamPlayer);
+            assertNotEquals(testTeam.getTeamMember2(), teamPlayer);
+        });
+    
     }
 
     @Test 
@@ -64,9 +71,11 @@ public class RemovePlayerTest {
         Team testTeam = new Team("test", teamPlayer);
         room.getTeams().add(testTeam);
 
-        assertTrue(room.removePlayer(teamPlayer));
-        assertTrue(room.getTeams().size() == 0);
-
+        assertAll(() -> {
+            assertTrue(room.removePlayer(teamPlayer));
+            assertTrue(room.getTeams().size() == 0);
+        });
+     
     }
 
     /***
@@ -76,9 +85,13 @@ public class RemovePlayerTest {
     @Test
     public void playerNotInRoom(){
         Player playerNotInRoom = new Player("notInRoom");
-        assertFalse(room.removePlayer(playerNotInRoom));
-        assertEquals(room.getTeams().size(), 0);
-        assertEquals(room.getBenchPlayers().size(), 1);
+
+        assertAll(() -> {
+            assertFalse(room.removePlayer(playerNotInRoom));
+            assertEquals(room.getTeams().size(), 0);
+            assertEquals(room.getBenchPlayers().size(), 1);
+        });
+      
     }
 
 }
