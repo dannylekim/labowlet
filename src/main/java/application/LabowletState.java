@@ -60,15 +60,17 @@ public class LabowletState {
         //remove the expired 
         List<Session> expiredSessions = labowletSessionRepository.removeExpiredSessions();
         expiredSessions.stream().forEach(session -> {
-            GameSession userSession = getGameSession((HttpSession) session);
-            Room currentRoom = userSession.getCurrentRoom();
-            /*if the user is a host of a room and expired, we can assume that the room itself has to expire 
+            GameSession userSession = session.getAttribute("gameSession");
+            if(userSession != null) {
+                Room currentRoom = userSession.getCurrentRoom();
+            /*if the user is a host of a room and expired, we can assume that the room itself has to expire
             regardless of the other players who are inside. We can only assume that the other players are also expired and cleaned up as we cannot pull their
-            game sessions to remove the currentRoom. Instead the currentRoom will simply point to a room that has no reference within the game state. 
+            game sessions to remove the currentRoom. Instead the currentRoom will simply point to a room that has no reference within the game state.
             */
-            
-            if(currentRoom != null && currentRoom.getHost() == userSession.getPlayer()){ 
-                removeActiveRoom(currentRoom);
+
+                if(currentRoom != null && currentRoom.getHost() == userSession.getPlayer()){
+                    removeActiveRoom(currentRoom);
+                }
             }
         });
     }

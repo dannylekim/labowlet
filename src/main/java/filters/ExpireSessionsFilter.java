@@ -1,5 +1,7 @@
 package filters;
 
+import application.LabowletState;
+
 import javax.servlet.*;
 import java.io.IOException;
 
@@ -12,13 +14,17 @@ import java.io.IOException;
  *
  */
 public class ExpireSessionsFilter implements Filter{
+
+    LabowletState state = LabowletState.getInstance();
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
+        state.removeExpiredSessions();
+        chain.doFilter(request, response);
     }
 
     @Override
