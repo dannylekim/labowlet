@@ -64,7 +64,6 @@ public class RoomController {
 
         //You cannot update a room if it is currently in play or locked
         if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-            //todo log and error handle
             throw new IllegalStateException("This room is no longer able to be modified as it has already started.");
         }
 
@@ -79,7 +78,6 @@ public class RoomController {
         Room roomToJoin = applicationState.getRoom(roomCode);
 
         if(roomToJoin == null) {
-            //todo log and error handle
             throw new IllegalArgumentException("There is no room with that room code. Please try again!");
         }
 

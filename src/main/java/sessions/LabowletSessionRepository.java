@@ -6,6 +6,7 @@ import org.springframework.session.SessionRepository;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,7 +68,7 @@ public class LabowletSessionRepository implements SessionRepository<Session> {
         Duration maxInactiveInterval = session.getMaxInactiveInterval();
 
 
-        LocalDateTime expiryDateTime = LocalDateTime.from(lastAccessedTime.plus(maxInactiveInterval));
+        LocalDateTime expiryDateTime = LocalDateTime.ofInstant(lastAccessedTime.plus(maxInactiveInterval), ZoneId.systemDefault());
         //check current time. If current time is passed the last access time then this session should be expired.
         LocalDateTime currentTime = LocalDateTime.now();
 

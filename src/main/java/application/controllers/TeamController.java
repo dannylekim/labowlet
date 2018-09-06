@@ -54,7 +54,6 @@ public class TeamController {
 
         Team team = currentRoom.getTeam(teamId);
         if(team == null){
-            //todo error handle
             throw new IllegalArgumentException("There is no team with the specified ID. Please choose a valid team.");
         }
         //if player is inside the team, then the only thing possible to update is the teamName.
@@ -67,7 +66,6 @@ public class TeamController {
             currentRoom.addPlayerToTeam(team, player);
         }
         else {
-            //todo return either an error or nothing
             //this is an error that should not occur, and if it does then you have to fail gracefully
             throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team."); 
         }
