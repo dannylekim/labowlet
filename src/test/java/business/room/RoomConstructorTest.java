@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,9 +46,12 @@ public class RoomConstructorTest {
      */
     @Test
     public void roomStateIsClean(){
-        assertFalse(room.isInPlay());
-        assertFalse(room.canStart());
-        assertFalse(room.isLocked());
+        assertAll(() -> {
+            assertFalse(room.isInPlay());
+            assertFalse(room.canStart());
+            assertFalse(room.isLocked());
+        });
+      
     }
 
     /***
@@ -56,13 +60,16 @@ public class RoomConstructorTest {
      */
     @Test
     public void roomAllObjectsInstantiated(){
-        assertNotNull(room.getBenchPlayers());
-        assertNotNull(room.getTeams());
-        assertNotNull(room.getRoomCode());
-        assertNotNull(room.getRoomSettings());
-        assertNotNull(room.getRounds());
-        assertNotNull(room.getWordsMadePerPlayer());
-        assertNotNull(room.getWordBowl());
+        assertAll(() -> {
+            assertNotNull(room.getBenchPlayers());
+            assertNotNull(room.getTeams());
+            assertNotNull(room.getRoomCode());
+            assertNotNull(room.getRoomSettings());
+            assertNotNull(room.getRounds());
+            assertNotNull(room.getWordsMadePerPlayer());
+            assertNotNull(room.getWordBowl());
+        });
+   
     }
 
 

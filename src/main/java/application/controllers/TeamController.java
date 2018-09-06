@@ -36,33 +36,24 @@ public class TeamController {
         applicationState = LabowletState.getInstance();
     }
 
-    @RequestMapping(method = POST, value = "/team")
+    @RequestMapping(method = POST, value = "/teams")
     public Room createTeam(@RequestParam String teamName) {
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
-        if (currentRoom == null) {
-            //todo error handle and return a message properly
-            throw new IllegalStateException("You have not joined any rooms currently! Cannot perform this action until you have joined a room.");
-        }
         currentRoom.createTeam(teamName, player);
         return currentRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/team/{teamId}") //add a teamId param
+    @RequestMapping(method = PUT, value = "/teams/{teamId}") //add a teamId param
     public Team updateTeam(@RequestParam(required = false) String teamName, @PathVariable("teamId") String teamId) throws Exception{
 
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
-        if(currentRoom == null) {
-            //todo error handle
-            throw new IllegalStateException("You have not joined any rooms currently! Cannot perform this action until you have joined a room.");
-        }
 
         Team team = currentRoom.getTeam(teamId);
         if(team == null){
-            //todo error handle
             throw new IllegalArgumentException("There is no team with the specified ID. Please choose a valid team.");
         }
         //if player is inside the team, then the only thing possible to update is the teamName.
@@ -75,7 +66,6 @@ public class TeamController {
             currentRoom.addPlayerToTeam(team, player);
         }
         else {
-            //todo return either an error or nothing
             //this is an error that should not occur, and if it does then you have to fail gracefully
             throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team."); 
         }
