@@ -62,11 +62,6 @@ public class RoomController {
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
 
-        //You cannot update a room if it is currently in play or locked
-        if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-            throw new IllegalStateException("This room is no longer able to be modified as it has already started.");
-        }
-
         currentRoom.updateRoom(updatedRoomSettings);
         return currentRoom;
     }

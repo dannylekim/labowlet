@@ -15,7 +15,7 @@ import utility.JsonErrorResponseHandler;
 
 /***
  *
- * This interceptor is simply to verify the existence of a Room for the request that is it mapped to.
+ * This interceptor is simply to verify the existence of a Room for the request that is it mapped to as well as to check if you're able to do requests onto this path.
  * 
  */
 public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
@@ -45,15 +45,20 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             
             //There needs to be a room associated to the session to be able to call these methods
             if(currentRoom == null) {
-                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.BAD_REQUEST, new IllegalStateException("You cannot perform this request because you haven't joined or created a room yet!"));
+                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.FAILED_DEPENDENCY, new IllegalStateException("You cannot perform this request because you haven't joined or created a room yet!"));
                 return false;
             }
 
             //Check if the room is active in the application state
             boolean isRoomActive = (applicationState.getRoom(currentRoom.getRoomCode()) != null);
             if(!isRoomActive){
-                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.BAD_REQUEST, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
+                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.GONE, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
                 return false;
+            }
+
+            //Check if the room is in play or locked
+            if(currentRoom.isInPlay() || currentRoom.isLocked()) {
+                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
             }
 
 
