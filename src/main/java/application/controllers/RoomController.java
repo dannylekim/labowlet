@@ -28,13 +28,14 @@ public class RoomController {
     @Autowired
     HttpSession session;
 
+
     public RoomController() {
         applicationState = LabowletState.getInstance();
     }
 
 
 
-    @RequestMapping(method = POST, value = "/room")
+    @RequestMapping(method = POST, value = "/rooms")
     public Room createRoom(RoomSettings newRoomSettings) {
         GameSession userSession = applicationState.getGameSession(session);
         Player host = userSession.getPlayer();
@@ -52,34 +53,26 @@ public class RoomController {
 
         applicationState.addActiveRoom(newRoom);
         userSession.setCurrentRoom(newRoom);
-
         return newRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/room")
+    @RequestMapping(method = PUT, value = "/host/rooms")
     public Room updateRoom(RoomSettings updatedRoomSettings){
 
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
 
-        //You cannot update a room if it is currently in play or locked
-        if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-            //todo log and error handle
-            throw new IllegalStateException("This room is no longer able to be modified as it has already started.");
-        }
-
         currentRoom.updateRoom(updatedRoomSettings);
         return currentRoom;
     }
 
-    @RequestMapping(method = POST, value = "/join")
+    @RequestMapping(method = PUT, value = "/rooms")
     public Room joinRoom(@RequestParam String roomCode) {
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room roomToJoin = applicationState.getRoom(roomCode);
 
         if(roomToJoin == null) {
-            //todo log and error handle
             throw new IllegalArgumentException("There is no room with that room code. Please try again!");
         }
 

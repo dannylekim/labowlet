@@ -3,6 +3,12 @@ package sessions;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /***
@@ -12,20 +18,62 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  *
  */
-public class LabowletSessionRepository implements SessionRepository {
+public class LabowletSessionRepository implements SessionRepository<Session> {
     private ConcurrentHashMap<String, Session>  repository;
 
     public LabowletSessionRepository(ConcurrentHashMap<String, Session> repository) {
         this.repository = repository;
     }
 
-    public void removeExpiredSessions(){
-        //todo
+    /***
+     * 
+     * Goes through all of the sessions and remove those that are expired.
+     * 
+     * @return a List<Session> that holds all of the sessions that have been removed from the repository. 
+     * 
+     */
+    public List<Session> removeExpiredSessions(){
+
+        List<Session> expiredSessions = new ArrayList<>();
+
+        //uses a stream to concurrently remove items from the map without causing issues
+        repository.entrySet().removeIf(entrySet -> {
+            Session session = entrySet.getValue();
+            if(isSessionExpired(session)){
+                expiredSessions.add(session); //if it is expired, add it to the list and return true to remove from the map
+                return true;
+            }
+            return false;
+        });
+
+        return expiredSessions;
     }
 
     @Override
     public Session createSession() {
         return new LabowletSession();
+    }
+
+    /***
+     * Returns the boolean value if the session is expired
+     * 
+     * @param session The Session that is to be checked on 
+     * @return true if the currentTime is beyond the addition of lastAccessedTime + maxInactiveInterval
+     */
+    private boolean isSessionExpired(Session session){
+
+        //Last accessed Time
+        Instant lastAccessedTime = session.getLastAccessedTime();
+        //What is the max inactive Interval and add it to the last accessed time 
+        Duration maxInactiveInterval = session.getMaxInactiveInterval();
+
+
+        LocalDateTime expiryDateTime = LocalDateTime.ofInstant(lastAccessedTime.plus(maxInactiveInterval), ZoneId.systemDefault());
+        //check current time. If current time is passed the last access time then this session should be expired.
+        LocalDateTime currentTime = LocalDateTime.now();
+
+
+        return (currentTime.compareTo(expiryDateTime) > 0);
     }
 
     /***

@@ -47,6 +47,10 @@ public class Room {
         return roomCode;
     }
 
+    public Player getHost() {
+        return host;
+    }
+
     public List<Player> getBenchPlayers() {
         return benchPlayers;
     }

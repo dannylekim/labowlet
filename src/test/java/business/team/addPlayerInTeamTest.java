@@ -4,6 +4,7 @@ import business.Player;
 import business.Team;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,8 +22,11 @@ public class addPlayerInTeamTest {
         Team team = new Team("test", mock(Player.class));
         Player secondPlayer = mock(Player.class);
         team.setTeamMember1(null);
-        assertTrue(team.addPlayerInTeam(secondPlayer));
-        assertEquals(secondPlayer, team.getTeamMember1());
+        assertAll(() -> {
+            assertTrue(team.addPlayerInTeam(secondPlayer));
+            assertEquals(secondPlayer, team.getTeamMember1());
+        });
+   
     }
 
     /***
@@ -33,8 +37,12 @@ public class addPlayerInTeamTest {
     public void setTeamMember2IfSetAfterStart(){
         Team team = new Team("test", mock(Player.class));
         Player secondPlayer = mock(Player.class);
-        assertTrue(team.addPlayerInTeam(secondPlayer));
-        assertEquals(secondPlayer, team.getTeamMember2());
+
+        assertAll(() -> {
+            assertTrue(team.addPlayerInTeam(secondPlayer));
+            assertEquals(secondPlayer, team.getTeamMember2());
+        });
+  
     }
 
     /***
