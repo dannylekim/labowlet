@@ -36,8 +36,9 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String requestUri = request.getRequestURI();
-        if(!request.getMethod().equals("POST") && requestUri.contains("room") || requestUri.contains("team")) {
+        String requestMethod = request.getMethod();
+        //In cors related requests, it will send an OPTIONS request first, we have to let that request go through.
+        if( !requestMethod.equals("OPTIONS")) {
             HttpSession session = request.getSession(false);
             LabowletState applicationState = LabowletState.getInstance();
             GameSession userSession = applicationState.getGameSession(session);

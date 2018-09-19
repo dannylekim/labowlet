@@ -16,6 +16,8 @@ public class Team {
         this.teamId = UUID.randomUUID().toString();
     }
 
+    public Team(){}
+
     public String getTeamId() {
         return this.teamId;
     }

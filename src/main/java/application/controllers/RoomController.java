@@ -5,11 +5,15 @@ import business.Player;
 import business.Room;
 import business.RoomSettings;
 
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import sessions.GameSession;
 
 import javax.servlet.http.HttpSession;
+
+import java.util.Map;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -57,7 +61,7 @@ public class RoomController {
     }
 
     @RequestMapping(method = PUT, value = "/host/rooms")
-    public Room updateRoom(RoomSettings updatedRoomSettings){
+    public Room updateRoom(@RequestBody RoomSettings updatedRoomSettings){
 
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
@@ -67,10 +71,11 @@ public class RoomController {
     }
 
     @RequestMapping(method = PUT, value = "/rooms")
-    public Room joinRoom(@RequestParam String roomCode) {
+    @ResponseBody
+    public Room joinRoom(@RequestBody Room roomWithOnlyRoomCode) {
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
-        Room roomToJoin = applicationState.getRoom(roomCode);
+        Room roomToJoin = applicationState.getRoom(roomWithOnlyRoomCode.getRoomCode());
 
         if(roomToJoin == null) {
             throw new IllegalArgumentException("There is no room with that room code. Please try again!");

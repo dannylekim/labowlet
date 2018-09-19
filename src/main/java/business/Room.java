@@ -42,6 +42,18 @@ public class Room {
         isLocked = false;
     }
 
+    //the below is simply used for @RequestBody when it occurs. They should NOT be used otherwise
+    public Room(){}
+
+    /***
+     * DO NOT USE THIS METHOD. Only used for SPRING controllers and not for developers.
+     *
+     * @param roomCode
+     */
+    public void setRoomCode(String roomCode) {
+        this.roomCode = roomCode;
+    }
+
     // ----------------- GETTERS / SETTERS FOR PUBLIC JSON RETURN -------------------- //
     public String getRoomCode() {
         return roomCode;
