@@ -10,11 +10,23 @@ import interceptors.*;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(new HostAuthInterceptor()).addPathPatterns("/host/rooms");
+    public void addInterceptors(InterceptorRegistry registry) {
+
+        registry.addInterceptor(new ValidSessionInterceptor())
+                .addPathPatterns("/host/*")
+                .addPathPatterns("/teams")
+                .addPathPatterns("/teams/*")
+                .addPathPatterns("/rooms")
+                .addPathPatterns("/rooms/*");
+
         registry.addInterceptor(new RoomExistenceInterceptor())
-        .addPathPatterns("/host/rooms")
-        .addPathPatterns("/teams")
-        .addPathPatterns("teams/*");
+                .addPathPatterns("/host/rooms")
+                .addPathPatterns("/teams")
+                .addPathPatterns("teams/*");
+
+        registry.addInterceptor(new HostAuthInterceptor()).addPathPatterns("/host/rooms");
+
+
+
     }
 }

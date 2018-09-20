@@ -40,7 +40,7 @@ public class RoomController {
 
 
     @RequestMapping(method = POST, value = "/rooms")
-    public Room createRoom(RoomSettings newRoomSettings) {
+    public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
         GameSession userSession = applicationState.getGameSession(session);
         Player host = userSession.getPlayer();
         Room newRoom = new Room(host, newRoomSettings);

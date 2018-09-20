@@ -2,6 +2,7 @@ package application.controllers;
 
 import business.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,12 +34,11 @@ public class PlayerController {
     }
 
     @RequestMapping(method=POST, value="/players")
-    public Player createPlayer(@RequestParam String name){
+    public Player createPlayer(@RequestBody Player playerWithJustName){
         //A game session creates a player on instantiation.
-        GameSession userGameSession = new GameSession(name);
+        GameSession userGameSession = new GameSession(playerWithJustName.getName());
         session.setAttribute("gameSession", userGameSession);
         return userGameSession.getPlayer();
-
     }
 
 }

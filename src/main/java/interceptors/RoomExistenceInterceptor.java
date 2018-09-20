@@ -60,8 +60,8 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             //Check if the room is in play or locked
             if(currentRoom.isInPlay() || currentRoom.isLocked()) {
                 JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
+                return false;
             }
-
 
         }
       

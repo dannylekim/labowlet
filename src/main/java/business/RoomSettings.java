@@ -9,7 +9,6 @@ import java.util.List;
  *
  */
 public class RoomSettings {
-    private int rounds;
     private List<String> roundTypes;
     private int maxTeams;
     private Duration roundTimeInSeconds;
@@ -26,9 +25,6 @@ public class RoomSettings {
         this.roundTypes = new ArrayList<>();
     }
 
-    public int getRounds() {
-        return rounds;
-    }
 
     public int getWordsPerPerson() {
         return wordsPerPerson;
@@ -36,10 +32,6 @@ public class RoomSettings {
 
     public void setWordsPerPerson(int wordsPerPerson) {
         this.wordsPerPerson = wordsPerPerson;
-    }
-
-    public void setRounds(int rounds) {
-        this.rounds = rounds;
     }
 
     public int getMaxTeams() {

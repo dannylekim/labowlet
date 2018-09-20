@@ -34,11 +34,11 @@ public class TeamController {
     }
 
     @RequestMapping(method = POST, value = "/teams")
-    public Room createTeam(@RequestParam String teamName) {
+    public Room createTeam(@RequestBody Team teamWithOnlyTeamName) {
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
-        currentRoom.createTeam(teamName, player);
+        currentRoom.createTeam(teamWithOnlyTeamName.getTeamName(), player);
         return currentRoom;
     }
 

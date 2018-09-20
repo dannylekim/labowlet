@@ -22,7 +22,7 @@ public class Room {
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
-    private static final String CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
+    private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
     private static final int ROOM_CODE_LENGTH = 4;
 
     public Room(Player host, RoomSettings roomSettings) {
