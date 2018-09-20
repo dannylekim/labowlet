@@ -41,6 +41,7 @@ public class RoomController {
 
     @RequestMapping(method = POST, value = "/rooms")
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
+        newRoomSettings.verifyRoundTypes();
         GameSession userSession = applicationState.getGameSession(session);
         Player host = userSession.getPlayer();
         Room newRoom = new Room(host, newRoomSettings);
@@ -62,7 +63,7 @@ public class RoomController {
 
     @RequestMapping(method = PUT, value = "/host/rooms")
     public Room updateRoom(@RequestBody RoomSettings updatedRoomSettings){
-
+        updatedRoomSettings.verifyRoundTypes();
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
 

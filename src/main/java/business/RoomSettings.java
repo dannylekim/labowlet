@@ -2,6 +2,7 @@ package business;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /***
@@ -16,12 +17,16 @@ public class RoomSettings {
     private int wordsPerPerson; //how many words can each person put into the wordbowl.
 
     //all the round types available
-    private static String roundType1 = "DESCRIBE_IT";
-    private static String roundType2 = "ONE_WORD_DESCRIPTION";
-    private static String roundType3 = "ACT_IT_OUT";
-    private static String roundType4 = "SOUND_IT_OUT";
+    private static List<String> roundTypeEnums = new ArrayList<String>() {
+        {
+            add("DESCRIBE_IT");
+            add("ONE_WORD_DESCRIPTION");
+            add("ACT_IT_OUT");
+            add("SOUND_IT_OUT");
+        }
+    };
 
-    public RoomSettings(){
+    public RoomSettings() {
         this.roundTypes = new ArrayList<>();
     }
 
@@ -47,11 +52,11 @@ public class RoomSettings {
         return roundTypes;
     }
 
-    public void setRoundTypes(List<String> roundTypes){
+    public void setRoundTypes(List<String> roundTypes) {
         this.roundTypes = roundTypes;
     }
 
-    public boolean getAllowSkips(){
+    public boolean getAllowSkips() {
         return allowSkips;
     }
 
@@ -69,6 +74,24 @@ public class RoomSettings {
     }
 
 
+    /***
+     * Used to verify that the round types are part of the enumeration. Used in a controller context to catch the error
+     *
+     *
+     * @throws IllegalArgumentException
+     */
+    public void verifyRoundTypes() throws IllegalArgumentException{
+        roundTypes.stream().forEach(roundType -> {
+            if(!roundTypeEnums.contains(roundType)){
+                StringBuilder msgBuilder = new StringBuilder();
+                msgBuilder.append( roundType + " is not a valid input. It must be one of these possible" +
+                        " choices: ");
+                msgBuilder.append(Arrays.toString(roundTypeEnums.toArray()));
+                String msg = msgBuilder.toString();
+                throw new IllegalArgumentException(msg);
+            }
+        });
+    }
 
 
 }
