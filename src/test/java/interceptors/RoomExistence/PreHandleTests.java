@@ -67,15 +67,6 @@ public class PreHandleTests {
         assertFalse(interceptor.preHandle(request, response, null));
     }
 
-    @Test
-    public void pathHasPostAndRoom() throws Exception{
-        doReturn("POST").when(request).getMethod();
-        doReturn("room").when(request).getRequestURI();
-        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
-        
-        
-        assertTrue(interceptor.preHandle(request, response, null));
-    }
 
     @Test 
     public void pathHasTeam() throws Exception{
@@ -88,16 +79,6 @@ public class PreHandleTests {
         assertFalse(interceptor.preHandle(request, response, null));
     }
 
-    @Test 
-    public void pathAnyURI() throws Exception{
-        doReturn(null).when(userSession).getCurrentRoom();
-        doReturn("TEST").when(request).getMethod();
-        doReturn("TEST").when(request).getRequestURI();
-
-        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
-        
-        assertTrue(interceptor.preHandle(request, response, null));
-    }
 
     @Test
     public void notActiveRoom() throws Exception {

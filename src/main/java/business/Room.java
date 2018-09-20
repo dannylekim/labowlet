@@ -22,7 +22,7 @@ public class Room {
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
-    private static final String CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
+    private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
     private static final int ROOM_CODE_LENGTH = 4;
 
     public Room(Player host, RoomSettings roomSettings) {
@@ -40,6 +40,18 @@ public class Room {
         isInPlay = false;
         canStart = false;
         isLocked = false;
+    }
+
+    //the below is simply used for @RequestBody when it occurs. They should NOT be used otherwise
+    public Room(){}
+
+    /***
+     * DO NOT USE THIS METHOD. Only used for SPRING controllers and not for developers.
+     *
+     * @param roomCode
+     */
+    public void setRoomCode(String roomCode) {
+        this.roomCode = roomCode;
     }
 
     // ----------------- GETTERS / SETTERS FOR PUBLIC JSON RETURN -------------------- //

@@ -5,10 +5,7 @@ import business.Player;
 import business.Room;
 import business.Team;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sessions.GameSession;
 
 import javax.servlet.http.HttpSession;
@@ -37,16 +34,16 @@ public class TeamController {
     }
 
     @RequestMapping(method = POST, value = "/teams")
-    public Room createTeam(@RequestParam String teamName) {
+    public Room createTeam(@RequestBody Team teamWithOnlyTeamName) {
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
-        currentRoom.createTeam(teamName, player);
+        currentRoom.createTeam(teamWithOnlyTeamName.getTeamName(), player);
         return currentRoom;
     }
 
     @RequestMapping(method = PUT, value = "/teams/{teamId}") //add a teamId param
-    public Team updateTeam(@RequestParam(required = false) String teamName, @PathVariable("teamId") String teamId) throws Exception{
+    public Team updateTeam(@RequestBody Team teamWithOnlyTeamName, @PathVariable("teamId") String teamId) throws Exception{
 
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
@@ -59,8 +56,8 @@ public class TeamController {
         //if player is inside the team, then the only thing possible to update is the teamName.
         boolean isPlayerInTeam = team.isPlayerInTeam(player);
 
-        if(isPlayerInTeam && teamName != null){
-            team.setTeamName(teamName); //you are only allowed to update teamName if you are ALREADY inside the team
+        if(isPlayerInTeam && teamWithOnlyTeamName != null){
+            team.setTeamName(teamWithOnlyTeamName.getTeamName()); //you are only allowed to update teamName if you are ALREADY inside the team
         }
         else if (!isPlayerInTeam){
             currentRoom.addPlayerToTeam(team, player);

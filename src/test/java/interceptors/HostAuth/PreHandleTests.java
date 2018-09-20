@@ -24,7 +24,6 @@ public class PreHandleTests {
     HttpServletRequest request;
     HttpServletResponse response;
     GameSession userSession;
-    LabowletState state;
     HttpSession session;
 
     @BeforeEach
