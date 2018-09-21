@@ -28,11 +28,9 @@ public class LabowletState {
     private LabowletSessionRepository labowletSessionRepository;
     private Map<String, Room> activeRooms;
     private Map<String, List<String>> activeSockets; //todo sockets/roomId
-    private Properties globalProperties; //todo pull from labowlet.properties
 
     private LabowletState(){
         activeRooms = new HashMap<>();
-        globalProperties = new Properties();
     }
 
     public void setLabowletSessionRepository(LabowletSessionRepository labowletSessionRepository) {

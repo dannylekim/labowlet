@@ -1,6 +1,8 @@
 package application.controllers;
 
 import business.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class PlayerController {
 
     private LabowletState applicationState;
-    //todo logger
+    private static final Logger logger = LoggerFactory.getLogger(PlayerController.class);
 
     @Autowired
     HttpSession session;
@@ -36,6 +38,7 @@ public class PlayerController {
     @RequestMapping(method=POST, value="/players")
     public Player createPlayer(@RequestBody Player playerWithJustName){
         //A game session creates a player on instantiation.
+        logger.info("Creating userGame session for " + session.getId() + " with the name " + playerWithJustName.getName());
         GameSession userGameSession = new GameSession(playerWithJustName.getName());
         session.setAttribute("gameSession", userGameSession);
         return userGameSession.getPlayer();
