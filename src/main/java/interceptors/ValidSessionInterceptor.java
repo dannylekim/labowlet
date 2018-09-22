@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -20,12 +22,13 @@ import utility.JsonErrorResponseHandler;
  */
 public class ValidSessionInterceptor extends HandlerInterceptorAdapter {
 
+    private static final Logger logger = LoggerFactory.getLogger(ValidSessionInterceptor.class);
+
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object Handler, Exception exception) throws Exception{}
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView model9AndView)
-            throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
 
     }
 
@@ -40,6 +43,7 @@ public class ValidSessionInterceptor extends HandlerInterceptorAdapter {
             LabowletState applicationState = LabowletState.getInstance();
             GameSession userSession = applicationState.getGameSession(session);
             if(userSession == null){
+                logger.info("No valid session was found with the given x-auth-token " + request.getHeader("x-auth-token"));
                 JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.BAD_REQUEST,
                         new IllegalStateException("No valid session has been found! " +
                                 "Please check your x-auth-token header and make sure it has a valid token."));

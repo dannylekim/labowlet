@@ -2,6 +2,8 @@ package application;
 
 import business.Room;
 import business.Team;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sessions.GameSession;
 import sessions.LabowletSessionRepository;
 
@@ -28,6 +30,8 @@ public class LabowletState {
     private LabowletSessionRepository labowletSessionRepository;
     private Map<String, Room> activeRooms;
     private Map<String, List<String>> activeSockets; //todo sockets/roomId
+    private static final Logger logger = LoggerFactory.getLogger(LabowletState.class);
+
 
     private LabowletState(){
         activeRooms = new HashMap<>();
@@ -55,10 +59,12 @@ public class LabowletState {
      *
      */
     public void removeExpiredSessions(){
-        //remove the expired 
+        //remove the expired
+        logger.info("Removing expired sessions...");
         List<Session> expiredSessions = labowletSessionRepository.removeExpiredSessions();
         expiredSessions.stream().forEach(session -> {
             GameSession userSession = session.getAttribute("gameSession");
+            logger.debug("Removed expired session: " + session.getId() + " with the player " + userSession.getPlayer());
             if(userSession != null) {
                 Room currentRoom = userSession.getCurrentRoom();
             /*if the user is a host of a room and expired, we can assume that the room itself has to expire
@@ -67,6 +73,7 @@ public class LabowletState {
             */
 
                 if(currentRoom != null && currentRoom.getHost() == userSession.getPlayer()){
+                    logger.debug("Removing active room " + currentRoom.getRoomCode());
                     removeActiveRoom(currentRoom);
                 }
             }

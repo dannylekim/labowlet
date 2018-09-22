@@ -1,5 +1,8 @@
 package business;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public class Room {
@@ -24,6 +27,7 @@ public class Room {
     private static final Random RANDOM = new Random();
     private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
     private static final int ROOM_CODE_LENGTH = 4;
+    private static final Logger logger = LoggerFactory.getLogger(Room.class);
 
     public Room(Player host, RoomSettings roomSettings) {
         teams = new ArrayList<>();
@@ -35,6 +39,8 @@ public class Room {
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
+
+        logger.info("Created a new room with " + host.getName() + " and " + host.getId());
 
         //set State//
         isInPlay = false;
@@ -114,25 +120,30 @@ public class Room {
      * @param player the player who is creating the team
      */
     public void createTeam(String teamName, Player player) {
+        logger.info("Trying to create a team with  " + teamName + " and player " + player.getName() + " and ID " + player.getId());
         //Cannot have more teams than the max teams
         if (teams.size() >= roomSettings.getMaxTeams()) {
+            logger.info("Trying to add a team when the room can no longer take any more. Max is:  " + roomSettings.getMaxTeams());
             throw new IllegalStateException("Can no longer add any more teams in this room!");
         }
 
         //Must be in the room to create a team
         if (!isPlayerInRoom(player)) {
+            logger.info("This player does not belong in this room and therefore cannot create a team");
+
             throw new IllegalStateException("This player must be in the room to create a team.");
         }
 
         //cannot have two of the same names
         boolean doesTeamNameExist = teams.stream().anyMatch(team -> team.getTeamName().equals(teamName));
         if (doesTeamNameExist) {
+            logger.info("This team name already exists, therefore cannot create this team");
             throw new IllegalArgumentException("This team name already exists in this room!");
         }
 
         //remove the player from previous team or bench
         removePlayer(player);
-
+        logger.info("Team has been added");
         Team newTeam = new Team(teamName, player);
         teams.add(newTeam);
     }
@@ -152,26 +163,33 @@ public class Room {
      */
     public void addPlayerToTeam(Team team, Player player) throws Exception{
         boolean isPlayerInRoom = isPlayerInRoom(player);
+        logger.info("Trying to add player " + player.getName() + " with ID " + player.getId() + " to " +
+                "join " + team.getTeamId() + " with name " + team.getTeamName());
 
         if(team.getTeamMember1() != null && team.getTeamMember2() != null){
+            logger.info("The team is full");
             throw new IllegalStateException("This team is already full!");
         }
 
         if(team.isPlayerInTeam(player)){
+            logger.info("The team already has this player");
             throw new IllegalArgumentException("This player is already a part of this team!");
         }
 
         if (!isPlayerInRoom) {
+            logger.info("The player is not even in this room");
             throw new IllegalStateException("Cannot add a player that's not joined in this room!");
         }
 
         boolean isPlayerRemoved = removePlayer(player);
         if (!isPlayerRemoved) {
+            logger.error("The player can not be moved to another group for an unknown reason");
             throw new Exception("Player could not be moved to another group. Reason Unknown");
         }
 
         boolean hasPlayerBeenAdded = team.addPlayerInTeam(player);
         if(!hasPlayerBeenAdded){
+            logger.error("The player can not be moved be added into the team for some reason");
             throw new Exception("Player could not be added into the team. Reason Unknown.");
         }
 

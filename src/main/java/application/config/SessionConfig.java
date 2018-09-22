@@ -1,8 +1,11 @@
 package application.config;
 
 import application.LabowletState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.Session;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
@@ -20,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Configuration
 public class SessionConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(SessionConfig.class);
+
     /***
      * Instantiates a session repository and instantiates (this will most likely be the first time) the singleton which
      * will hold the entire game state. It will then keep track of the session repository.
@@ -33,6 +38,7 @@ public class SessionConfig {
      */
     @Bean
     public LabowletSessionRepository sessionRepository(){
+        logger.info("Creating a session repository and setting it to the application state.");
         LabowletSessionRepository labowletSessionRepository = new LabowletSessionRepository(new ConcurrentHashMap<>());
         LabowletState applicationState = LabowletState.getInstance();
         applicationState.setLabowletSessionRepository(labowletSessionRepository);

@@ -1,5 +1,7 @@
 package filters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import utility.JsonErrorResponseHandler;
 
@@ -19,8 +21,10 @@ import java.util.Enumeration;
  */
 public class XAuthTokenFilter implements Filter {
 
+    private static final Logger logger = LoggerFactory.getLogger(XAuthTokenFilter.class);
+
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
     }
 
     @Override
@@ -39,6 +43,7 @@ public class XAuthTokenFilter implements Filter {
         if (xAuthTokenHeaderExists) {
             chain.doFilter(request, response);
         } else {
+            logger.info("Request " + ((HttpServletRequest) request).getRequestURI() + " has been sent without an x-auth-token header");
             JsonErrorResponseHandler.sendErrorResponse((HttpServletResponse) response,
                     HttpStatus.FORBIDDEN, new IllegalAccessError("X-Auth-Token header is not present! Can not process request" +
                             "without this header."));

@@ -4,6 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.Host;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -21,13 +24,14 @@ import utility.JsonErrorResponseHandler;
  *
  */
 public class HostAuthInterceptor extends HandlerInterceptorAdapter {
+
+    private static final Logger logger = LoggerFactory.getLogger(HostAuthInterceptor.class);
     
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object Handler, Exception exception) throws Exception{}
     
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView model9AndView)
-    throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
       
     }
 
@@ -44,6 +48,8 @@ public class HostAuthInterceptor extends HandlerInterceptorAdapter {
         Player host = currentRoom.getHost();
         Player currentPlayer = userSession.getPlayer();
         if(!host.equals(currentPlayer)){
+            logger.info(currentPlayer.getName() + " with ID " + currentPlayer.getId() + " is trying to access a host" +
+                    "only request without host rights to the room " + currentRoom.getRoomCode());
             JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.FORBIDDEN, new IllegalAccessError("You are not authorized to perform this request!"));
             return false;
         }

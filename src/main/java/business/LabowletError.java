@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 /***
@@ -13,13 +15,14 @@ import org.springframework.http.HttpStatus;
  */
 public class LabowletError {
 
+    private static final Logger logger = LoggerFactory.getLogger(LabowletError.class);
+
    private HttpStatus status;
    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
    private LocalDateTime timestamp;
    private String message;
    private String debugMessage;
    private List<LabowletSubError> subErrors; //this is generally used during validations or other custom exceptions created that will allow subErrors to be available.
-
    private LabowletError() {
        timestamp = LocalDateTime.now();
    }
@@ -27,13 +30,20 @@ public class LabowletError {
    public LabowletError(HttpStatus status) {
        this();
        this.status = status;
+       logger.info("Created error object with status " + status.toString());
    }
 
    public LabowletError(HttpStatus status, Throwable ex) {
+
+
        this();
        this.status = status;
        this.message = "Labowlet received an unexpected error.";
        this.debugMessage = ex.getLocalizedMessage();
+
+       logger.info("Created error object with status " + status.toString() + " with error debug message " +
+               this.debugMessage);
+       logger.debug(ex.getStackTrace().toString());
    }
 
    public LabowletError(HttpStatus status, String message, Throwable ex) {
@@ -41,6 +51,10 @@ public class LabowletError {
        this.status = status;
        this.message = message;
        this.debugMessage = ex.getLocalizedMessage();
+       logger.info("Created error object with status " + status.toString() + " with error message " +
+               this.message + " with debug message: " + this.debugMessage);
+
+       logger.debug(ex.getStackTrace().toString());
    }
 
    // Getters & Setters

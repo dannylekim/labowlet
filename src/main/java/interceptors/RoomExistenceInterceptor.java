@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -19,13 +21,14 @@ import utility.JsonErrorResponseHandler;
  * 
  */
 public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
+
+    private static final Logger logger = LoggerFactory.getLogger(RoomExistenceInterceptor.class);
     
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object Handler, Exception exception) throws Exception{}
     
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView model9AndView)
-    throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView){
       
     }
 
@@ -46,6 +49,8 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             
             //There needs to be a room associated to the session to be able to call these methods
             if(currentRoom == null) {
+                logger.info(userSession.getPlayer() + " with ID " + userSession.getPlayer().getId() + " is trying to " +
+                        "access a method without having a room associated.");
                 JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.FAILED_DEPENDENCY, new IllegalStateException("You cannot perform this request because you haven't joined or created a room yet!"));
                 return false;
             }
@@ -53,13 +58,18 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             //Check if the room is active in the application state
             boolean isRoomActive = (applicationState.getRoom(currentRoom.getRoomCode()) != null);
             if(!isRoomActive){
-                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.GONE, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
+                logger.info(userSession.getPlayer() + " with ID " + userSession.getPlayer().getId() + " is trying to access " +
+                        "a method without a room being active");
+                        JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.GONE, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
                 return false;
             }
 
             //Check if the room is in play or locked
             if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
+                logger.info(userSession.getPlayer() + " with ID " + userSession.getPlayer().getId() + " is trying to access " +
+                        "a method where the room is locked or in play");
+
+                        JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
                 return false;
             }
 

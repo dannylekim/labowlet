@@ -1,5 +1,7 @@
 package sessions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class LabowletSessionRepository implements SessionRepository<Session> {
+    private static final Logger logger = LoggerFactory.getLogger(LabowletSessionRepository.class);
     private ConcurrentHashMap<String, Session>  repository;
 
     public LabowletSessionRepository(ConcurrentHashMap<String, Session> repository) {
@@ -40,6 +43,7 @@ public class LabowletSessionRepository implements SessionRepository<Session> {
         repository.entrySet().removeIf(entrySet -> {
             Session session = entrySet.getValue();
             if(isSessionExpired(session)){
+                logger.debug(session.getId() + " is an expired session and was removed.");
                 expiredSessions.add(session); //if it is expired, add it to the list and return true to remove from the map
                 return true;
             }
@@ -72,6 +76,7 @@ public class LabowletSessionRepository implements SessionRepository<Session> {
         //check current time. If current time is passed the last access time then this session should be expired.
         LocalDateTime currentTime = LocalDateTime.now();
 
+        logger.trace(expiryDateTime.toString() + " is the expiry date and " + currentTime.toString() + " is the current Time.");
 
         return (currentTime.compareTo(expiryDateTime) > 0);
     }

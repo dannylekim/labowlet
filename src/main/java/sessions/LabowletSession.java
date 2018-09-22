@@ -1,5 +1,7 @@
 package sessions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.session.Session;
 
 import java.io.Serializable;
@@ -23,6 +25,7 @@ public class LabowletSession implements Session, Serializable {
     // ---------- STATIC CONSTANTS ------------------- //
 
     private static final Duration DEFAULT_MAX_INACTIVE_INTERVAL = Duration.ofHours(1);
+    private static final Logger logger = LoggerFactory.getLogger(LabowletSession.class);
 
 
     // ------------ Sessions Implementation ----------- //
@@ -48,6 +51,8 @@ public class LabowletSession implements Session, Serializable {
         this.isExpired = false;
         this.maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
         this.sessionId = UUID.randomUUID().toString();
+
+        logger.debug("Session created " + this.sessionId + " at " + this.creationTime.toString() + " with " + this.maxInactiveInterval.toString());
     }
 
     /***
@@ -62,6 +67,9 @@ public class LabowletSession implements Session, Serializable {
         this.maxInactiveInterval = session.maxInactiveInterval;
         this.sessionId = session.sessionId;
         this.isExpired = session.isExpired;
+
+        logger.debug("Session created " + this.sessionId + " at " + this.creationTime.toString() + " with " + this.maxInactiveInterval.toString());
+
     }
 
 

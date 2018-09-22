@@ -1,6 +1,8 @@
 package filters;
 
 import application.LabowletState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import java.io.IOException;
@@ -16,13 +18,16 @@ import java.io.IOException;
 public class ExpireSessionsFilter implements Filter{
 
     LabowletState state = LabowletState.getInstance();
+    private static final Logger logger = LoggerFactory.getLogger(ExpireSessionsFilter.class);
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+        logger.debug("Removing expired sessions...");
         state.removeExpiredSessions();
         chain.doFilter(request, response);
     }
