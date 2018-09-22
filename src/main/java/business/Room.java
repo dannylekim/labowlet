@@ -202,11 +202,13 @@ public class Room {
      * @return returns the team found or null if the ID was invalid
      */
     public Team getTeam(String teamId) {
-        return teams.stream()
+        Team returnTeam = teams.stream()
                 .filter(team ->
                         team.getTeamId().equals(teamId))
                 .findFirst()
                 .orElse(null);
+        logger.debug("Returning the team " + ((returnTeam != null) ? returnTeam.getTeamName() : "null"));
+        return returnTeam;
     }
 
     /***
@@ -216,12 +218,16 @@ public class Room {
      * @return a boolean if the removal was successful
      */
     public boolean removePlayer(Player player) {
+        logger.info("Attempting to remove player " + player.getName() + " with ID " + player.getId());
         boolean isPlayerRemoved = benchPlayers.remove(player);
         if (!isPlayerRemoved) {
+
+            logger.info("Player has not been removed, looking into the teams");
             //was not in bench therefore look in groups
             for(Team team: teams){
                 isPlayerRemoved = team.removePlayerFromTeam(player);
                 if(isPlayerRemoved){
+                    logger.info("Player has been found inside the team. Removing the player now...");
                     if(team.getTeamMember1() == null || team.getTeamMember2() == null){
                         teams.remove(team);
                     }    
@@ -229,6 +235,8 @@ public class Room {
                 }
             }
         }
+
+        logger.info("Has player been removed: " + isPlayerRemoved);
         return isPlayerRemoved;
     }
 
@@ -251,15 +259,25 @@ public class Room {
 
     public void addWordBowl(List<String> inputWords, Player player){
 
+        logger.info("Player " + player.getName() + " with ID " + player.getId() + " is trying to input these words: " + ((inputWords != null) ? Arrays.toString(inputWords.toArray()) : "null"));
+
         if(!isPlayerInATeam(player)){
+            logger.info("Player is not part a team, can not input words until then.");
             throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
         }
 
         if(!isLocked){
+            logger.info("Cannot input words until the game has started.");
             throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
         }
 
+        if(inputWords == null) {
+            logger.info("Missing word entries, cannot input a null object");
+            throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
+        }
+
         if(inputWords.size() != roomSettings.getWordsPerPerson()){
+            logger.info("Missing word entries, you need to have " + roomSettings.getWordsPerPerson() + " entries.");
             throw new IllegalArgumentException("Missing word entries! You need to have " + roomSettings.getWordsPerPerson() + " entries!");
         }
 
@@ -270,29 +288,54 @@ public class Room {
 
             //checking for uniqueness
             if(playerWordBowl.contains(word)){
+                logger.info("Cannot have two of the same entries in the word bowl");
                 throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
             }
             playerWordBowl.add(word);
         });
 
+        logger.info("Replacing the words inputted previously with the new ones");
         this.wordsMadePerPlayer.remove(player);
         this.wordsMadePerPlayer.put(player, playerWordBowl);
 
     }
 
+    /***
+     *
+     * This method is to update a room with the new settings. Can not update if game is locked or already in play.
+     * If the room settings changes max amount of teams and there are more teams than the max, it will bench the
+     * last joined teams and then remove the teams associated.
+     *
+     *
+     * @param roomSettings the new inputted room settings
+     */
     public void updateRoom(RoomSettings roomSettings) {
+
+        logger.info("Starting to update the room...");
+        if(this.isInPlay || this.isLocked){
+            logger.info("Cannot update the room, the game has been locked or already in play!");
+            throw new IllegalStateException("Can not update the room, the game has been locked or already in play!");
+        }
+
         this.roomSettings = roomSettings;
+
+
 
         //If there are more teams than the new updated Max Teams, you must bench the newly joined ones until
         //it is of equal sizing
         int maxTeams = roomSettings.getMaxTeams();
         int lastJoinedTeamIndex;
         Team teamToBench;
+        logger.info("Removing the last joined members and teams if needed...");
         while (teams.size() > maxTeams) {
+            logger.debug("Size of the team " + teams.size() + " is still bigger than max teams set by settings " + maxTeams);
             lastJoinedTeamIndex = teams.size() - 1;
             teamToBench = teams.get(lastJoinedTeamIndex);
             benchPlayers.add(teamToBench.getTeamMember1());
             benchPlayers.add(teamToBench.getTeamMember2());
+
+            logger.debug("Benched " + teamToBench.getTeamMember1() + " and " + teamToBench.getTeamMember2());
+            logger.debug("Removing team " + teamToBench.getTeamName() + " with ID " + teamToBench.getTeamId());
             teams.remove(teamToBench);
         }
     }
@@ -319,7 +362,10 @@ public class Room {
         for (int i = 0; i < ROOM_CODE_LENGTH; i++) {
             token.append(CHARS.charAt(RANDOM.nextInt(CHARS.length())));
         }
-        return token.toString();
+
+        String generatedRoomCode = token.toString();
+        logger.info("Created room code " + generatedRoomCode);
+        return generatedRoomCode;
 
     }
 
@@ -336,6 +382,7 @@ public class Room {
             isPlayerInRoom = isPlayerInATeam(player);
         }
 
+        logger.info("Player " + player.getName() + " with ID " + player.getId() + " is inside the room: " + isPlayerInRoom);
         return isPlayerInRoom;
     }
 
@@ -347,10 +394,13 @@ public class Room {
      * @return a boolean value if the player is in a team or not
      */
     private boolean isPlayerInATeam(Player player){
-        return teams
+        boolean isPlayerInATeam =  teams
                 .stream()
                 .anyMatch(team ->
                         (team.isPlayerInTeam(player)));
+
+        logger.info("Player is in a team: " + isPlayerInATeam);
+        return  isPlayerInATeam;
     }
 
 

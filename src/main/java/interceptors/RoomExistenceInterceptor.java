@@ -49,8 +49,7 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             
             //There needs to be a room associated to the session to be able to call these methods
             if(currentRoom == null) {
-                logger.info(userSession.getPlayer() + " with ID " + userSession.getPlayer().getId() + " is trying to " +
-                        "access a method without having a room associated.");
+                logger.info(session.getId() + " is trying to access a room call that the session has no joined yet");
                 JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.FAILED_DEPENDENCY, new IllegalStateException("You cannot perform this request because you haven't joined or created a room yet!"));
                 return false;
             }
@@ -58,18 +57,15 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             //Check if the room is active in the application state
             boolean isRoomActive = (applicationState.getRoom(currentRoom.getRoomCode()) != null);
             if(!isRoomActive){
-                logger.info(userSession.getPlayer() + " with ID " + userSession.getPlayer().getId() + " is trying to access " +
-                        "a method without a room being active");
-                        JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.GONE, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
+                logger.info(session.getId() + " is trying to access a room call where the room is no longer active");
+                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.GONE, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
                 return false;
             }
 
             //Check if the room is in play or locked
             if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-                logger.info(userSession.getPlayer() + " with ID " + userSession.getPlayer().getId() + " is trying to access " +
-                        "a method where the room is locked or in play");
-
-                        JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
+                logger.info(session.getId() + " is trying to access a room call where the room has already started or is locked.");
+                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
                 return false;
             }
 

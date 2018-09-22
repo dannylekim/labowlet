@@ -53,10 +53,10 @@ public class Team {
      * @param teamMember1 the player to be set as the first teammember
      */
     public void setTeamMember1(Player teamMember1) {
-        logger.debug("Attempting to set teamMember with " + teamMember1.getName());
+        logger.debug("Attempting to set teamMember with " + ((teamMember1 == null) ? "null": teamMember1.getName()));
         if (teamMember1 == null || this.teamMember2 == null || (teamMember1 != this.teamMember2)) {
             this.teamMember1 = teamMember1;
-            logger.debug("Player " + teamMember1.getName() + " is set as Team member 1");
+            logger.debug("Player " + ((teamMember1 == null) ? "null": teamMember1.getName()) + " is set as Team member 1");
         }
     }
 
@@ -68,12 +68,11 @@ public class Team {
      * @param teamMember2 the player to be set as the first teammember
      */
     public void setTeamMember2(Player teamMember2) {
-
-        logger.debug("Attempting to set teamMember with " + teamMember2.getName());
+        logger.debug("Attempting to set teamMember with " + ((teamMember2 == null) ? "null": teamMember2.getName()));
 
         if (teamMember2 == null || this.teamMember1 == null || (teamMember2 != this.teamMember1)) {
             this.teamMember2 = teamMember2;
-            logger.debug("Player " + teamMember1.getName() + " is set as Team member 2");
+            logger.debug("Player " + ((teamMember2 == null) ? "null": teamMember2.getName()) + " is set as Team member 2");
 
         }
 
