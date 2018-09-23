@@ -22,7 +22,7 @@ public class RoomSettings {
     private static final Logger logger = LoggerFactory.getLogger(RoomSettings.class);
 
     //all the round types available
-    private static List<String> roundTypeEnums = new ArrayList<String>() {
+    private static List<String> roundTypeEnums = new ArrayList<>() {
         {
             add("DESCRIBE_IT");
             add("ONE_WORD_DESCRIPTION");

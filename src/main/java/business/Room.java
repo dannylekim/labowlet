@@ -271,6 +271,11 @@ public class Room {
             throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
         }
 
+        if(isInPlay){
+            logger.info("Cannot input words, the game has started.");
+            throw new IllegalStateException("The game has already started, cannot input words at this time!");
+        }
+
         if(inputWords == null) {
             logger.info("Missing word entries, cannot input a null object");
             throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
