@@ -58,7 +58,7 @@ public class LabowletState {
      */
     public void removeExpiredSessions(){
         //remove the expired
-        logger.info("Removing expired com.danken.sessions...");
+        logger.info("Removing expired sessions...");
         List<Session> expiredSessions = labowletSessionRepository.removeExpiredSessions();
         expiredSessions.stream().forEach(session -> {
             GameSession userSession = session.getAttribute("gameSession");
