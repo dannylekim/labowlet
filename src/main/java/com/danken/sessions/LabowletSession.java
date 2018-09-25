@@ -7,6 +7,10 @@ import org.springframework.session.Session;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
@@ -52,7 +56,11 @@ public class LabowletSession implements Session, Serializable {
         this.maxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL;
         this.sessionId = UUID.randomUUID().toString();
 
-        logger.debug("Session created {} at {} with {}", this.sessionId, this.creationTime.toString(), this.maxInactiveInterval.toString());
+        logger.debug("Session created {} at {} with {} hour(s) as max time before expiry",
+                this.sessionId,
+                LocalDateTime.ofInstant(this.creationTime,
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+                this.maxInactiveInterval.toHours());
     }
 
     /***

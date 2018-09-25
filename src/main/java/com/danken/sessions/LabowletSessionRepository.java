@@ -9,6 +9,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +78,9 @@ public class LabowletSessionRepository implements SessionRepository<Session> {
         //check current time. If current time is passed the last access time then this session should be expired.
         LocalDateTime currentTime = LocalDateTime.now();
 
-        logger.trace("{} is the expiry date and {} is the current time.", expiryDateTime.toString(), currentTime.toString() );
+        logger.trace("{} is the expiry date and {} is the current time.",
+                expiryDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+                currentTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
 
         return (currentTime.compareTo(expiryDateTime) > 0);
     }

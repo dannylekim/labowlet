@@ -44,7 +44,7 @@ public class LabowletError {
 
         logger.info("Created error object with status {} with error debug message {}", status.toString(),
                 this.debugMessage);
-        logger.debug(ex.getStackTrace().toString());
+        logger.debug("Stack trace", ex);
     }
 
     public LabowletError(HttpStatus status, String message, Throwable ex) {
@@ -55,7 +55,7 @@ public class LabowletError {
         logger.info("Created error object with status {} with error message {} with debug message: {}", status.toString(),
                 this.message, this.debugMessage);
 
-        logger.debug(ex.getStackTrace().toString());
+        logger.debug("Stack trace", ex);
     }
 
     // Getters & Setters
