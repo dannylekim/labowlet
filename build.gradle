@@ -38,6 +38,7 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testImplementation('org.junit.jupiter:junit-jupiter-api')
 	testRuntime('org.junit.jupiter:junit-jupiter-engine')
+	compileOnly 'org.projectlombok:lombok:1.18.2'
 }
 
 test {

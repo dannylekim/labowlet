@@ -31,7 +31,7 @@ public class LabowletState {
     private static final Logger logger = LoggerFactory.getLogger(LabowletState.class);
 
 
-    private LabowletState(){
+    private LabowletState() {
         activeRooms = new HashMap<>();
     }
 
@@ -40,14 +40,18 @@ public class LabowletState {
     }
 
     public static LabowletState getInstance() {
-        if(labowletState == null){
+        if (labowletState == null) {
             labowletState = new LabowletState();
         }
         return labowletState;
     }
 
-    public GameSession getGameSession(HttpSession session){
-        return (GameSession) session.getAttribute("gameSession");
+    public GameSession getGameSession(HttpSession session) {
+        if (session == null) {
+            return null;
+        } else {
+            return (GameSession) session.getAttribute("gameSession");
+        }
     }
 
     /***
@@ -56,21 +60,21 @@ public class LabowletState {
      * players expire but the room is still active because the host is somehow still active, but then the rooms will not be able to self-clean their data.
      *
      */
-    public void removeExpiredSessions(){
+    public void removeExpiredSessions() {
         //remove the expired
-        logger.info("Removing expired com.danken.sessions...");
+        logger.info("Removing expired sessions...");
         List<Session> expiredSessions = labowletSessionRepository.removeExpiredSessions();
         expiredSessions.stream().forEach(session -> {
             GameSession userSession = session.getAttribute("gameSession");
             logger.debug("Removed expired session: {} with the player {}", session.getId(), userSession.getPlayer());
-            if(userSession != null) {
+            if (userSession != null) {
                 Room currentRoom = userSession.getCurrentRoom();
             /*if the user is a host of a room and expired, we can assume that the room itself has to expire
             regardless of the other players who are inside. We can only assume that the other players are also expired and cleaned up as we cannot pull their
-            game com.danken.sessions to remove the currentRoom. Instead the currentRoom will simply point to a room that has no reference within the game state.
+            game sessions to remove the currentRoom. Instead the currentRoom will simply point to a room that has no reference within the game state.
             */
 
-                if(currentRoom != null && currentRoom.getHost() == userSession.getPlayer()){
+                if (currentRoom != null && currentRoom.getHost() == userSession.getPlayer()) {
                     logger.debug("Removing active room {}", currentRoom.getRoomCode());
                     removeActiveRoom(currentRoom);
                 }
@@ -78,19 +82,19 @@ public class LabowletState {
         });
     }
 
-    public Room getRoom(String roomCode){
+    public Room getRoom(String roomCode) {
         return activeRooms.get(roomCode);
     }
 
-    public boolean isRoomCodeUnique(String roomCode){
+    public boolean isRoomCodeUnique(String roomCode) {
         return (getRoom(roomCode) == null);
     }
 
-    public void addActiveRoom(Room newActiveRoom){
+    public void addActiveRoom(Room newActiveRoom) {
         activeRooms.put(newActiveRoom.getRoomCode(), newActiveRoom);
     }
 
-    public void removeActiveRoom(Room room){
+    public void removeActiveRoom(Room room) {
         activeRooms.remove(room.getRoomCode());
     }
 
