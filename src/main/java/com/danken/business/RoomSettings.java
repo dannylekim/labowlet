@@ -52,18 +52,25 @@ public class RoomSettings {
      * @throws IllegalArgumentException
      */
     public void verifyRoundTypes() throws IllegalArgumentException{
-        roundTypes.stream().forEach(roundType -> {
-            log.debug("Verifying if " + roundType + " is a valid input");
-            if(!roundTypeEnums.contains(roundType)){
-                StringBuilder msgBuilder = new StringBuilder();
-                msgBuilder.append( roundType + " is not a valid input. It must be one of these possible" +
-                        " choices: ");
-                msgBuilder.append(Arrays.toString(roundTypeEnums.toArray()));
-                String msg = msgBuilder.toString();
-                log.info(msg);
-                throw new IllegalArgumentException(msg);
-            }
-        });
+        if(roundTypes.size() > 0) {
+            roundTypes.stream().forEach(roundType -> {
+                log.debug("Verifying if " + roundType + " is a valid input");
+                if(!roundTypeEnums.contains(roundType)){
+                    StringBuilder msgBuilder = new StringBuilder();
+                    msgBuilder.append( roundType + " is not a valid input. It must be one of these possible" +
+                            " choices: ");
+                    msgBuilder.append(Arrays.toString(roundTypeEnums.toArray()));
+                    String msg = msgBuilder.toString();
+                    log.warn(msg);
+                    throw new IllegalArgumentException(msg);
+                }
+            });
+        }
+        else if(roundTypeEnums.size() > 0) {
+            log.warn("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(roundTypeEnums.toArray()));
+            throw new IllegalArgumentException("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(roundTypeEnums.toArray()));
+        }
+
     }
 
 

@@ -40,4 +40,11 @@ public class verifyRoundTypesTest {
         roomSettings.setRoundTypes(roundTypes);
         assertThrows(IllegalArgumentException.class, () -> roomSettings.verifyRoundTypes());
     }
+
+    @Test
+    public void nullArrayReturnError(){
+        ArrayList<String> roundTypes = new ArrayList<>();
+        roomSettings.setRoundTypes(roundTypes);
+        assertThrows(IllegalArgumentException.class, () -> roomSettings.verifyRoundTypes());
+    }
 }

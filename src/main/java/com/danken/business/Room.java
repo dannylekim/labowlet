@@ -66,13 +66,13 @@ public class Room {
         log.info("Trying to create a team with  " + teamName + " and player " + player.getName() + " and ID " + player.getId());
         //Cannot have more teams than the max teams
         if (teams.size() >= roomSettings.getMaxTeams()) {
-            log.info("Trying to add a team when the room can no longer take any more. Max is:  {}", roomSettings.getMaxTeams());
+            log.warn("Trying to add a team when the room can no longer take any more. Max is:  {}", roomSettings.getMaxTeams());
             throw new IllegalStateException("Can no longer add any more teams in this room!");
         }
 
         //Must be in the room to create a team
         if (!isPlayerInRoom(player)) {
-            log.info("This player does not belong in this room and therefore cannot create a team");
+            log.warn("This player does not belong in this room and therefore cannot create a team");
 
             throw new IllegalStateException("This player must be in the room to create a team.");
         }
@@ -80,7 +80,7 @@ public class Room {
         //cannot have two of the same names
         boolean doesTeamNameExist = teams.stream().anyMatch(team -> team.getTeamName().equals(teamName));
         if (doesTeamNameExist) {
-            log.info("This team name already exists, therefore cannot create this team");
+            log.warn("This team name already exists, therefore cannot create this team");
             throw new IllegalArgumentException("This team name already exists in this room!");
         }
 
@@ -109,17 +109,17 @@ public class Room {
         log.info("Trying to add player {} with ID {} to join {} with name {}", player.getName(), player.getId(), team.getTeamId(), team.getTeamName());
 
         if (team.getTeamMember1() != null && team.getTeamMember2() != null) {
-            log.info("The team is full");
+            log.warn("The team is full");
             throw new IllegalStateException("This team is already full!");
         }
 
         if (team.isPlayerInTeam(player)) {
-            log.info("The team already has this player");
+            log.warn("The team already has this player");
             throw new IllegalArgumentException("This player is already a part of this team!");
         }
 
         if (!isPlayerInRoom) {
-            log.info("The player is not even in this room");
+            log.warn("The player is not even in this room");
             throw new IllegalStateException("Cannot add a player that's not joined in this room!");
         }
 
@@ -199,27 +199,27 @@ public class Room {
         log.info("Player {} with ID {} is trying to input these words: {}", player.getName(), player.getId(), ((inputWords != null) ? Arrays.toString(inputWords.toArray()) : "null"));
 
         if (!isPlayerInATeam(player)) {
-            log.info("Player is not part a team, can not input words until then.");
+            log.warn("Player is not part a team, can not input words until then.");
             throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
         }
 
         if (!isLocked) {
-            log.info("Cannot input words until the game has started.");
+            log.warn("Cannot input words until the game has started.");
             throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
         }
 
         if (isInPlay) {
-            log.info("Cannot input words, the game has started.");
+            log.warn("Cannot input words, the game has started.");
             throw new IllegalStateException("The game has already started, cannot input words at this time!");
         }
 
         if (inputWords == null) {
-            log.info("Missing word entries, cannot input a null object");
+            log.warn("Missing word entries, cannot input a null object");
             throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
         }
 
         if (inputWords.size() != roomSettings.getWordsPerPerson()) {
-            log.info("Missing word entries, you need to have {} entries", roomSettings.getWordsPerPerson());
+            log.warn("Missing word entries, you need to have {} entries", roomSettings.getWordsPerPerson());
             throw new IllegalArgumentException("Missing word entries! You need to have " + roomSettings.getWordsPerPerson() + " entries!");
         }
 
@@ -230,7 +230,7 @@ public class Room {
 
             //checking for uniqueness
             if (playerWordBowl.contains(word)) {
-                log.info("Cannot have two of the same entries in the word bowl");
+                log.warn("Cannot have two of the same entries in the word bowl");
                 throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
             }
             playerWordBowl.add(word);
@@ -255,7 +255,7 @@ public class Room {
 
         log.info("Starting to update the room...");
         if (this.isInPlay || this.isLocked) {
-            log.info("Cannot update the room, the game has been locked or already in play!");
+            log.warn("Cannot update the room, the game has been locked or already in play!");
             throw new IllegalStateException("Can not update the room, the game has been locked or already in play!");
         }
 
