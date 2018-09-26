@@ -1,7 +1,6 @@
 package com.danken.application.config;
 
 import com.danken.filters.ExpireSessionsFilter;
-import com.danken.filters.XAuthTokenFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -23,16 +22,6 @@ public class FilterConfig {
         registrationBean.setFilter(new ExpireSessionsFilter());
         registrationBean.addUrlPatterns("/*");
 
-        return registrationBean;
-    }
-
-    @Bean
-    public FilterRegistrationBean<XAuthTokenFilter> xAuthTokenFilter(){
-        FilterRegistrationBean<XAuthTokenFilter> registrationBean
-                = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new XAuthTokenFilter());
-        registrationBean.addUrlPatterns("/rooms/*", "/rooms", "/teams", "/teams/*", "/host/*");
         return registrationBean;
     }
 

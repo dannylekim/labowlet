@@ -1,18 +1,23 @@
 package com.danken.business;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
+@Getter
+@Setter
+@Slf4j
+@NoArgsConstructor
 public class Team {
     private String teamName;
     private Player teamMember1;
     private Player teamMember2;
     private Score teamScore;
     private String teamId;
-
-    private static final Logger logger = LoggerFactory.getLogger(Team.class);
+    
 
     public Team(String teamName, Player teamMember1) {
         this.teamName = teamName;
@@ -20,31 +25,9 @@ public class Team {
         this.teamScore = new Score();
         this.teamId = UUID.randomUUID().toString();
 
-        logger.info("Created " + teamName + " with id " + this.teamId);
+        log.info("Created " + teamName + " with id " + this.teamId);
     }
-
-    public Team() {
-    }
-
-    public String getTeamId() {
-        return this.teamId;
-    }
-
-    public String getTeamName() {
-        return this.teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
-
-    public Player getTeamMember1() {
-        return teamMember1;
-    }
-
-    public Player getTeamMember2() {
-        return teamMember2;
-    }
+    
 
     /***
      * Set the first team member however, it will only set if and only if: the value you're trying to set is null,
@@ -54,10 +37,10 @@ public class Team {
      * @param teamMember1 the player to be set as the first teammember
      */
     public void setTeamMember1(Player teamMember1) {
-        logger.debug("Attempting to set teamMember with {}", ((teamMember1 == null) ? "null" : teamMember1.getName()));
+        log.debug("Attempting to set teamMember with {}", ((teamMember1 == null) ? "null" : teamMember1.getName()));
         if (teamMember1 == null || this.teamMember2 == null || (teamMember1 != this.teamMember2)) {
             this.teamMember1 = teamMember1;
-            logger.debug("Player {} is set as Team member 1", ((teamMember1 == null) ? "null" : teamMember1.getName()));
+            log.debug("Player {} is set as Team member 1", ((teamMember1 == null) ? "null" : teamMember1.getName()));
         }
     }
 
@@ -69,11 +52,11 @@ public class Team {
      * @param teamMember2 the player to be set as the first teammember
      */
     public void setTeamMember2(Player teamMember2) {
-        logger.debug("Attempting to set teamMember with {}", ((teamMember2 == null) ? "null" : teamMember2.getName()));
+        log.debug("Attempting to set teamMember with {}", ((teamMember2 == null) ? "null" : teamMember2.getName()));
 
         if (teamMember2 == null || this.teamMember1 == null || (teamMember2 != this.teamMember1)) {
             this.teamMember2 = teamMember2;
-            logger.debug("Player {} is set as Team member 2", ((teamMember2 == null) ? "null" : teamMember2.getName()));
+            log.debug("Player {} is set as Team member 2", ((teamMember2 == null) ? "null" : teamMember2.getName()));
 
         }
 
@@ -90,23 +73,23 @@ public class Team {
      * @return boolean value if the removal was successful
      */
     public boolean removePlayerFromTeam(Player player) {
-        logger.info("Removing player {}", player.getName());
+        log.info("Removing player {}", player.getName());
         boolean isRemoved = false;
         if (teamMember2 == player) {
             this.setTeamMember2(null);
 
-            logger.debug("Team member 2 has been removed.");
+            log.debug("Team member 2 has been removed.");
             isRemoved = true;
         }
         if (teamMember1 == player) {
             this.setTeamMember1(null);
 
-            logger.debug("Team member 1 has been removed.");
+            log.debug("Team member 1 has been removed.");
             isRemoved = true;
         }
 
 
-        logger.info("Player has been removed: {}", isRemoved);
+        log.info("Player has been removed: {}", isRemoved);
         return isRemoved;
 
     }
@@ -119,20 +102,20 @@ public class Team {
      */
     public boolean addPlayerInTeam(Player player) {
 
-        logger.info("Attempting to add player {} to team", player.getName());
+        log.info("Attempting to add player {} to team", player.getName());
         boolean hasPlayerJoinedTeam = false;
         if (teamMember1 == null) {
             setTeamMember1(player);
             hasPlayerJoinedTeam = true;
-            logger.debug("Team member 1 has been added.");
+            log.debug("Team member 1 has been added.");
 
         } else if (teamMember2 == null) {
             setTeamMember2(player);
-            logger.debug("Team member 2 has been added.");
+            log.debug("Team member 2 has been added.");
             hasPlayerJoinedTeam = true;
         }
 
-        logger.info("Player has been added: {}", hasPlayerJoinedTeam);
+        log.info("Player has been added: {}", hasPlayerJoinedTeam);
 
         return hasPlayerJoinedTeam;
     }

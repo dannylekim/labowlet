@@ -26,8 +26,6 @@ public class ExpireSessionsFilter implements Filter{
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
-        logger.debug("Removing expired com.danken.sessions...");
         state.removeExpiredSessions();
         chain.doFilter(request, response);
     }

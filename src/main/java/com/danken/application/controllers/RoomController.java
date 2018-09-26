@@ -5,8 +5,7 @@ import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
@@ -24,10 +23,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
  *
  */
 @RestController
+@Slf4j
 public class RoomController {
 
     private LabowletState applicationState;
-    private static final Logger logger = LoggerFactory.getLogger(RoomController.class);
 
     @Autowired
     HttpSession session;
@@ -41,15 +40,15 @@ public class RoomController {
 
     @RequestMapping(method = POST, value = "/rooms")
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
-        logger.info("Verifying the round types for " + Arrays.toString(newRoomSettings.getRoundTypes().toArray()));
+        log.info("Verifying the round types for " + Arrays.toString(newRoomSettings.getRoundTypes().toArray()));
         newRoomSettings.verifyRoundTypes();
         GameSession userSession = applicationState.getGameSession(session);
         Player host = userSession.getPlayer();
 
-        logger.info("Creating new room for the host {}", host.getName());
+        log.info("Creating new room for the host {}", host.getName());
         Room newRoom = new Room(host, newRoomSettings);
 
-        logger.info("Verifying if the roomCode is unique");
+        log.info("Verifying if the roomCode is unique");
         boolean isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
 
         /*if the room code isn't unique, regenerate the room code and check again until there are no rooms with the same
@@ -61,7 +60,7 @@ public class RoomController {
             isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
         }
 
-        logger.info("Adding newly formed room with room code {} as active for the session", newRoom.getRoomCode());
+        log.info("Adding newly formed room with room code {} as active for the session", newRoom.getRoomCode());
         applicationState.addActiveRoom(newRoom);
         userSession.setCurrentRoom(newRoom);
         return newRoom;
@@ -70,7 +69,7 @@ public class RoomController {
     @RequestMapping(method = PUT, value = "/host/rooms")
     public Room updateRoom(@RequestBody RoomSettings updatedRoomSettings){
 
-        logger.info("Verifying the round types for {}", Arrays.toString(updatedRoomSettings.getRoundTypes().toArray()));
+        log.info("Verifying the round types for {}", Arrays.toString(updatedRoomSettings.getRoundTypes().toArray()));
         updatedRoomSettings.verifyRoundTypes();
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
@@ -86,12 +85,12 @@ public class RoomController {
         Room roomToJoin = applicationState.getRoom(roomWithOnlyRoomCode.getRoomCode());
 
         if(roomToJoin == null) {
-            logger.warn("Tried to access the room with room code: {}", roomWithOnlyRoomCode.getRoomCode());
+            log.warn("Tried to access the room with room code: {}", roomWithOnlyRoomCode.getRoomCode());
             throw new IllegalArgumentException("There is no room with that room code. Please try again!");
 
         }
 
-        logger.info("Adding player {} to the list of bench players and setting their current room to the session,", player.getName());
+        log.info("Adding player {} to the list of bench players and setting their current room to the session,", player.getName());
         roomToJoin.addPlayerToBench(player);
         userGameSession.setCurrentRoom(roomToJoin);
         return roomToJoin;
