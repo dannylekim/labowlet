@@ -40,7 +40,7 @@ public class AddWordBowlTest {
 
     @Test
     public void roomIsLocked() {
-        room.setIsLocked(false);
+        room.setLocked(false);
         Player testPlayer = new Player("test");
         List<Team> teams = room.getTeams();
         Team testTeam = new Team("test", testPlayer);
@@ -50,7 +50,7 @@ public class AddWordBowlTest {
 
     @Test
     public void inputWordsIsNull() {
-        room.setIsLocked(true);
+        room.setLocked(true);
         Player testPlayer = new Player("test");
         List<Team> teams = room.getTeams();
         Team testTeam = new Team("test", testPlayer);
@@ -61,7 +61,7 @@ public class AddWordBowlTest {
 
     @Test
     public void tooManyWords() {
-        room.setIsLocked(true);
+        room.setLocked(true);
 
         Player testPlayer = new Player("test");
         List<Team> teams = room.getTeams();
@@ -78,7 +78,7 @@ public class AddWordBowlTest {
 
     @Test
     public void doubleEntries() {
-        room.setIsLocked(true);
+        room.setLocked(true);
 
         Player testPlayer = new Player("test");
         List<Team> teams = room.getTeams();
@@ -94,7 +94,7 @@ public class AddWordBowlTest {
 
     @Test
     public void successfulInput() {
-        room.setIsLocked(true);
+        room.setLocked(true);
         doReturn(5).when(roomSettings).getWordsPerPerson();
         List<String> words = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -113,7 +113,7 @@ public class AddWordBowlTest {
 
     @Test
     public void replacedInput() {
-        room.setIsLocked(true);
+        room.setLocked(true);
         doReturn(5).when(roomSettings).getWordsPerPerson();
         List<String> words = new ArrayList<>();
         for (int i = 0; i < 5; i++) {

@@ -48,7 +48,7 @@ public class RoomConstructorTest {
     public void roomStateIsClean(){
         assertAll(() -> {
             assertFalse(room.isInPlay());
-            assertFalse(room.canStart());
+            assertFalse(room.isCanStart());
             assertFalse(room.isLocked());
         });
       

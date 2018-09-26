@@ -56,7 +56,7 @@ public class CreateWordBowlTest {
         Player somePlayer = mock(Player.class);
         Team team = new Team("test", somePlayer);
         room.getTeams().add(team);
-        room.setIsLocked(true);
+        room.setLocked(true);
         List<String> wordTests = Arrays.asList("One", "Two", "Three");
         assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(wordTests, somePlayer));
     }
@@ -75,7 +75,7 @@ public class CreateWordBowlTest {
         Player somePlayer = mock(Player.class);
         Team team = new Team("test", somePlayer);
         room.getTeams().add(team);
-        room.setIsLocked(true);
+        room.setLocked(true);
 
 
         List<String> wordTests = Arrays.asList("One", "Two", "Three");
@@ -100,7 +100,7 @@ public class CreateWordBowlTest {
         Player somePlayer = mock(Player.class);
         Team team = new Team("test", somePlayer);
         room.getTeams().add(team);
-        room.setIsLocked(true);
+        room.setLocked(true);
 
 
         List<String> wordTests = Arrays.asList("One", "One", "One");
