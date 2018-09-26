@@ -45,6 +45,7 @@ public class PreHandleTests {
     public void sessionIsValid() throws Exception{
         doReturn(session).when(request).getSession(false);
         doReturn(userSession).when(session).getAttribute(any());
+        doReturn("ANY").when(request).getMethod();
 
         ValidSessionInterceptor interceptor = new ValidSessionInterceptor();
 
@@ -55,6 +56,7 @@ public class PreHandleTests {
     public void sessionIsNotValid() throws Exception{
         doReturn(session).when(request).getSession(false);
         doReturn(null).when(session).getAttribute(any());
+        doReturn("ANY").when(request).getMethod();
 
         ValidSessionInterceptor interceptor = new ValidSessionInterceptor();
 
@@ -62,6 +64,15 @@ public class PreHandleTests {
 
     }
 
+    @Test
+    public void optionsPass() throws Exception{
+        doReturn("OPTIONS").when(request).getMethod();
+
+        ValidSessionInterceptor interceptor = new ValidSessionInterceptor();
+
+        assertTrue(interceptor.preHandle(request, response, null));
+
+    }
 
 
 }
