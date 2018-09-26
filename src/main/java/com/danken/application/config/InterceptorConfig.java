@@ -13,16 +13,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(new ValidSessionInterceptor())
-                .excludePathPatterns("/players")
-                .order(0);
+                .excludePathPatterns("/players");
 
         registry.addInterceptor(new RoomExistenceInterceptor())
                 .addPathPatterns("/host/rooms")
                 .addPathPatterns("/teams")
-                .addPathPatterns("teams/*")
-                .order(2);
+                .addPathPatterns("teams/*");
 
-        registry.addInterceptor(new HostAuthInterceptor()).addPathPatterns("/host/rooms").order(3);
+        registry.addInterceptor(new HostAuthInterceptor()).addPathPatterns("/host/rooms");
 
 
 
