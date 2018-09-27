@@ -1,6 +1,7 @@
 package com.danken.filters;
 
 import com.danken.application.LabowletState;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +16,10 @@ import java.io.IOException;
  * This filter should be configured with * for paths.
  *
  */
+@Slf4j
 public class ExpireSessionsFilter implements Filter{
 
     LabowletState state = LabowletState.getInstance();
-    private static final Logger logger = LoggerFactory.getLogger(ExpireSessionsFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) {
