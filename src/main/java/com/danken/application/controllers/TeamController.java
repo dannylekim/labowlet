@@ -1,11 +1,13 @@
 package com.danken.application.controllers;
 
 import com.danken.application.LabowletState;
+import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.Team;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
@@ -26,6 +28,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class TeamController {
 
     private LabowletState applicationState;
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Autowired
     HttpSession session;
@@ -42,6 +46,11 @@ public class TeamController {
 
         log.info("Creating a team with team name {} and the player {}", teamWithOnlyTeamName.getTeamName(), player.getName());
         currentRoom.createTeam(teamWithOnlyTeamName.getTeamName(), player);
+
+        //Sending the room in a message to allow everyone connected to the socket to be able sync
+        log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+
         return currentRoom;
     }
 
@@ -73,7 +82,9 @@ public class TeamController {
             throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team.");
         }
 
-
+        //Sending the room in a message to allow everyone connected to the socket to be able sync
+        log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
         return team;
     }
 

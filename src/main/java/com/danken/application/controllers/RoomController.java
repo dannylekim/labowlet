@@ -1,12 +1,14 @@
 package com.danken.application.controllers;
 
 import com.danken.application.LabowletState;
+import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
@@ -27,16 +29,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class RoomController {
 
     private LabowletState applicationState;
+    @Autowired
+    private SimpMessagingTemplate template;
+
 
     @Autowired
     HttpSession session;
 
-
-    public RoomController() {
-        applicationState = LabowletState.getInstance();
-    }
-
-
+    RoomController() {applicationState = LabowletState.getInstance();}
 
     @RequestMapping(method = POST, value = "/rooms")
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
@@ -60,9 +60,12 @@ public class RoomController {
             isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
         }
 
+        //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.info("Adding newly formed room with room code {} as active for the session", newRoom.getRoomCode());
         applicationState.addActiveRoom(newRoom);
         userSession.setCurrentRoom(newRoom);
+
+
         return newRoom;
     }
 
@@ -74,6 +77,11 @@ public class RoomController {
         GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
         currentRoom.updateRoom(updatedRoomSettings);
+
+        //Sending the room in a message to allow everyone connected to the socket to be able sync
+        log.debug("Sending room to all sockets connecting into /room/{}", currentRoom.getRoomCode());
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+
         return currentRoom;
     }
 
@@ -93,6 +101,12 @@ public class RoomController {
         log.info("Adding player {} to the list of bench players and setting their current room to the session,", player.getName());
         roomToJoin.addPlayerToBench(player);
         userGameSession.setCurrentRoom(roomToJoin);
+
+        //Sending the room in a message to allow everyone connected to the socket to be able sync
+        log.debug("Sending room to all sockets connecting into /room/{}", roomToJoin.getRoomCode());
+        template.convertAndSend("/room/" + roomToJoin.getRoomCode(), new OutputMessage("ROOM", roomToJoin));
+
+
         return roomToJoin;
     }
 
