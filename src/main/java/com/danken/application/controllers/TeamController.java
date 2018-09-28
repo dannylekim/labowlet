@@ -27,15 +27,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @Slf4j
 public class TeamController {
 
-    private LabowletState applicationState;
-    @Autowired
     private SimpMessagingTemplate template;
-
-    @Autowired
+    private final LabowletState applicationState = LabowletState.getInstance();
     HttpSession session;
 
-    public TeamController() {
-        applicationState = LabowletState.getInstance();
+
+    //Retrieve Application State
+    @Autowired
+    public TeamController(HttpSession session, SimpMessagingTemplate template) {
+        this.session = session;
+        this.template = template;
     }
 
     @RequestMapping(method = POST, value = "/teams")

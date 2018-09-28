@@ -28,15 +28,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @Slf4j
 public class RoomController {
 
-    private LabowletState applicationState;
-    @Autowired
     private SimpMessagingTemplate template;
-
-
-    @Autowired
+    private final LabowletState applicationState = LabowletState.getInstance();
     HttpSession session;
 
-    RoomController() {applicationState = LabowletState.getInstance();}
+
+    //Retrieve Application State
+    @Autowired
+    public RoomController(HttpSession session, SimpMessagingTemplate template) {
+        this.template = template;
+        this.session = session;
+    }
 
     @RequestMapping(method = POST, value = "/rooms")
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {

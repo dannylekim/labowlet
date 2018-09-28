@@ -23,14 +23,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @Slf4j
 public class PlayerController {
 
-    private LabowletState applicationState;
-
-    @Autowired
     HttpSession session;
-
-    //Retrieve Application State
-    public PlayerController(){
-        applicationState = LabowletState.getInstance();
+    @Autowired
+    public PlayerController(HttpSession session) {
+        this.session = session;
     }
 
     @RequestMapping(method=POST, value="/players")
