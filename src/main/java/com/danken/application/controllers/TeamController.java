@@ -25,6 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
  */
 @RestController
 @Slf4j
+@RequestMapping("/teams")
 public class TeamController {
 
     private SimpMessagingTemplate template;
@@ -39,7 +40,7 @@ public class TeamController {
         this.template = template;
     }
 
-    @RequestMapping(method = POST, value = "/teams")
+    @RequestMapping(method = POST)
     public Room createTeam(@RequestBody Team teamWithOnlyTeamName) {
         GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
@@ -55,7 +56,7 @@ public class TeamController {
         return currentRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/teams/{teamId}") //add a teamId param
+    @RequestMapping(method = PUT, value = "/{teamId}") //add a teamId param
     public Team updateTeam(@RequestBody Team teamWithOnlyTeamName, @PathVariable("teamId") String teamId) throws Exception {
 
         GameSession userGameSession = applicationState.getGameSession(session);
