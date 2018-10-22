@@ -99,4 +99,8 @@ public class RoomController {
         return roomToJoin;
     }
 
+    public Room removeTeam(){
+        return null;
+    }
+
 }

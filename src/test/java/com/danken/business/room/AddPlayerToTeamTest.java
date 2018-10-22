@@ -80,7 +80,7 @@ public class AddPlayerToTeamTest {
 
         room.addPlayerToTeam(testTeam, host);
 
-        assertTrue(room.getTeams().size() == 1);
+        assertTrue(room.getTeams().size() == 2);
 
         assertAll(() -> {
             //the player should only be found in 1 team.

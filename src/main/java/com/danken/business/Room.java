@@ -39,16 +39,19 @@ public class Room {
         benchPlayers.add(host);
         wordBowl = new ArrayList<>();
         wordsMadePerPlayer = new HashMap<>();
-        rounds = new ArrayList<>();
+        rounds = new ArrayList<>(); //should be moved into game state
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
 
         log.info("Created a new room with {} and {}", host.getName(), host.getId());
 
-        //set State//
+        //set State// //fixme move this into GameState
         isInPlay = false;
-        canStart = false;
+        canStart = false; //todo set
+
+        createEmptyTeams(roomSettings.getMaxTeams());
+
         isLocked = false;
     }
 
@@ -171,7 +174,7 @@ public class Room {
                 if (isPlayerRemoved) {
                     log.info("Player has been found inside the team. Removing the player now...");
                     if (team.getTeamMember1() == null || team.getTeamMember2() == null) {
-                        teams.remove(team);
+                        team.setTeamName("Empty Slot");
                     }
                     break;
                 }
@@ -292,6 +295,13 @@ public class Room {
     }
 
     //========== private methods ================/
+
+    private void createEmptyTeams(int numOfTeams){
+        for(int i = 1; i <= numOfTeams; i++){
+            Team newTeam = new Team("Empty Slot");
+            this.teams.add(newTeam);
+        }
+    }
 
     /***
      * Generate a room code as long as the ROOM_CODE_LENGTH

@@ -27,6 +27,13 @@ public class Team {
 
         log.info("Created " + teamName + " with id " + this.teamId);
     }
+
+    public Team(String teamName){
+        this.teamName = teamName;
+        this.teamScore = new Score();
+        this.teamId = UUID.randomUUID().toString();
+        log.info("Created " + teamName + " with id " + this.teamId);
+    }
     
 
     /***

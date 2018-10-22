@@ -73,7 +73,7 @@ public class RemovePlayerTest {
 
         assertAll(() -> {
             assertTrue(room.removePlayer(teamPlayer));
-            assertTrue(room.getTeams().size() == 0);
+            assertEquals("Empty Slot", room.getTeams().get(0).getTeamName());
         });
      
     }
