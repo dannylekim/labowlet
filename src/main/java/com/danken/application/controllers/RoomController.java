@@ -26,19 +26,22 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
  */
 @RestController
 @Slf4j
+@RequestMapping("/rooms")
 public class RoomController {
 
-    private LabowletState applicationState;
-    @Autowired
     private SimpMessagingTemplate template;
-
-
-    @Autowired
+    private final LabowletState applicationState = LabowletState.getInstance();
     HttpSession session;
 
-    RoomController() {applicationState = LabowletState.getInstance();}
 
-    @RequestMapping(method = POST, value = "/rooms")
+    //Retrieve Application State
+    @Autowired
+    public RoomController(HttpSession session, SimpMessagingTemplate template) {
+        this.template = template;
+        this.session = session;
+    }
+
+    @RequestMapping(method = POST)
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
         log.info("Verifying the round types for " + Arrays.toString(newRoomSettings.getRoundTypes().toArray()));
         newRoomSettings.verifyRoundTypes();
@@ -65,27 +68,16 @@ public class RoomController {
         applicationState.addActiveRoom(newRoom);
         userSession.setCurrentRoom(newRoom);
 
+        log.debug("Sending room to all sockets connecting into /room/{}", newRoom.getRoomCode());
+        template.convertAndSend("/room/" + newRoom.getRoomCode(), new OutputMessage("ROOM", newRoom));
+
 
         return newRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/host/rooms")
-    public Room updateRoom(@RequestBody RoomSettings updatedRoomSettings){
 
-        log.info("Verifying the round types for {}", Arrays.toString(updatedRoomSettings.getRoundTypes().toArray()));
-        updatedRoomSettings.verifyRoundTypes();
-        GameSession userGameSession = applicationState.getGameSession(session);
-        Room currentRoom = userGameSession.getCurrentRoom();
-        currentRoom.updateRoom(updatedRoomSettings);
 
-        //Sending the room in a message to allow everyone connected to the socket to be able sync
-        log.debug("Sending room to all sockets connecting into /room/{}", currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
-
-        return currentRoom;
-    }
-
-    @RequestMapping(method = PUT, value = "/rooms")
+    @RequestMapping(method = PUT)
     @ResponseBody
     public Room joinRoom(@RequestBody Room roomWithOnlyRoomCode) {
         GameSession userGameSession = applicationState.getGameSession(session);
@@ -108,6 +100,10 @@ public class RoomController {
 
 
         return roomToJoin;
+    }
+
+    public Room removeTeam(){
+        return null;
     }
 
 }

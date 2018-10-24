@@ -26,7 +26,7 @@ public class RemoveExpireSessions {
     @Test
     public void expireOne(){
         Session expiredSession = new LabowletSession();
-        expiredSession.setLastAccessedTime(Instant.now().minus(Duration.ofHours(1)));
+        expiredSession.setLastAccessedTime(Instant.now().minus(Duration.ofHours(2)));
 
         repo.save(expiredSession);
 
@@ -77,7 +77,7 @@ public class RemoveExpireSessions {
         ArrayList<Session> expiredSessions = new ArrayList<>();
         for(int i = 1; i <= 5; i++) {
             Session expiredSession = new LabowletSession();
-            expiredSession.setLastAccessedTime(Instant.now().minus(Duration.ofHours(i)));
+            expiredSession.setLastAccessedTime(Instant.now().minus(Duration.ofHours(i + 1)));
             repo.save(expiredSession);
             String sessionId = expiredSession.getId();
             assertSame(expiredSession, repo.findById(sessionId));

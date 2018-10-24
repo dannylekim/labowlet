@@ -21,19 +21,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 @RestController
 @Slf4j
+@RequestMapping("/players")
 public class PlayerController {
 
-    private LabowletState applicationState;
-
-    @Autowired
     HttpSession session;
-
-    //Retrieve Application State
-    public PlayerController(){
-        applicationState = LabowletState.getInstance();
+    @Autowired
+    public PlayerController(HttpSession session) {
+        this.session = session;
     }
 
-    @RequestMapping(method=POST, value="/players")
+    @RequestMapping(method=POST)
     public Player createPlayer(@RequestBody Player playerWithJustName){
         //A game session creates a player on instantiation.
         log.info("Creating userGame session for {} with the name {}", session.getId(), playerWithJustName.getName());

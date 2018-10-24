@@ -27,6 +27,13 @@ public class Team {
 
         log.info("Created " + teamName + " with id " + this.teamId);
     }
+
+    public Team(String teamName){
+        this.teamName = teamName;
+        this.teamScore = new Score();
+        this.teamId = UUID.randomUUID().toString();
+        log.info("Created " + teamName + " with id " + this.teamId);
+    }
     
 
     /***
@@ -86,6 +93,10 @@ public class Team {
 
             log.debug("Team member 1 has been removed.");
             isRemoved = true;
+        }
+
+        if (teamMember1 == null && teamMember2 == null) {
+            teamName = "Empty Slot";
         }
 
 
