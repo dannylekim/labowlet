@@ -173,9 +173,6 @@ public class Room {
                 isPlayerRemoved = team.removePlayerFromTeam(player);
                 if (isPlayerRemoved) {
                     log.info("Player has been found inside the team. Removing the player now...");
-                    if (team.getTeamMember1() == null || team.getTeamMember2() == null) {
-                        team.setTeamName("Empty Slot");
-                    }
                     break;
                 }
             }

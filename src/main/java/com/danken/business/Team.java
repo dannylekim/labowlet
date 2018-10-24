@@ -95,6 +95,10 @@ public class Team {
             isRemoved = true;
         }
 
+        if (teamMember1 == null && teamMember2 == null) {
+            teamName = "Empty Slot";
+        }
+
 
         log.info("Player has been removed: {}", isRemoved);
         return isRemoved;
