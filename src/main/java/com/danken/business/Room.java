@@ -271,6 +271,11 @@ public class Room {
         int lastJoinedTeamIndex;
         Team teamToBench;
         log.info("Removing the last joined members and teams if needed...");
+
+        if(maxTeams > teams.size()){
+            createEmptyTeams(maxTeams - teams.size());
+        }
+
         while (teams.size() > maxTeams) {
             log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
             lastJoinedTeamIndex = teams.size() - 1;
