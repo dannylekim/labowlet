@@ -68,6 +68,9 @@ public class RoomController {
         applicationState.addActiveRoom(newRoom);
         userSession.setCurrentRoom(newRoom);
 
+        log.debug("Sending room to all sockets connecting into /room/{}", newRoom.getRoomCode());
+        template.convertAndSend("/room/" + newRoom.getRoomCode(), new OutputMessage("ROOM", newRoom));
+
 
         return newRoom;
     }
