@@ -1,6 +1,6 @@
 package com.danken.application;
 
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.danken.sessions.GameSession;

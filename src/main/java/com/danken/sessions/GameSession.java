@@ -1,7 +1,7 @@
 package com.danken.sessions;
 
 import com.danken.business.Player;
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 
 /**
  *  Business Session. Currently being used as an attribute to the com.danken.application session. When the com.danken.application session expires

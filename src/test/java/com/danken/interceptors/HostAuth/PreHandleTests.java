@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.danken.business.Player;
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 import com.danken.interceptors.HostAuthInterceptor;
 import com.danken.sessions.GameSession;
 

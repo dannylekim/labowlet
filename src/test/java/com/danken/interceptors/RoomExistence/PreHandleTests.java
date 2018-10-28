@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.danken.application.LabowletState;
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 import com.danken.interceptors.RoomExistenceInterceptor;
 import com.danken.sessions.GameSession;
 

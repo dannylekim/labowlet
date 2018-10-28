@@ -1,7 +1,7 @@
 package com.danken.application.state;
 
 import com.danken.application.LabowletState;
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 import com.danken.business.RoomSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

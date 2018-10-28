@@ -1,7 +1,6 @@
 package com.danken.business.room;
 
 import com.danken.business.Player;
-import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

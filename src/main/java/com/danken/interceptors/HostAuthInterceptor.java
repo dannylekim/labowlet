@@ -12,7 +12,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.danken.application.LabowletState;
 import com.danken.business.Player;
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 import com.danken.sessions.GameSession;
 import com.danken.utility.JsonErrorResponseHandler;
 

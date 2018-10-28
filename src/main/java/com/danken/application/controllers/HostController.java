@@ -2,7 +2,7 @@ package com.danken.application.controllers;
 
 import com.danken.application.LabowletState;
 import com.danken.business.OutputMessage;
-import com.danken.business.Room;
+import com.danken.business.room.Room;
 import com.danken.business.RoomSettings;
 import com.danken.sessions.GameSession;
 import lombok.extern.slf4j.Slf4j;

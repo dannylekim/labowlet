@@ -1,59 +1,22 @@
-package com.danken.business;
+package com.danken.business.room;
 
-import lombok.Getter;
+import com.danken.business.Player;
+import com.danken.business.RoomSettings;
+import com.danken.business.Score;
+import com.danken.business.Team;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import java.util.*;
+import org.springframework.stereotype.Component;
 
-@Getter
-@NoArgsConstructor
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 @Slf4j
-public class Room {
-
-    // -------- DATA CONSTANTS ------------
-    private List<Team> teams;
-    private List<Player> benchPlayers;
-    private Player host;
-    @Setter private String roomCode; //given a setter to use for @RequestBody
-    private RoomSettings roomSettings;
-    private List<String> wordBowl;
-    private Map<Player, List<String>> wordsMadePerPlayer;
-    private List<Round> rounds;
-
-    //Game state -> fixme should this be refactored into its own object
-    @Setter
-    private boolean isLocked; //Locked in players and now must input words
-    private boolean canStart; //All the words have now been inputted and all the players have readied up
-    private boolean isInPlay; //Is the game in play
-
-
-    // ------- STATIC CONSTANTS --------------------- //
-    private static final Random RANDOM = new Random();
-    private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
-    private static final int ROOM_CODE_LENGTH = 4;
-
-    public Room(Player host, RoomSettings roomSettings) {
-        teams = new ArrayList<>();
-        benchPlayers = new ArrayList<>();
-        benchPlayers.add(host);
-        wordBowl = new ArrayList<>();
-        wordsMadePerPlayer = new HashMap<>();
-        rounds = new ArrayList<>(); //should be moved into game state
-        this.host = host;
-        this.roomCode = generateRoomCode();
-        this.roomSettings = roomSettings;
-
-        log.info("Created a new room with {} and {}", host.getName(), host.getId());
-
-        //set State// //fixme move this into GameState
-        isInPlay = false;
-        canStart = false; //todo set
-
-        createEmptyTeams(roomSettings.getMaxTeams());
-
-        isLocked = false;
-    }
+@Component
+@NoArgsConstructor
+public class RoomProvider implements RoomService{
 
     /* public methods */
 
@@ -65,8 +28,13 @@ public class Room {
      * @param teamName the team name
      * @param player the player who is creating the team
      */
-    public void createTeam(String teamName, Player player) {
+    @Override
+    public void createTeam(String teamName, Player player, Room room) {
         log.info("Trying to create a team with  " + teamName + " and player " + player.getName() + " and ID " + player.getId());
+
+        List<Team> teams = room.getTeams();
+        RoomSettings roomSettings = room.getRoomSettings();
+
         //Cannot have more teams than the max teams
         if (teams.size() >= roomSettings.getMaxTeams()) {
             log.warn("Trying to add a team when the room can no longer take any more. Max is:  {}", roomSettings.getMaxTeams());
@@ -74,7 +42,7 @@ public class Room {
         }
 
         //Must be in the room to create a team
-        if (!isPlayerInRoom(player)) {
+        if (!isPlayerInRoom(player, room)) {
             log.warn("This player does not belong in this room and therefore cannot create a team");
 
             throw new IllegalStateException("This player must be in the room to create a team.");
@@ -88,14 +56,24 @@ public class Room {
         }
 
         //remove the player from previous team or bench
-        removePlayer(player);
+        removePlayer(player,room);
         log.info("Team has been added");
         Team newTeam = new Team(teamName, player);
         teams.add(newTeam);
     }
 
-    public void addPlayerToBench(Player player) {
-        benchPlayers.add(player);
+    @Override
+    public void addPlayerToBench(Player player, Room room) {
+        room.getBenchPlayers().add(player);
+    }
+
+    @Override
+    public Room createRoom(Player host, RoomSettings roomSettings){
+        Room room = new Room(host, roomSettings);
+        List<Team> teams = createEmptyTeams(roomSettings.getMaxTeams());
+        room.setTeams(teams);
+
+        return room;
     }
 
     /***
@@ -107,8 +85,9 @@ public class Room {
      * @param player the player who wants to join the team
      * @return a boolean value if the player has successfully joined or not
      */
-    public void addPlayerToTeam(Team team, Player player) throws Exception {
-        boolean isPlayerInRoom = isPlayerInRoom(player);
+    @Override
+    public void addPlayerToTeam(Room room, Team team, Player player) throws Exception {
+        boolean isPlayerInRoom = isPlayerInRoom(player, room);
         log.info("Trying to add player {} with ID {} to join {} with name {}", player.getName(), player.getId(), team.getTeamId(), team.getTeamName());
 
         if (team.getTeamMember1() != null && team.getTeamMember2() != null) {
@@ -126,7 +105,7 @@ public class Room {
             throw new IllegalStateException("Cannot add a player that's not joined in this room!");
         }
 
-        boolean isPlayerRemoved = removePlayer(player);
+        boolean isPlayerRemoved = removePlayer(player, room);
         if (!isPlayerRemoved) {
             log.error("The player can not be moved to another group for an unknown reason");
             throw new Exception("Player could not be moved to another group. Reason Unknown");
@@ -146,7 +125,8 @@ public class Room {
      * @param teamId the unique ID of a team to find
      * @return returns the team found or null if the ID was invalid
      */
-    public Team getTeam(String teamId) {
+    @Override
+    public Team getTeam(String teamId, List<Team> teams) {
         Team returnTeam = teams.stream()
                 .filter(team ->
                         team.getTeamId().equals(teamId))
@@ -162,14 +142,15 @@ public class Room {
      * @param player the player to remove from the room
      * @return a boolean if the removal was successful
      */
-    public boolean removePlayer(Player player) {
+    @Override
+    public boolean removePlayer(Player player, Room room) {
         log.info("Attempting to remove player {} with ID {}", player.getName(), player.getId());
-        boolean isPlayerRemoved = benchPlayers.remove(player);
+        boolean isPlayerRemoved = room.getBenchPlayers().remove(player);
         if (!isPlayerRemoved) {
 
             log.info("Player has not been removed, looking into the teams");
             //was not in bench therefore look in groups
-            for (Team team : teams) {
+            for (Team team : room.getTeams()) {
                 isPlayerRemoved = team.removePlayerFromTeam(player);
                 if (isPlayerRemoved) {
                     log.info("Player has been found inside the team. Removing the player now...");
@@ -182,6 +163,7 @@ public class Room {
         return isPlayerRemoved;
     }
 
+    @Override
     public Score fetchScoreboard() {
         return null;
         //todo, return a scoreboard, not a score
@@ -194,21 +176,21 @@ public class Room {
      * @param inputWords This is a list of words that the user has made to be placed in the word bowl
      */
 
-    public void addWordBowl(List<String> inputWords, Player player) {
+    public void addWordBowl(List<String> inputWords, Player player, Room room) {
 
         log.info("Player {} with ID {} is trying to input these words: {}", player.getName(), player.getId(), ((inputWords != null) ? Arrays.toString(inputWords.toArray()) : "null"));
 
-        if (!isPlayerInATeam(player)) {
+        if (!isPlayerInATeam(player, room)) {
             log.warn("Player is not part a team, can not input words until then.");
             throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
         }
 
-        if (!isLocked) {
+        if (!room.isLocked()) {
             log.warn("Cannot input words until the game has started.");
             throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
         }
 
-        if (isInPlay) {
+        if (room.isInPlay()) {
             log.warn("Cannot input words, the game has started.");
             throw new IllegalStateException("The game has already started, cannot input words at this time!");
         }
@@ -217,6 +199,8 @@ public class Room {
             log.warn("Missing word entries, cannot input a null object");
             throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
         }
+
+        RoomSettings roomSettings = room.getRoomSettings();
 
         if (inputWords.size() != roomSettings.getWordsPerPerson()) {
             log.warn("Missing word entries, you need to have {} entries", roomSettings.getWordsPerPerson());
@@ -237,8 +221,9 @@ public class Room {
         });
 
         log.info("Replacing the words inputted previously with the new ones");
-        this.wordsMadePerPlayer.remove(player);
-        this.wordsMadePerPlayer.put(player, playerWordBowl);
+        Map<Player, List<String>> wordsMadePerPlayer = room.getWordsMadePerPlayer();
+        wordsMadePerPlayer.remove(player);
+        wordsMadePerPlayer.put(player, playerWordBowl);
 
     }
 
@@ -251,15 +236,15 @@ public class Room {
      *
      * @param roomSettings the new inputted room settings
      */
-    public void updateRoom(RoomSettings roomSettings) {
+    public void updateRoom(RoomSettings roomSettings, Room room) {
 
         log.info("Starting to update the room...");
-        if (this.isInPlay || this.isLocked) {
+        if (room.isInPlay() || room.isLocked()) {
             log.warn("Cannot update the room, the game has been locked or already in play!");
             throw new IllegalStateException("Can not update the room, the game has been locked or already in play!");
         }
 
-        this.roomSettings = roomSettings;
+        room.setRoomSettings(roomSettings);
 
 
         //If there are more teams than the new updated Max Teams, you must bench the newly joined ones until
@@ -269,9 +254,14 @@ public class Room {
         Team teamToBench;
         log.info("Removing the last joined members and teams if needed...");
 
+        List<Team> teams = room.getTeams();
+
         if(maxTeams > teams.size()){
-            createEmptyTeams(maxTeams - teams.size());
+            List<Team> emptyTeams = createEmptyTeams(maxTeams - teams.size());
+            teams.addAll(emptyTeams);
         }
+
+        List<Player> benchPlayers = room.getBenchPlayers();
 
         while (teams.size() > maxTeams) {
             log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
@@ -286,42 +276,20 @@ public class Room {
         }
     }
 
-    /***
-     * Regenerates a new unique room code and sets it as this room's code.
-     *
-     * @return
-     */
-    public String regenerateRoomCode() {
-        this.roomCode = generateRoomCode();
-        return roomCode;
-    }
+
 
     //========== private methods ================/
 
-    private void createEmptyTeams(int numOfTeams){
+    private List<Team> createEmptyTeams(int numOfTeams){
+        List<Team> teams = new ArrayList<>();
+
         for(int i = 1; i <= numOfTeams; i++){
             Team newTeam = new Team("Empty Slot");
-            this.teams.add(newTeam);
-        }
-    }
-
-    /***
-     * Generate a room code as long as the ROOM_CODE_LENGTH
-     *
-     * @return a unique code that is as long as the ROOM_CODE_LENGTH
-     */
-    private String generateRoomCode() {
-        StringBuilder token = new StringBuilder(ROOM_CODE_LENGTH);
-        for (int i = 0; i < ROOM_CODE_LENGTH; i++) {
-            token.append(CHARS.charAt(RANDOM.nextInt(CHARS.length())));
+            teams.add(newTeam);
         }
 
-        String generatedRoomCode = token.toString();
-        log.info("Created room code {}", generatedRoomCode);
-        return generatedRoomCode;
-
+        return teams;
     }
-
 
     /***
      * Returns true if the player is inside the room (either in the bench of the teams)
@@ -329,10 +297,10 @@ public class Room {
      * @param player the player to verify if they are in the room
      * @return a boolean value if player is in the room or not
      */
-    private boolean isPlayerInRoom(Player player) {
-        boolean isPlayerInRoom = benchPlayers.contains(player);
+    private boolean isPlayerInRoom(Player player, Room room) {
+        boolean isPlayerInRoom = room.getBenchPlayers().contains(player);
         if (!isPlayerInRoom) {
-            isPlayerInRoom = isPlayerInATeam(player);
+            isPlayerInRoom = isPlayerInATeam(player, room);
         }
 
         log.info("Player {} with ID {} is inside the room: {}", player.getName(), player.getId(), isPlayerInRoom);
@@ -346,7 +314,10 @@ public class Room {
      * @param player the player to check all teams with
      * @return a boolean value if the player is in a team or not
      */
-    private boolean isPlayerInATeam(Player player) {
+    private boolean isPlayerInATeam(Player player, Room room) {
+
+        List<Team> teams = room.getTeams();
+
         boolean isPlayerInATeam = teams
                 .stream()
                 .anyMatch(team ->
