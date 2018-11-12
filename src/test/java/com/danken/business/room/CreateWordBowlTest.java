@@ -3,7 +3,9 @@ package com.danken.business.room;
 import com.danken.business.Player;
 import com.danken.business.RoomSettings;
 import com.danken.business.Team;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +17,13 @@ import static org.mockito.Mockito.mock;
 
 public class CreateWordBowlTest {
 
+    RoomProvider provider;
+
+    @BeforeEach
+    void setup() {
+        provider = new RoomProvider();
+    }
+
     /***
      * Throws if the player is not inside a team and tries to add words to the list
      */
@@ -22,7 +31,7 @@ public class CreateWordBowlTest {
     public void throwIfPlayerNotInTeam() {
         Player host = new Player("test");
         Room room = new Room(host, mock(RoomSettings.class));
-        assertThrows(IllegalStateException.class, () -> room.addWordBowl(null, mock(Player.class)));
+        assertThrows(IllegalStateException.class, () -> provider.addWordBowl(null, mock(Player.class), room));
 
     }
 
@@ -37,7 +46,7 @@ public class CreateWordBowlTest {
         Player somePlayer = mock(Player.class);
         Team team = new Team("test", somePlayer);
         room.getTeams().add(team);
-        assertThrows(IllegalStateException.class, () -> room.addWordBowl(null, somePlayer));
+        assertThrows(IllegalStateException.class, () -> provider.addWordBowl(null, somePlayer, room));
     }
 
 
@@ -47,7 +56,7 @@ public class CreateWordBowlTest {
      *
      */
     @Test
-    public void throwIfWordSizeIsNotLikeSetting(){
+    public void throwIfWordSizeIsNotLikeSetting() {
         Player host = mock(Player.class);
         RoomSettings roomSettings = new RoomSettings();
         roomSettings.setWordsPerPerson(2);
@@ -57,7 +66,7 @@ public class CreateWordBowlTest {
         room.getTeams().add(team);
         room.setLocked(true);
         List<String> wordTests = Arrays.asList("One", "Two", "Three");
-        assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(wordTests, somePlayer));
+        assertThrows(IllegalArgumentException.class, () -> provider.addWordBowl(wordTests, somePlayer, room));
     }
 
 
@@ -66,7 +75,7 @@ public class CreateWordBowlTest {
      *
      */
     @Test
-    public void wordsMustBeReplaced(){
+    public void wordsMustBeReplaced() {
         Player host = mock(Player.class);
         RoomSettings roomSettings = new RoomSettings();
         roomSettings.setWordsPerPerson(3);
@@ -78,11 +87,11 @@ public class CreateWordBowlTest {
 
 
         List<String> wordTests = Arrays.asList("One", "Two", "Three");
-        room.addWordBowl(wordTests, somePlayer);
+        provider.addWordBowl(wordTests, somePlayer, room);
         assertEquals(wordTests, room.getWordsMadePerPlayer().get(somePlayer));
 
         wordTests = Arrays.asList("Four", "Five", "Six");
-        room.addWordBowl(wordTests, somePlayer);
+        provider.addWordBowl(wordTests, somePlayer, room);
         assertEquals(wordTests, room.getWordsMadePerPlayer().get(somePlayer));
     }
 
@@ -91,7 +100,7 @@ public class CreateWordBowlTest {
      *
      */
     @Test
-    public void noSameWordsTest(){
+    public void noSameWordsTest() {
         Player host = mock(Player.class);
         RoomSettings roomSettings = new RoomSettings();
         roomSettings.setWordsPerPerson(3);
@@ -103,10 +112,8 @@ public class CreateWordBowlTest {
 
 
         List<String> wordTests = Arrays.asList("One", "One", "One");
-        assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(wordTests, somePlayer));
+        assertThrows(IllegalArgumentException.class, () -> provider.addWordBowl(wordTests, somePlayer, room));
     }
-
-
 
 
 }

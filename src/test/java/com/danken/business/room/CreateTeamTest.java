@@ -20,7 +20,7 @@ public class CreateTeamTest {
     RoomSettings roomSettings;
     Player host;
     Room room;
-
+    RoomProvider provider;
 
 
     @BeforeEach
@@ -28,6 +28,7 @@ public class CreateTeamTest {
        roomSettings = mock(RoomSettings.class);
        host = mock(Player.class);
        room = spy(new Room(host, roomSettings));
+       provider = new RoomProvider();
 
     }
 
@@ -38,7 +39,7 @@ public class CreateTeamTest {
     @Test
     public void maxTeamsTest(){
         doReturn(0).when(roomSettings).getMaxTeams();
-        assertThrows(IllegalStateException.class, () -> room.createTeam("test", host));
+        assertThrows(IllegalStateException.class, () -> provider.createTeam("test", host, room));
     }
 
     /***
@@ -49,8 +50,8 @@ public class CreateTeamTest {
     @Test
     public void noDuplicatePlayerTest(){
         doReturn(5).when(roomSettings).getMaxTeams();
-        room.createTeam("One", host);
-        room.createTeam("Two", host);
+        provider.createTeam("One", host, room);
+        provider.createTeam("Two", host, room);
 
         List<Team> teamsWithMock = room
                 .getTeams()
@@ -68,7 +69,7 @@ public class CreateTeamTest {
     @Test
     public void playerLeavesBenchIfHeCreatesATeam(){
         doReturn(5).when(roomSettings).getMaxTeams();
-        room.createTeam("One", host);
+        provider.createTeam("One", host, room);
         assertTrue(room.getBenchPlayers().size() == 0);
     }
 
@@ -79,8 +80,8 @@ public class CreateTeamTest {
     @Test
     public void noSameTeamNameTest(){
         doReturn(2).when(roomSettings).getMaxTeams();
-        room.createTeam("One", host);
-        assertThrows(IllegalArgumentException.class, () -> room.createTeam("One", host));
+        provider.createTeam("One", host, room);
+        assertThrows(IllegalArgumentException.class, () -> provider.createTeam("One", host, room));
     }
 
     /***
@@ -91,7 +92,7 @@ public class CreateTeamTest {
     public void playerMustBeInRoomTest(){
         doReturn(2).when(roomSettings).getMaxTeams();
         Player player = new Player("test");
-        assertThrows(IllegalStateException.class, () -> room.createTeam("One", player));
+        assertThrows(IllegalStateException.class, () -> provider.createTeam("One", player, room));
     }
 
 }

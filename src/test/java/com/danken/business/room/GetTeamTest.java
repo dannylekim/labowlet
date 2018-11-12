@@ -24,9 +24,12 @@ public class GetTeamTest {
     @InjectMocks
     Room room;
 
+    RoomProvider provider;
+
     @BeforeEach
     public void setUp(){
         MockitoAnnotations.initMocks(this);
+        provider = new RoomProvider();
     }
 
     /***
@@ -44,7 +47,7 @@ public class GetTeamTest {
 
         room.getTeams().add(teamToBeFound);
 
-        assertSame(room.getTeam(teamToBeFound.getTeamId()), teamToBeFound);
+        assertSame(provider.getTeam(teamToBeFound.getTeamId(), room.getTeams()) , teamToBeFound);
 
     }
 
@@ -55,7 +58,7 @@ public class GetTeamTest {
     @Test
     public void returnNullIfNone(){
         Team teamToNotBeFound = new Team("returnNull", host);
-        assertNull(room.getTeam(teamToNotBeFound.getTeamId()));
+        assertNull(provider.getTeam(teamToNotBeFound.getTeamId(), room.getTeams()));
 
     }
 }

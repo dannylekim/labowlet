@@ -23,18 +23,19 @@ public class AddWordBowlTest {
 
     @Mock
     RoomSettings roomSettings;
-
+    RoomProvider provider;
     Room room;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         room = spy(new Room(host, roomSettings));
+        provider = new RoomProvider();
     }
 
     @Test
     public void playerNotInTeam() {
-        assertThrows(IllegalStateException.class, () -> room.addWordBowl(new ArrayList<>(), new Player("test")));
+        assertThrows(IllegalStateException.class, () -> provider.addWordBowl(new ArrayList<>(), new Player("test"), room));
     }
 
     @Test
@@ -44,7 +45,7 @@ public class AddWordBowlTest {
         List<Team> teams = room.getTeams();
         Team testTeam = new Team("test", testPlayer);
         teams.add(testTeam);
-        assertThrows(IllegalStateException.class, () -> room.addWordBowl(new ArrayList<>(), testPlayer));
+        assertThrows(IllegalStateException.class, () -> provider.addWordBowl(new ArrayList<>(), testPlayer, room));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class AddWordBowlTest {
         Team testTeam = new Team("test", testPlayer);
         teams.add(testTeam);
 
-        assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(null, testPlayer));
+        assertThrows(IllegalArgumentException.class, () -> provider.addWordBowl(null, testPlayer, room));
     }
 
     @Test
@@ -71,7 +72,7 @@ public class AddWordBowlTest {
         for (int i = 0; i < 10; i++) {
             words.add(i + "");
         }
-        assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(words, testPlayer));
+        assertThrows(IllegalArgumentException.class, () -> provider.addWordBowl(words, testPlayer, room));
 
     }
 
@@ -87,7 +88,7 @@ public class AddWordBowlTest {
         for (int i = 0; i < 5; i++) {
             words.add("test");
         }
-        assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(words, testPlayer));
+        assertThrows(IllegalArgumentException.class, () -> provider.addWordBowl(words, testPlayer, room));
 
     }
 
@@ -103,7 +104,7 @@ public class AddWordBowlTest {
         List<Team> teams = room.getTeams();
         Team testTeam = new Team("test", testPlayer);
         teams.add(testTeam);
-        room.addWordBowl(words, testPlayer);
+        provider.addWordBowl(words, testPlayer, room);
         List<String> wordsSetIn = room.getWordsMadePerPlayer().get(testPlayer);
         wordsSetIn.forEach(word ->
                 assertTrue(words.contains(word))
@@ -122,7 +123,7 @@ public class AddWordBowlTest {
         List<Team> teams = room.getTeams();
         Team testTeam = new Team("test", testPlayer);
         teams.add(testTeam);
-        room.addWordBowl(words, testPlayer);
+        provider.addWordBowl(words, testPlayer, room);
 
 
         List<String> newWords = new ArrayList<>();
@@ -130,7 +131,7 @@ public class AddWordBowlTest {
             newWords.add(i + "");
         }
 
-        room.addWordBowl(newWords, testPlayer);
+        provider.addWordBowl(newWords, testPlayer, room);
         List<String> wordsSetIn = room.getWordsMadePerPlayer().get(testPlayer);
         wordsSetIn.forEach(word ->
                 assertTrue(newWords.contains(word))

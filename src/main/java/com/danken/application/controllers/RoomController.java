@@ -6,6 +6,7 @@ import com.danken.business.Player;
 import com.danken.business.room.Room;
 import com.danken.business.RoomSettings;
 
+import com.danken.business.room.RoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,13 +33,14 @@ public class RoomController {
     private SimpMessagingTemplate template;
     private final LabowletState applicationState = LabowletState.getInstance();
     HttpSession session;
-
+    RoomService roomService;
 
     //Retrieve Application State
     @Autowired
-    public RoomController(HttpSession session, SimpMessagingTemplate template) {
+    public RoomController(HttpSession session, RoomService roomService, SimpMessagingTemplate template) {
         this.template = template;
         this.session = session;
+        this.roomService = roomService;
     }
 
     @RequestMapping(method = POST)
@@ -91,7 +93,7 @@ public class RoomController {
         }
 
         log.info("Adding player {} to the list of bench players and setting their current room to the session,", player.getName());
-        roomToJoin.addPlayerToBench(player);
+        roomService.addPlayerToBench(player, roomToJoin);
         userGameSession.setCurrentRoom(roomToJoin);
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync

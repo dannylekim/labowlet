@@ -42,7 +42,7 @@ public class RoomProvider implements RoomService{
         }
 
         //Must be in the room to create a team
-        if (!isPlayerInRoom(player, room)) {
+        if (!room.isPlayerInRoom(player)) {
             log.warn("This player does not belong in this room and therefore cannot create a team");
 
             throw new IllegalStateException("This player must be in the room to create a team.");
@@ -87,7 +87,6 @@ public class RoomProvider implements RoomService{
      */
     @Override
     public void addPlayerToTeam(Room room, Team team, Player player) throws Exception {
-        boolean isPlayerInRoom = isPlayerInRoom(player, room);
         log.info("Trying to add player {} with ID {} to join {} with name {}", player.getName(), player.getId(), team.getTeamId(), team.getTeamName());
 
         if (team.getTeamMember1() != null && team.getTeamMember2() != null) {
@@ -100,19 +99,17 @@ public class RoomProvider implements RoomService{
             throw new IllegalArgumentException("This player is already a part of this team!");
         }
 
-        if (!isPlayerInRoom) {
+        if (!room.isPlayerInRoom(player)) {
             log.warn("The player is not even in this room");
             throw new IllegalStateException("Cannot add a player that's not joined in this room!");
         }
 
-        boolean isPlayerRemoved = removePlayer(player, room);
-        if (!isPlayerRemoved) {
+        if (!removePlayer(player, room)) {
             log.error("The player can not be moved to another group for an unknown reason");
             throw new Exception("Player could not be moved to another group. Reason Unknown");
         }
 
-        boolean hasPlayerBeenAdded = team.addPlayerInTeam(player);
-        if (!hasPlayerBeenAdded) {
+        if (!team.addPlayerInTeam(player)) {
             log.error("The player can not be moved be added into the team for some reason");
             throw new Exception("Player could not be added into the team. Reason Unknown.");
         }
@@ -180,7 +177,7 @@ public class RoomProvider implements RoomService{
 
         log.info("Player {} with ID {} is trying to input these words: {}", player.getName(), player.getId(), ((inputWords != null) ? Arrays.toString(inputWords.toArray()) : "null"));
 
-        if (!isPlayerInATeam(player, room)) {
+        if (!room.isPlayerInATeam(player)) {
             log.warn("Player is not part a team, can not input words until then.");
             throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
         }
@@ -291,41 +288,9 @@ public class RoomProvider implements RoomService{
         return teams;
     }
 
-    /***
-     * Returns true if the player is inside the room (either in the bench of the teams)
-     *
-     * @param player the player to verify if they are in the room
-     * @return a boolean value if player is in the room or not
-     */
-    private boolean isPlayerInRoom(Player player, Room room) {
-        boolean isPlayerInRoom = room.getBenchPlayers().contains(player);
-        if (!isPlayerInRoom) {
-            isPlayerInRoom = isPlayerInATeam(player, room);
-        }
 
-        log.info("Player {} with ID {} is inside the room: {}", player.getName(), player.getId(), isPlayerInRoom);
-        return isPlayerInRoom;
-    }
 
-    /***
-     *
-     * Returns true if the player is inside a team.
-     *
-     * @param player the player to check all teams with
-     * @return a boolean value if the player is in a team or not
-     */
-    private boolean isPlayerInATeam(Player player, Room room) {
 
-        List<Team> teams = room.getTeams();
-
-        boolean isPlayerInATeam = teams
-                .stream()
-                .anyMatch(team ->
-                        (team.isPlayerInTeam(player)));
-
-        log.info("Player is in a team: {}", isPlayerInATeam);
-        return isPlayerInATeam;
-    }
 
 
 }

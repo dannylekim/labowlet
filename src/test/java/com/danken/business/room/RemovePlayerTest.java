@@ -14,12 +14,14 @@ public class RemovePlayerTest {
 
     Room room;
     Player host;
+    RoomProvider provider;
 
     @BeforeEach
     public void setUp(){
         host  = mock(Player.class);
         RoomSettings roomSettings = mock(RoomSettings.class);
         room = spy(new Room(host, roomSettings));
+        provider = new RoomProvider();
     }
 
 
@@ -34,7 +36,7 @@ public class RemovePlayerTest {
         room.getBenchPlayers().add(benchPlayer);
 
         assertAll(() -> {
-            assertTrue(room.removePlayer(benchPlayer));
+            assertTrue(provider.removePlayer(benchPlayer, room));
             assertEquals(room.getBenchPlayers().size(), 1);
             assertSame(room.getBenchPlayers().get(0), host);
         });
@@ -54,10 +56,10 @@ public class RemovePlayerTest {
 
         Player mockPlayer = mock(Player.class);
         room.getBenchPlayers().add(mockPlayer);
-        room.addPlayerToTeam(testTeam, mockPlayer);
+        provider.addPlayerToTeam(room, testTeam, mockPlayer);
 
         assertAll(() -> {
-            assertTrue(room.removePlayer(teamPlayer));
+            assertTrue(provider.removePlayer(teamPlayer, room));
             assertNotEquals(testTeam.getTeamMember1(), teamPlayer);
             assertNotEquals(testTeam.getTeamMember2(), teamPlayer);
         });
@@ -71,7 +73,7 @@ public class RemovePlayerTest {
         room.getTeams().add(testTeam);
 
         assertAll(() -> {
-            assertTrue(room.removePlayer(teamPlayer));
+            assertTrue(provider.removePlayer(teamPlayer, room));
             assertEquals("Empty Slot", room.getTeams().get(0).getTeamName());
         });
      
@@ -86,7 +88,7 @@ public class RemovePlayerTest {
         Player playerNotInRoom = new Player("notInRoom");
 
         assertAll(() -> {
-            assertFalse(room.removePlayer(playerNotInRoom));
+            assertFalse(provider.removePlayer(playerNotInRoom, room));
             assertEquals(room.getTeams().size(), 0);
             assertEquals(room.getBenchPlayers().size(), 1);
         });

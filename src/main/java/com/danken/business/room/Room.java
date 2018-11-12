@@ -81,5 +81,38 @@ public class Room {
         return roomCode;
     }
 
+    /***
+     * Returns true if the player is inside the room (either in the bench of the teams)
+     *
+     * @param player the player to verify if they are in the room
+     * @return a boolean value if player is in the room or not
+     */
+    public boolean isPlayerInRoom(Player player) {
+        boolean isPlayerInRoom = benchPlayers.contains(player);
+        if (!isPlayerInRoom) {
+            isPlayerInRoom = isPlayerInATeam(player);
+        }
+
+        log.info("Player {} with ID {} is inside the room: {}", player.getName(), player.getId(), isPlayerInRoom);
+        return isPlayerInRoom;
+    }
+
+    /***
+     *
+     * Returns true if the player is inside a team.
+     *
+     * @param player the player to check all teams with
+     * @return a boolean value if the player is in a team or not
+     */
+    public boolean isPlayerInATeam(Player player) {
+        boolean isPlayerInATeam = teams
+                .stream()
+                .anyMatch(team ->
+                        (team.isPlayerInTeam(player)));
+
+        log.info("Player is in a team: {}", isPlayerInATeam);
+        return isPlayerInATeam;
+    }
+
 
 }
