@@ -15,7 +15,7 @@ public class removePlayerFromTeamTest {
      */
     @Test
     public void removePlayerInTeamMember1(){
-        Player player = new Player("test");
+        Player player = new Player();
 
         Team team = new Team("test", player);
         assertAll(() -> {
@@ -32,7 +32,7 @@ public class removePlayerFromTeamTest {
      */
     @Test
     public void playerInTeamMember2(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
 
         team.setTeamMember1(null);
@@ -51,10 +51,10 @@ public class removePlayerFromTeamTest {
      */
     @Test
     public void playerNotInTeam(){
-        Player player = new Player("inTeam");
+        Player player = new Player();
         Team team = new Team("test", player);
 
-        Player playerNotInTeam = new Player("notInTeam");
+        Player playerNotInTeam = new Player();
 
         assertFalse(team.removePlayerFromTeam(playerNotInTeam));
     }

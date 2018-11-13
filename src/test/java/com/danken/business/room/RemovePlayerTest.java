@@ -31,7 +31,7 @@ public class RemovePlayerTest {
      */
     @Test
     public void removePlayerFromBench(){
-        Player benchPlayer = new Player("Bench");
+        Player benchPlayer = new Player();
         room.getBenchPlayers().add(benchPlayer);
 
         assertAll(() -> {
@@ -49,7 +49,7 @@ public class RemovePlayerTest {
      */
     @Test
     public void removePlayerFromTeam() throws Exception{
-        Player teamPlayer = new Player("business/team");
+        Player teamPlayer = new Player();
         Team testTeam = new Team("test", teamPlayer);
         room.getTeams().add(testTeam);
 
@@ -67,7 +67,7 @@ public class RemovePlayerTest {
 
     @Test 
     public void removeTeamIfLastPlayer(){
-        Player teamPlayer = new Player("business/team");
+        Player teamPlayer = new Player();
         Team testTeam = new Team("test", teamPlayer);
         room.getTeams().add(testTeam);
 
@@ -84,7 +84,7 @@ public class RemovePlayerTest {
      */
     @Test
     public void playerNotInRoom(){
-        Player playerNotInRoom = new Player("notInRoom");
+        Player playerNotInRoom = new Player();
 
         assertAll(() -> {
             assertFalse(room.removePlayer(playerNotInRoom));

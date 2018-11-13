@@ -21,7 +21,7 @@ public class CreateWordBowlTest {
      */
     @Test
     public void throwIfPlayerNotInTeam() {
-        Player host = new Player("test");
+        Player host = new Player();
         Room room = new Room(host, mock(RoomSettings.class));
         assertThrows(IllegalStateException.class, () -> room.addWordBowl(null, mock(Player.class)));
 

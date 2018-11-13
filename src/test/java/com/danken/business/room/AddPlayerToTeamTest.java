@@ -108,8 +108,8 @@ public class AddPlayerToTeamTest {
      */
     @Test
     public void throwErrorIfPlayerNotInRoom() throws Exception{
-        Player playerNotInRoom = new Player("notInRoom");
-        Team testTeam = new Team("test", new Player("playerInTeam"));
+        Player playerNotInRoom = new Player();
+        Team testTeam = new Team("test", new Player());
         room.getTeams().add(testTeam);
         assertThrows(IllegalStateException.class, () -> room.addPlayerToTeam(testTeam, playerNotInRoom));
     }
@@ -124,8 +124,8 @@ public class AddPlayerToTeamTest {
      */
     @Test
     public void throwErrorIfNoOpenSlot() throws Exception{
-        Team fullTeam = new Team("fullTeam",  new Player("one"));
-        fullTeam.addPlayerInTeam(new Player("anotherOne"));
+        Team fullTeam = new Team("fullTeam",  new Player());
+        fullTeam.addPlayerInTeam(new Player());
         room.getTeams().add(fullTeam);
         assertThrows(IllegalStateException.class, () -> room.addPlayerToTeam(fullTeam, host));
 
@@ -142,7 +142,7 @@ public class AddPlayerToTeamTest {
      */
     @Test
     public void throwErrorIfPlayerAlreadyInTeam() throws Exception{
-        Player somePlayerAlreadyInTeam = new Player("in");
+        Player somePlayerAlreadyInTeam = new Player();
         Team testTeam = new Team("test", somePlayerAlreadyInTeam);
         room.getTeams().add(testTeam);
 
@@ -160,7 +160,7 @@ public class AddPlayerToTeamTest {
     @Test
     public void throwErrorIfPlayerNotRemoved() throws Exception{
         doReturn(false).when(room).removePlayer(any()); //player could not be removed for some reason
-        Player somePlayerAlreadyInTeam = new Player("in");
+        Player somePlayerAlreadyInTeam = new Player();
         Team testTeam = new Team("test", somePlayerAlreadyInTeam);
         room.getTeams().add(testTeam);
 
@@ -177,7 +177,7 @@ public class AddPlayerToTeamTest {
     public void throwErrorIfPlayerCouldNotBeAdded() throws Exception{
         doReturn(true).when(room).removePlayer(any()); //able to remove the player
 
-        Player somePlayerAlreadyInTeam = new Player("in");
+        Player somePlayerAlreadyInTeam = new Player();
         Team testTeam = spy(new Team("test", somePlayerAlreadyInTeam));
         doReturn(false).when(testTeam).addPlayerInTeam(any()); //but somehow could not be added to a team
         room.getTeams().add(testTeam);

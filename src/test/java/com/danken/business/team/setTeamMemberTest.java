@@ -16,7 +16,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setSameTeamMemberFrom1In2(){
-        Player player = new Player("test");
+        Player player = new Player();
 
         Team team = new Team("test", player);
         team.setTeamMember2(player);
@@ -29,7 +29,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setTeamMember1ToNull(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
         team.setTeamMember1(null);
         assertNull(team.getTeamMember1());
@@ -41,7 +41,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setTeamMember1ToNullWhenAlreadyNull(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
         team.setTeamMember1(null);
         team.setTeamMember1(null);
@@ -54,7 +54,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setTeamMember2ToNullWhenAlreadyNull(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
         team.setTeamMember2(null);
         assertNull(team.getTeamMember2());
@@ -66,7 +66,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setTeamMember2ToNull(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
         team.setTeamMember1(null);
         team.setTeamMember2(player);
@@ -80,7 +80,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setSameTeamMemberFrom2In1(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
         team.setTeamMember1(null);
         team.setTeamMember2(player);
@@ -94,7 +94,7 @@ public class setTeamMemberTest {
      */
     @Test
     public void setPlayerInAnyWhenBothNull(){
-        Player player = new Player("test");
+        Player player = new Player();
         Team team = new Team("test", player);
         team.setTeamMember1(null);
         team.setTeamMember1(player);

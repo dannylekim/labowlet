@@ -23,7 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/players")
 public class PlayerController {
 
-    HttpSession session;
+    private HttpSession session;
 
     @Inject
     public PlayerController(HttpSession session) {
@@ -31,10 +31,11 @@ public class PlayerController {
     }
 
     @RequestMapping(method=POST)
-    public Player createPlayer(@RequestBody Player playerWithJustName){
+    public Player createPlayer(@RequestBody Player player){
         //A game session creates a player on instantiation.
-        log.info("Creating userGame session for {} with the name {}", session.getId(), playerWithJustName.getName());
-        GameSession userGameSession = new GameSession(playerWithJustName.getName());
+        log.info("Creating userGame session for {} with the name {} and id {}", session.getId(), player.getName(), player.getId());
+        var userGameSession = new GameSession();
+        userGameSession.setPlayer(player);
         //todo check if there's already a session, if there is simply change the name so as to not recreate the ID
         session.setAttribute("gameSession", userGameSession);
         return userGameSession.getPlayer();

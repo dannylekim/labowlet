@@ -91,7 +91,7 @@ public class CreateTeamTest {
     @Test
     public void playerMustBeInRoomTest(){
         doReturn(2).when(roomSettings).getMaxTeams();
-        Player player = new Player("test");
+        Player player = new Player();
         assertThrows(IllegalStateException.class, () -> room.createTeam("One", player));
     }
 
