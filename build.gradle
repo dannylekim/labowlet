@@ -33,6 +33,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-websocket')
 	compile ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.6")
 	runtime('org.springframework.boot:spring-boot-devtools')
+	compile group: 'javax.inject', name: 'javax.inject', version: '1'
 	compile('org.springframework.session:spring-session-core')
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 	testCompile('org.springframework.boot:spring-boot-starter-test')

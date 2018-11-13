@@ -6,11 +6,11 @@ import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.Team;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -34,7 +34,7 @@ public class TeamController {
 
 
     //Retrieve Application State
-    @Autowired
+    @Inject
     public TeamController(HttpSession session, SimpMessagingTemplate template) {
         this.session = session;
         this.template = template;

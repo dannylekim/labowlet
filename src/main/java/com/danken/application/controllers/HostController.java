@@ -6,12 +6,12 @@ import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 import com.danken.sessions.GameSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 
@@ -24,10 +24,10 @@ public class HostController {
 
     private SimpMessagingTemplate template;
     private final LabowletState applicationState = LabowletState.getInstance();
-    HttpSession session;
+    private HttpSession session;
 
     //Retrieve Application State
-    @Autowired
+    @Inject
     public HostController(HttpSession session, SimpMessagingTemplate template) {
         this.template = template;
         this.session = session;

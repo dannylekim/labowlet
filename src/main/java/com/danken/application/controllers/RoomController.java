@@ -7,11 +7,11 @@ import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class RoomController {
 
 
     //Retrieve Application State
-    @Autowired
+    @Inject
     public RoomController(HttpSession session, SimpMessagingTemplate template) {
         this.template = template;
         this.session = session;
