@@ -43,7 +43,8 @@ public class AddWordBowlTest {
         room.setLocked(false);
         Player testPlayer = new Player();
         List<Team> teams = room.getTeams();
-        Team testTeam = new Team("test", testPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(testPlayer);
         teams.add(testTeam);
         assertThrows(IllegalStateException.class, () -> room.addWordBowl(new ArrayList<>(), testPlayer));
     }
@@ -53,7 +54,8 @@ public class AddWordBowlTest {
         room.setLocked(true);
         Player testPlayer = new Player();
         List<Team> teams = room.getTeams();
-        Team testTeam = new Team("test", testPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(testPlayer);
         teams.add(testTeam);
 
         assertThrows(IllegalArgumentException.class, () -> room.addWordBowl(null, testPlayer));
@@ -65,7 +67,8 @@ public class AddWordBowlTest {
 
         Player testPlayer = new Player();
         List<Team> teams = room.getTeams();
-        Team testTeam = new Team("test", testPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(testPlayer);
         teams.add(testTeam);
 
         List<String> words = new ArrayList<>();
@@ -82,7 +85,8 @@ public class AddWordBowlTest {
 
         Player testPlayer = new Player();
         List<Team> teams = room.getTeams();
-        Team testTeam = new Team("test", testPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(testPlayer);
         teams.add(testTeam);
         List<String> words = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -102,7 +106,8 @@ public class AddWordBowlTest {
         }
         Player testPlayer = new Player();
         List<Team> teams = room.getTeams();
-        Team testTeam = new Team("test", testPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(testPlayer);
         teams.add(testTeam);
         room.addWordBowl(words, testPlayer);
         List<String> wordsSetIn = room.getWordsMadePerPlayer().get(testPlayer);
@@ -121,7 +126,8 @@ public class AddWordBowlTest {
         }
         Player testPlayer = new Player();
         List<Team> teams = room.getTeams();
-        Team testTeam = new Team("test", testPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(testPlayer);
         teams.add(testTeam);
         room.addWordBowl(words, testPlayer);
 

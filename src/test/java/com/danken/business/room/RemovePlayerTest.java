@@ -50,7 +50,8 @@ public class RemovePlayerTest {
     @Test
     public void removePlayerFromTeam() throws Exception{
         Player teamPlayer = new Player();
-        Team testTeam = new Team("test", teamPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(teamPlayer);
         room.getTeams().add(testTeam);
 
         Player mockPlayer = mock(Player.class);
@@ -59,8 +60,7 @@ public class RemovePlayerTest {
 
         assertAll(() -> {
             assertTrue(room.removePlayer(teamPlayer));
-            assertNotEquals(testTeam.getTeamMember1(), teamPlayer);
-            assertNotEquals(testTeam.getTeamMember2(), teamPlayer);
+            assertFalse(testTeam.isPlayerInTeam(teamPlayer));
         });
     
     }
@@ -68,7 +68,8 @@ public class RemovePlayerTest {
     @Test 
     public void removeTeamIfLastPlayer(){
         Player teamPlayer = new Player();
-        Team testTeam = new Team("test", teamPlayer);
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(teamPlayer);
         room.getTeams().add(testTeam);
 
         assertAll(() -> {

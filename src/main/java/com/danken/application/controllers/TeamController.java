@@ -81,7 +81,7 @@ public class TeamController {
                 currentRoom.addPlayerToTeam(team, player);
             } else {
                 //this is an error that should not occur, and if it does then you have to fail gracefully
-                log.error("Unknown Error. Team name parameter is {}, and the team's current players are {} and {}", teamWithOnlyTeamName.getTeamName(), team.getTeamMember1(), team.getTeamMember2());
+                log.error("Unknown Error. Team name parameter is {}, and the team's current players are: {}" , teamWithOnlyTeamName.getTeamName(), team.getTeamMembers());
                 throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team.");
             }
 

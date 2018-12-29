@@ -56,7 +56,7 @@ public class CreateTeamTest {
         List<Team> teamsWithMock = room
                 .getTeams()
                 .stream()
-                .filter(team -> team.getTeamMember1() == host || team.getTeamMember2() == host)
+                .filter(team -> team.getTeamMembers().contains(host))
                 .collect(Collectors.toList());
 
         assertTrue(teamsWithMock.size() == 1);

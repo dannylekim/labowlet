@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 
 @Getter
@@ -15,7 +16,8 @@ public class Room {
     private List<Team> teams;
     private List<Player> benchPlayers;
     private Player host;
-    @Setter private String roomCode; //given a setter to use for @RequestBody
+    @Setter
+    private String roomCode; //given a setter to use for @RequestBody
     private RoomSettings roomSettings;
     private List<String> wordBowl;
     private Map<Player, List<String>> wordsMadePerPlayer;
@@ -90,7 +92,8 @@ public class Room {
         //remove the player from previous team or bench
         removePlayer(player);
         log.info("Team has been added");
-        Team newTeam = new Team(teamName, player);
+        Team newTeam = new Team(teamName);
+        newTeam.addPlayerInTeam(player);
         teams.add(newTeam);
     }
 
@@ -111,7 +114,7 @@ public class Room {
         boolean isPlayerInRoom = isPlayerInRoom(player);
         log.info("Trying to add player {} with ID {} to join {} with name {}", player.getName(), player.getId(), team.getTeamId(), team.getTeamName());
 
-        if (team.getTeamMember1() != null && team.getTeamMember2() != null) {
+        if (team.getTeamMembers().size() >= 2) {
             log.warn("The team is full");
             throw new IllegalStateException("This team is already full!");
         }
@@ -269,7 +272,7 @@ public class Room {
         Team teamToBench;
         log.info("Removing the last joined members and teams if needed...");
 
-        if(maxTeams > teams.size()){
+        if (maxTeams > teams.size()) {
             createEmptyTeams(maxTeams - teams.size());
         }
 
@@ -277,10 +280,10 @@ public class Room {
             log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
             lastJoinedTeamIndex = teams.size() - 1;
             teamToBench = teams.get(lastJoinedTeamIndex);
-            benchPlayers.add(teamToBench.getTeamMember1());
-            benchPlayers.add(teamToBench.getTeamMember2());
+            List<Player> players = teamToBench.getTeamMembers();
+            benchPlayers.addAll(players);
 
-            log.debug("Benched {} and {}", teamToBench.getTeamMember1(), teamToBench.getTeamMember2());
+            log.debug("Benched {}", players);
             log.debug("Removing team {} with ID {}", teamToBench.getTeamName(), teamToBench.getTeamId());
             teams.remove(teamToBench);
         }
@@ -291,15 +294,14 @@ public class Room {
      *
      * @return
      */
-    public String regenerateRoomCode() {
+    public void regenerateRoomCode() {
         this.roomCode = generateRoomCode();
-        return roomCode;
     }
 
     //========== private methods ================/
 
-    private void createEmptyTeams(int numOfTeams){
-        for(int i = 1; i <= numOfTeams; i++){
+    private void createEmptyTeams(int numOfTeams) {
+        for (int i = 1; i <= numOfTeams; i++) {
             Team newTeam = new Team("Empty Slot");
             this.teams.add(newTeam);
         }
@@ -355,6 +357,8 @@ public class Room {
         log.info("Player is in a team: {}", isPlayerInATeam);
         return isPlayerInATeam;
     }
+
+
 
 
 }
