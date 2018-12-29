@@ -57,6 +57,22 @@ public class Room {
         isLocked = false;
     }
 
+    public boolean isCanStart() {
+        int teamsFilled = 0;
+        for (Team team : teams) {
+            List<Player> teamMembers = team.getTeamMembers();
+            if (teamMembers.size() == Team.MAX_TEAM_MEMBERS) {
+                teamsFilled++;
+                //if a team is not filled or empty, then it is missing players and cannot start
+            } else if (teamMembers.size() != 0) {
+                return false;
+            }
+        }
+
+        //can't play with just one team
+        return teamsFilled > 1;
+    }
+
     /* public methods */
 
     /***
@@ -357,8 +373,6 @@ public class Room {
         log.info("Player is in a team: {}", isPlayerInATeam);
         return isPlayerInATeam;
     }
-
-
 
 
 }

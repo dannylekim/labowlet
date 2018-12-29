@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Team {
     private String teamName;
-    private static final int MAX_TEAM_MEMBERS = 2;
+    public static final int MAX_TEAM_MEMBERS = 2;
     private List<Player> teamMembers;
     private Score teamScore;
     private String teamId;
