@@ -12,7 +12,7 @@ import java.util.*;
 @Slf4j
 public class Room {
 
-    // -------- DATA CONSTANTS ------------
+    // -------- DATA MEMBERS ------------
     private List<Team> teams;
     private List<Player> benchPlayers;
     private Player host;

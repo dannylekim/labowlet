@@ -6,6 +6,8 @@ import lombok.NonNull;
 @Data
 public class OutputMessage {
 
+    public static String ROOM_EVENT = "ROOM";
+
     @NonNull
     private String id;
     @NonNull

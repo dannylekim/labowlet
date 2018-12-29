@@ -6,6 +6,8 @@ import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +58,7 @@ public class RoomController {
         room code.
         */
 
-        while(!isRoomCodeUnique){
+        while (!isRoomCodeUnique) {
             newRoom.regenerateRoomCode();
             isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
         }
@@ -67,22 +69,20 @@ public class RoomController {
         userGameSession.setCurrentRoom(newRoom);
 
         log.debug("Sending room to all sockets connecting into /room/{}", newRoom.getRoomCode());
-        template.convertAndSend("/room/" + newRoom.getRoomCode(), new OutputMessage("ROOM", newRoom));
+        template.convertAndSend("/room/" + newRoom.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, newRoom));
 
 
         return newRoom;
     }
 
 
-
     @RequestMapping(method = PUT)
-    @ResponseBody
-    public Room joinRoom(@RequestBody Room roomWithOnlyRoomCode) {
+    public Room joinRoom(@RequestBody RoomCode roomCode) {
         Player player = userGameSession.getPlayer();
-        Room roomToJoin = applicationState.getRoom(roomWithOnlyRoomCode.getRoomCode());
+        Room roomToJoin = applicationState.getRoom(roomCode.getRoomCode());
 
-        if(roomToJoin == null) {
-            log.warn("Tried to access the room with room code: {}", roomWithOnlyRoomCode.getRoomCode());
+        if (roomToJoin == null) {
+            log.warn("Tried to access the room with room code: {}", roomCode.getRoomCode());
             throw new IllegalArgumentException("There is no room with that room code. Please try again!");
 
         }
@@ -93,14 +93,19 @@ public class RoomController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}", roomToJoin.getRoomCode());
-        template.convertAndSend("/room/" + roomToJoin.getRoomCode(), new OutputMessage("ROOM", roomToJoin));
+        template.convertAndSend("/room/" + roomToJoin.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, roomToJoin));
 
 
         return roomToJoin;
     }
 
-    public Room removeTeam(){
-        return null;
+    static class RoomCode {
+        @Getter
+        @Setter
+        String roomCode;
+
+        public RoomCode(){}
     }
+
 
 }

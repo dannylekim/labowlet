@@ -46,7 +46,7 @@ public class TeamController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, currentRoom));
 
         return currentRoom;
     }
@@ -90,7 +90,7 @@ public class TeamController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, currentRoom));
         return currentRoom;
     }
 
