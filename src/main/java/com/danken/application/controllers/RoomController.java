@@ -1,6 +1,6 @@
 package com.danken.application.controllers;
 
-import com.danken.application.LabowletState;
+import com.danken.LabowletState;
 import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 
 import java.util.Arrays;
 
@@ -31,22 +30,21 @@ public class RoomController {
 
     private SimpMessagingTemplate template;
     private final LabowletState applicationState = LabowletState.getInstance();
-    HttpSession session;
+    private GameSession userGameSession;
 
 
     //Retrieve Application State
     @Inject
-    public RoomController(HttpSession session, SimpMessagingTemplate template) {
+    public RoomController(SimpMessagingTemplate template, GameSession userGameSession) {
         this.template = template;
-        this.session = session;
+        this.userGameSession = userGameSession;
     }
 
     @RequestMapping(method = POST)
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
         log.info("Verifying the round types for " + Arrays.toString(newRoomSettings.getRoundTypes().toArray()));
         newRoomSettings.verifyRoundTypes();
-        GameSession userSession = applicationState.getGameSession(session);
-        Player host = userSession.getPlayer();
+        Player host = userGameSession.getPlayer();
 
         log.info("Creating new room for the host {}", host.getName());
         Room newRoom = new Room(host, newRoomSettings);
@@ -66,7 +64,7 @@ public class RoomController {
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.info("Adding newly formed room with room code {} as active for the session", newRoom.getRoomCode());
         applicationState.addActiveRoom(newRoom);
-        userSession.setCurrentRoom(newRoom);
+        userGameSession.setCurrentRoom(newRoom);
 
         log.debug("Sending room to all sockets connecting into /room/{}", newRoom.getRoomCode());
         template.convertAndSend("/room/" + newRoom.getRoomCode(), new OutputMessage("ROOM", newRoom));
@@ -80,7 +78,6 @@ public class RoomController {
     @RequestMapping(method = PUT)
     @ResponseBody
     public Room joinRoom(@RequestBody Room roomWithOnlyRoomCode) {
-        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room roomToJoin = applicationState.getRoom(roomWithOnlyRoomCode.getRoomCode());
 

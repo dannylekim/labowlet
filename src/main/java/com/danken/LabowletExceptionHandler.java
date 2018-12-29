@@ -1,4 +1,4 @@
-package com.danken.application;
+package com.danken;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

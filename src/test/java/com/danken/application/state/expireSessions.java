@@ -1,6 +1,6 @@
 package com.danken.application.state;
 
-import com.danken.application.LabowletState;
+import com.danken.LabowletState;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;

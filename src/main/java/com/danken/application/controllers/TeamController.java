@@ -1,6 +1,5 @@
 package com.danken.application.controllers;
 
-import com.danken.application.LabowletState;
 import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -29,20 +27,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class TeamController {
 
     private SimpMessagingTemplate template;
-    private final LabowletState applicationState = LabowletState.getInstance();
-    HttpSession session;
-
+    private GameSession userGameSession;
 
     //Retrieve Application State
     @Inject
-    public TeamController(HttpSession session, SimpMessagingTemplate template) {
-        this.session = session;
+    public TeamController(SimpMessagingTemplate template, GameSession userGameSession) {
         this.template = template;
+        this.userGameSession = userGameSession;
     }
 
     @RequestMapping(method = POST)
     public Room createTeam(@RequestBody Team teamWithOnlyTeamName) {
-        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
 
@@ -59,7 +54,6 @@ public class TeamController {
     @RequestMapping(method = PUT, value = "/{teamId}") //add a teamId param
     public Room updateTeam(@RequestBody Team teamWithOnlyTeamName, @PathVariable("teamId") String teamId) throws Exception {
 
-        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
 

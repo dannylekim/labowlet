@@ -1,6 +1,5 @@
 package com.danken.application.controllers;
 
-import com.danken.application.LabowletState;
 import com.danken.business.OutputMessage;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -23,14 +21,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class HostController {
 
     private SimpMessagingTemplate template;
-    private final LabowletState applicationState = LabowletState.getInstance();
-    private HttpSession session;
+    private GameSession userGameSession;
 
     //Retrieve Application State
     @Inject
-    public HostController(HttpSession session, SimpMessagingTemplate template) {
+    public HostController(SimpMessagingTemplate template, GameSession userGameSession) {
         this.template = template;
-        this.session = session;
+        this.userGameSession = userGameSession;
     }
 
     @RequestMapping(method = PUT, value = "/rooms")
@@ -38,7 +35,6 @@ public class HostController {
 
         log.info("Verifying the round types for {}", Arrays.toString(updatedRoomSettings.getRoundTypes().toArray()));
         updatedRoomSettings.verifyRoundTypes();
-        GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
         currentRoom.updateRoom(updatedRoomSettings);
 
