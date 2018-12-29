@@ -99,13 +99,15 @@ public class RoomController {
         return roomToJoin;
     }
 
-    static class RoomCode {
-        @Getter
-        @Setter
-        String roomCode;
-
-        public RoomCode(){}
-    }
-
 
 }
+
+class RoomCode {
+    @Getter
+    @Setter
+    String roomCode;
+
+    public RoomCode() {
+    }
+}
+
