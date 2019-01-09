@@ -39,6 +39,7 @@ public class CreateTeamTest {
     @Test
     public void maxTeamsTest(){
         doReturn(0).when(roomSettings).getMaxTeams();
+        room = spy(new Room(host, roomSettings));
         assertThrows(IllegalStateException.class, () -> room.createTeam("test", host));
     }
 
@@ -50,6 +51,7 @@ public class CreateTeamTest {
     @Test
     public void noDuplicatePlayerTest(){
         doReturn(5).when(roomSettings).getMaxTeams();
+        room = spy(new Room(host, roomSettings));
         room.createTeam("One", host);
         room.createTeam("Two", host);
 
@@ -69,6 +71,7 @@ public class CreateTeamTest {
     @Test
     public void playerLeavesBenchIfHeCreatesATeam(){
         doReturn(5).when(roomSettings).getMaxTeams();
+        room = spy(new Room(host, roomSettings));
         room.createTeam("One", host);
         assertTrue(room.getBenchPlayers().size() == 0);
     }
@@ -80,6 +83,7 @@ public class CreateTeamTest {
     @Test
     public void noSameTeamNameTest(){
         doReturn(2).when(roomSettings).getMaxTeams();
+        room = spy(new Room(host, roomSettings));
         room.createTeam("One", host);
         assertThrows(IllegalArgumentException.class, () -> room.createTeam("One", host));
     }
@@ -91,6 +95,7 @@ public class CreateTeamTest {
     @Test
     public void playerMustBeInRoomTest(){
         doReturn(2).when(roomSettings).getMaxTeams();
+        room = spy(new Room(host, roomSettings));
         Player player = new Player();
         assertThrows(IllegalStateException.class, () -> room.createTeam("One", player));
     }

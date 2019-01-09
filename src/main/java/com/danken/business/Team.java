@@ -70,4 +70,8 @@ public class Team {
 
     }
 
+    public boolean isEmpty(){
+        return teamMembers.size() == 0;
+    }
+
 }

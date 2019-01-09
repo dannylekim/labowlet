@@ -86,7 +86,10 @@ public class Room {
     public void createTeam(String teamName, Player player) {
         log.info("Trying to create a team with  " + teamName + " and player " + player.getName() + " and ID " + player.getId());
         //Cannot have more teams than the max teams
-        if (teams.size() >= roomSettings.getMaxTeams()) {
+
+        var emptyTeam = teams.stream().filter(Team::isEmpty).findFirst().orElse(null);
+
+        if (emptyTeam == null) {
             log.warn("Trying to add a team when the room can no longer take any more. Max is:  {}", roomSettings.getMaxTeams());
             throw new IllegalStateException("Can no longer add any more teams in this room!");
         }
@@ -108,9 +111,11 @@ public class Room {
         //remove the player from previous team or bench
         removePlayer(player);
         log.info("Team has been added");
-        Team newTeam = new Team(teamName);
+        teams.remove(emptyTeam);
+        var newTeam = new Team(teamName);
         newTeam.addPlayerInTeam(player);
         teams.add(newTeam);
+
     }
 
     public void addPlayerToBench(Player player) {
