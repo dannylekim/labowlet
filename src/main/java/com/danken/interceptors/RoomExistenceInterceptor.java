@@ -69,13 +69,6 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
                 return false;
             }
 
-            //Check if the room is in play or locked
-            if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-                logger.info("{} is trying to access a room call where the room has already started or is locked.", session.getId());
-                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
-                return false;
-            }
-
         }
       
        

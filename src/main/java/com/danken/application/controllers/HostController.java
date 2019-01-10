@@ -54,7 +54,6 @@ public class HostController {
             return null;
         }
 
-        currentRoom.setLocked(true);
         List<Player> players = new ArrayList<>();
         currentRoom.getTeams().forEach(team ->
                 players.addAll(team.getTeamMembers())

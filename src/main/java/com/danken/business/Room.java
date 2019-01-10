@@ -19,16 +19,7 @@ public class Room {
     @Setter
     private String roomCode; //given a setter to use for @RequestBody
     private RoomSettings roomSettings;
-    private List<String> wordBowl;
-    private Map<Player, List<String>> wordsMadePerPlayer;
-    private List<Round> rounds;
-
-    //Game state -> fixme should this be refactored into its own object
-    @Setter
-    private boolean isLocked; //Locked in players and now must input words
-    private boolean canStart; //All the words have now been inputted and all the players have readied up
-    private boolean isInPlay; //Is the game in play
-
+    private Game game;
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
@@ -39,9 +30,6 @@ public class Room {
         teams = new ArrayList<>();
         benchPlayers = new ArrayList<>();
         benchPlayers.add(host);
-        wordBowl = new ArrayList<>();
-        wordsMadePerPlayer = new HashMap<>();
-        rounds = new ArrayList<>(); //should be moved into game state
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
@@ -49,12 +37,9 @@ public class Room {
         log.info("Created a new room with {} and {}", host.getName(), host.getId());
 
         //set State// //fixme move this into GameState
-        isInPlay = false;
-        canStart = false; //todo set
 
         createEmptyTeams(roomSettings.getMaxTeams());
 
-        isLocked = false;
     }
 
     public boolean isCanStart() {
@@ -212,59 +197,7 @@ public class Room {
     }
 
 
-    /***
-     *  Creates a new word bowl with the input. Verifies that all the words are unique.
-     *
-     * @param inputWords This is a list of words that the user has made to be placed in the word bowl
-     */
 
-    public void addWordBowl(List<String> inputWords, Player player) {
-
-        log.info("Player {} with ID {} is trying to input these words: {}", player.getName(), player.getId(), ((inputWords != null) ? Arrays.toString(inputWords.toArray()) : "null"));
-
-        if (!isPlayerInATeam(player)) {
-            log.warn("Player is not part a team, can not input words until then.");
-            throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
-        }
-
-        if (!isLocked) {
-            log.warn("Cannot input words until the game has started.");
-            throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
-        }
-
-        if (isInPlay) {
-            log.warn("Cannot input words, the game has started.");
-            throw new IllegalStateException("The game has already started, cannot input words at this time!");
-        }
-
-        if (inputWords == null) {
-            log.warn("Missing word entries, cannot input a null object");
-            throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
-        }
-
-        if (inputWords.size() != roomSettings.getWordsPerPerson()) {
-            log.warn("Missing word entries, you need to have {} entries", roomSettings.getWordsPerPerson());
-            throw new IllegalArgumentException("Missing word entries! You need to have " + roomSettings.getWordsPerPerson() + " entries!");
-        }
-
-
-        List<String> playerWordBowl = new ArrayList<>();
-
-        inputWords.stream().forEach(word -> {
-
-            //checking for uniqueness
-            if (playerWordBowl.contains(word)) {
-                log.warn("Cannot have two of the same entries in the word bowl");
-                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
-            }
-            playerWordBowl.add(word);
-        });
-
-        log.info("Replacing the words inputted previously with the new ones");
-        this.wordsMadePerPlayer.remove(player);
-        this.wordsMadePerPlayer.put(player, playerWordBowl);
-
-    }
 
     /***
      *
@@ -278,10 +211,6 @@ public class Room {
     public void updateRoom(RoomSettings roomSettings) {
 
         log.info("Starting to update the room...");
-        if (this.isInPlay || this.isLocked) {
-            log.warn("Cannot update the room, the game has been locked or already in play!");
-            throw new IllegalStateException("Can not update the room, the game has been locked or already in play!");
-        }
 
         this.roomSettings = roomSettings;
 

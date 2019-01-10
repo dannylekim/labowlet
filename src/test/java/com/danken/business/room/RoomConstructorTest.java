@@ -26,7 +26,7 @@ public class RoomConstructorTest {
 
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         room = spy(new Room(host, settings));
     }
@@ -45,13 +45,9 @@ public class RoomConstructorTest {
      *
      */
     @Test
-    public void roomStateIsClean(){
-        assertAll(() -> {
-            assertFalse(room.isInPlay());
-            assertFalse(room.isCanStart());
-            assertFalse(room.isLocked());
-        });
-      
+    public void roomStateIsClean() {
+        assertFalse(room.isCanStart());
+
     }
 
     /***
@@ -59,17 +55,14 @@ public class RoomConstructorTest {
      *
      */
     @Test
-    public void roomAllObjectsInstantiated(){
+    public void roomAllObjectsInstantiated() {
         assertAll(() -> {
             assertNotNull(room.getBenchPlayers());
             assertNotNull(room.getTeams());
             assertNotNull(room.getRoomCode());
             assertNotNull(room.getRoomSettings());
-            assertNotNull(room.getRounds());
-            assertNotNull(room.getWordsMadePerPlayer());
-            assertNotNull(room.getWordBowl());
         });
-   
+
     }
 
 
