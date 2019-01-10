@@ -17,7 +17,6 @@ public class Room {
     private List<Team> teams;
     private List<Player> benchPlayers;
     private Player host;
-    @Setter
     private String roomCode; //given a setter to use for @RequestBody
     private RoomSettings roomSettings;
     private Game game;
