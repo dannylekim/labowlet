@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -197,8 +198,6 @@ public class Room {
     }
 
 
-
-
     /***
      *
      * This method is to update a room with the new settings. Can not update if game is locked or already in play.
@@ -218,26 +217,40 @@ public class Room {
         //If there are more teams than the new updated Max Teams, you must bench the newly joined ones until
         //it is of equal sizing
         int maxTeams = roomSettings.getMaxTeams();
-        int lastJoinedTeamIndex;
-        Team teamToBench;
         log.info("Removing the last joined members and teams if needed...");
 
         if (maxTeams > teams.size()) {
             createEmptyTeams(maxTeams - teams.size());
         }
 
-        while (teams.size() > maxTeams) {
-            log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
-            lastJoinedTeamIndex = teams.size() - 1;
-            teamToBench = teams.get(lastJoinedTeamIndex);
-            List<Player> players = teamToBench.getTeamMembers();
-            benchPlayers.addAll(players);
+        removeLastTeams(maxTeams);
+    }
 
-            log.debug("Benched {}", players);
+    private void removeLastTeams(int maxTeams) {
+
+        Team teamToBench;
+        while (teams.size() > maxTeams) {
+
+            log.info("Checking for empty teams");
+            var emptyTeams = teams.stream().filter(Team::isEmpty).collect(Collectors.toList());
+
+            if (emptyTeams.size() > 0) {
+                teamToBench = emptyTeams.get(0);
+            } else {
+                int lastJoinedTeamIndex;
+                log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
+                lastJoinedTeamIndex = teams.size() - 1;
+                teamToBench = teams.get(lastJoinedTeamIndex);
+                List<Player> players = teamToBench.getTeamMembers();
+                benchPlayers.addAll(players);
+                log.debug("Benched {}", players);
+            }
+
             log.debug("Removing team {} with ID {}", teamToBench.getTeamName(), teamToBench.getTeamId());
             teams.remove(teamToBench);
         }
     }
+
 
     /***
      * Regenerates a new unique room code and sets it as this room's code.
