@@ -53,7 +53,7 @@ public class RoomSettings {
      */
     public void verifyRoundTypes() throws IllegalArgumentException{
         if(roundTypes.size() > 0) {
-            roundTypes.stream().forEach(roundType -> {
+            roundTypes.forEach(roundType -> {
                 log.debug("Verifying if " + roundType + " is a valid input");
                 if(!roundTypeEnums.contains(roundType)){
                     StringBuilder msgBuilder = new StringBuilder();

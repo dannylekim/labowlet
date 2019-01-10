@@ -19,6 +19,9 @@ public class Game {
     @Getter
     private boolean allowSkips;
     private int wordsPerPerson;
+    @Getter
+    private int currentRound;
+
 
     public Game(List<Team> teams, List<Round> rounds, RoomSettings roomSettings){
         this.teams = teams;
@@ -27,6 +30,7 @@ public class Game {
         this.wordBowl = new ArrayList<>();
         this.wordsPerPerson = roomSettings.getWordsPerPerson();
         this.allowSkips = roomSettings.isAllowSkips();
+        this.currentRound = 1;
     }
 
     /***
@@ -50,7 +54,7 @@ public class Game {
 
         List<String> playerWordBowl = new ArrayList<>();
 
-        inputWords.stream().forEach(word -> {
+        inputWords.forEach(word -> {
 
             //checking for uniqueness
             if (playerWordBowl.contains(word)) {
@@ -61,8 +65,16 @@ public class Game {
         });
 
         log.info("Replacing the words inputted previously with the new ones");
-        this.wordsMadePerPlayer.remove(player);
         this.wordsMadePerPlayer.put(player, playerWordBowl);
 
+    }
+
+    public void prepareRounds(){
+        if(wordsMadePerPlayer.size() != teams.size() * 2){
+            throw new IllegalStateException("Rounds cannot be prepared until all words have been inputted by each player");
+        }
+
+        var allWords = wordsMadePerPlayer.values().stream().collect(ArrayList<String>::new, ArrayList::addAll, ArrayList::addAll);
+        rounds.forEach(round -> round.setRemainingWords(allWords));
     }
 }
