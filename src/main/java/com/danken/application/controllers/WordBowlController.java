@@ -1,5 +1,6 @@
 package com.danken.application.controllers;
 
+import com.danken.business.Room;
 import com.danken.business.WordBowlInputState;
 import com.danken.sessions.GameSession;
 import lombok.extern.slf4j.Slf4j;
@@ -7,10 +8,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.inject.Inject;
 
 import java.util.List;
+
 
 
 @Controller
@@ -38,6 +41,15 @@ public class WordBowlController {
 //        template.convertAndSend("/room/" + currentRoom.getRoomCode() + "/game", game.getState());
 
         return game.getState();
+    }
+
+    @MessageMapping("/host/{roomCode}/start")
+    @SendTo("/host/{roomCode}/start")
+    public WordBowlInputState startGame() {
+        Room currentRoom = gameSession.getCurrentRoom();
+        var game = currentRoom.createGame();
+        return game.getState();
+
     }
 
 
