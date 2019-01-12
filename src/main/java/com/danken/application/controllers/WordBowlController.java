@@ -49,6 +49,7 @@ public class WordBowlController {
     public Player startGame() {
         var player = new Player();
         player.setName("NANI KORE");
+        log.info("you made it");
         return player;
     }
 
