@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -48,11 +49,11 @@ public class WordBowlController {
     }
 
     @MessageMapping("/host/{roomCode}/start")
-    public Player startGame() {
+    public Player startGame(HttpSession session) {
         var player = new Player();
         player.setName("NANI KORE");
 
-        log.info(gameSession.toString());
+        log.info(session.getId());
         template.convertAndSend("/host/" + gameSession.getCurrentRoom().getRoomCode() + "/start", player);
 
         return player;
