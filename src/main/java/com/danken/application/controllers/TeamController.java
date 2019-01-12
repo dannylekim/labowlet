@@ -1,6 +1,5 @@
 package com.danken.application.controllers;
 
-import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.Team;
@@ -46,7 +45,7 @@ public class TeamController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), currentRoom);
 
         return currentRoom;
     }
@@ -90,7 +89,7 @@ public class TeamController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(),currentRoom);
         return currentRoom;
     }
 

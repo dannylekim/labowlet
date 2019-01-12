@@ -39,7 +39,7 @@ public class HostController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}", currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), currentRoom);
 
         return currentRoom;
     }
@@ -49,6 +49,7 @@ public class HostController {
         Room currentRoom = userGameSession.getCurrentRoom();
         var game = currentRoom.createGame();
 
+        template.convertAndSend("/room/" + currentRoom.getRoomCode() + "/game", game.getState());
         return game.getState();
 
     }

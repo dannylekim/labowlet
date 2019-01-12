@@ -1,7 +1,6 @@
 package com.danken.application.controllers;
 
 import com.danken.LabowletState;
-import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
@@ -69,7 +68,7 @@ public class RoomController {
         userGameSession.setCurrentRoom(newRoom);
 
         log.debug("Sending room to all sockets connecting into /room/{}", newRoom.getRoomCode());
-        template.convertAndSend("/room/" + newRoom.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, newRoom));
+        template.convertAndSend("/room/" + newRoom.getRoomCode(), newRoom);
 
 
         return newRoom;
@@ -93,7 +92,7 @@ public class RoomController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}", roomToJoin.getRoomCode());
-        template.convertAndSend("/room/" + roomToJoin.getRoomCode(), new OutputMessage(OutputMessage.ROOM_EVENT, roomToJoin));
+        template.convertAndSend("/room/" + roomToJoin.getRoomCode(), roomToJoin);
 
 
         return roomToJoin;

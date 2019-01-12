@@ -31,7 +31,17 @@ public class WordBowlController {
 
     @RequestMapping(method = POST)
     public WordBowlInputState addWords(@RequestBody List<String> inputWords ) {
-        return null;
+        var currentRoom = gameSession.getCurrentRoom();
+        var game = currentRoom.getGame();
+
+        if(game == null){
+            throw new IllegalStateException("Game hasn't started yet");
+        }
+
+        game.addWordBowl(inputWords, gameSession.getPlayer());
+        template.convertAndSend("/room/" + currentRoom.getRoomCode() + "/game", game.getState());
+
+        return game.getState();
     }
 
 
