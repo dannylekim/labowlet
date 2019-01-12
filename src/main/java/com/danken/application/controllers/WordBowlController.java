@@ -7,6 +7,7 @@ import com.danken.sessions.GameSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +23,12 @@ import java.util.List;
 public class WordBowlController {
 
     private GameSession gameSession;
+    private SimpMessagingTemplate template;
 
     @Inject
-    public WordBowlController(GameSession userGameSession) {
+    public WordBowlController(GameSession userGameSession, SimpMessagingTemplate template) {
         this.gameSession = userGameSession;
+        this.template = template;
     }
 
     @MessageMapping("/room/{roomCode}/addWords")
@@ -49,7 +52,10 @@ public class WordBowlController {
     public Player startGame() {
         var player = new Player();
         player.setName("NANI KORE");
-        log.info("you made it");
+
+        log.info(gameSession.toString());
+        template.convertAndSend("/host/" + gameSession.getCurrentRoom().getRoomCode() + "/game", player);
+
         return player;
     }
 
