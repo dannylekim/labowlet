@@ -48,13 +48,12 @@ public class WordBowlController {
     }
 
     @MessageMapping("/host/{roomCode}/start")
-    @SendTo("/host/start")
     public Player startGame() {
         var player = new Player();
         player.setName("NANI KORE");
 
         log.info(gameSession.toString());
-        template.convertAndSend("/host/" + gameSession.getCurrentRoom().getRoomCode() + "/game", player);
+        template.convertAndSend("/host/" + gameSession.getCurrentRoom().getRoomCode() + "/start", player);
 
         return player;
     }
