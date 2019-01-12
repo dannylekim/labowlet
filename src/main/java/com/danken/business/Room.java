@@ -1,5 +1,6 @@
 package com.danken.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,8 @@ public class Room {
     private Player host;
     private String roomCode; //given a setter to use for @RequestBody
     private RoomSettings roomSettings;
+    @JsonIgnore
+    @Setter
     private Game game;
 
     // ------- STATIC CONSTANTS --------------------- //
@@ -40,6 +43,19 @@ public class Room {
 
         createEmptyTeams(roomSettings.getMaxTeams());
 
+    }
+
+    public Game createGame(){
+        if (!isCanStart()) {
+            throw new IllegalStateException("Game cannot start.");
+        }
+
+        var rounds = getRoomSettings().getRoundTypes().stream().map(Round::new).collect(Collectors.toList());
+        var teams = getTeams();
+
+        game = new Game(teams, rounds);
+
+        return this.game;
     }
 
     public boolean isCanStart() {

@@ -1,5 +1,6 @@
 package com.danken.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -10,21 +11,17 @@ import java.util.Random;
 @Slf4j
 public class Round {
     private String roundName;
-
-
+    @JsonIgnore
     private List<String> remainingWords;
-    private String description;
     private int turns;
     private Random randomNumber = new Random();
 
-    public Round(String description, String roundName) {
+    public Round(String roundName) {
         this.remainingWords = new ArrayList<>();
-        this.description = description;
         this.turns = 0;
         this.roundName = roundName;
 
-        log.info("Created a round with roundName "
-                + this.roundName + " with " + description);
+        log.info("Created a round with roundName " + this.roundName);
 
     }
 

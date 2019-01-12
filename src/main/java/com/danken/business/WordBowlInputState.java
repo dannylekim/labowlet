@@ -13,12 +13,15 @@ public class WordBowlInputState {
     boolean isReady = false;
 
     public WordBowlInputState(List<Player> players){
-        players.stream().forEach(player -> {
+        players.forEach(player -> {
             var status = new UserWordBowlStatus();
             status.setPlayer(player);
             usersStatus.add(status);
         });
+
     }
+
+
 
     public boolean isReady() {
         return usersStatus

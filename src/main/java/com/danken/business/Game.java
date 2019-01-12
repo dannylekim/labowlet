@@ -1,5 +1,6 @@
 package com.danken.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,31 +8,40 @@ import java.util.*;
 
 
 @Slf4j
+@Getter
 public class Game {
-    @Getter
+    @JsonIgnore
     private List<String> wordBowl;
-    @Getter
+    @JsonIgnore
     private Map<Player, List<String>> wordsMadePerPlayer;
-    @Getter
     private List<Round> rounds;
-    @Getter
     private List<Team> teams;
-    @Getter
-    private boolean allowSkips;
-    private int wordsPerPerson;
-    @Getter
-    private int currentRound;
+    @JsonIgnore
+    private int wordsPerPerson; // put this in the controller
+    private int currentRound; //index
+
+    private Player currentActor;
+    private Player currentGuesser;
+
+    @JsonIgnore
+    private WordBowlInputState state;
 
 
-    public Game(List<Team> teams, List<Round> rounds, RoomSettings roomSettings){
+    public Game(List<Team> teams, List<Round> rounds){
         this.teams = teams;
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
         this.wordBowl = new ArrayList<>();
-        this.wordsPerPerson = roomSettings.getWordsPerPerson();
-        this.allowSkips = roomSettings.isAllowSkips();
         this.currentRound = 1;
+
+        List<Player> players = new ArrayList<>();
+        teams.forEach(team ->
+                players.addAll(team.getTeamMembers())
+        );
+
+        state = new WordBowlInputState(players);
     }
+
 
     /***
      *  Creates a new word bowl with the input. Verifies that all the words are unique.
@@ -46,6 +56,7 @@ public class Game {
             throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
         }
 
+        //todo move this check into the controller
         if (inputWords.size() != wordsPerPerson) {
             log.warn("Missing word entries, you need to have {} entries", wordsPerPerson);
             throw new IllegalArgumentException("Missing word entries! You need to have " + wordsPerPerson + " entries!");
@@ -67,6 +78,8 @@ public class Game {
         log.info("Replacing the words inputted previously with the new ones");
         this.wordsMadePerPlayer.put(player, playerWordBowl);
 
+        var userStatus = state.usersStatus.stream().filter(status -> status.getPlayer().equals(player)).findFirst().orElse(null);
+        userStatus.setCompleted(true);
     }
 
     public void prepareRounds(){

@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -49,17 +47,9 @@ public class HostController {
     @RequestMapping(method = POST, value = "/gamestart")
     public WordBowlInputState startGame() {
         Room currentRoom = userGameSession.getCurrentRoom();
-        if (!currentRoom.isCanStart()) {
-            //throw error
-            return null;
-        }
+        var game = currentRoom.createGame();
 
-        List<Player> players = new ArrayList<>();
-        currentRoom.getTeams().forEach(team ->
-                players.addAll(team.getTeamMembers())
-        );
-
-        return new WordBowlInputState(players);
+        return game.getState();
 
     }
 
