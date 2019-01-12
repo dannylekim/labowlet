@@ -45,7 +45,7 @@ public class WordBowlController {
     }
 
     @MessageMapping("/host/{roomCode}/start")
-    @SendTo("/host/{roomCode}/start")
+    @SendTo("/host/start")
     public Player startGame() {
         var player = new Player();
         player.setName("NANI KORE");
