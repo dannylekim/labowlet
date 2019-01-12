@@ -1,5 +1,6 @@
 package com.danken.application.controllers;
 
+import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.WordBowlInputState;
 import com.danken.sessions.GameSession;
@@ -45,11 +46,10 @@ public class WordBowlController {
 
     @MessageMapping("/host/{roomCode}/start")
     @SendTo("/host/{roomCode}/start")
-    public WordBowlInputState startGame() {
-        Room currentRoom = gameSession.getCurrentRoom();
-        var game = currentRoom.createGame();
-        return game.getState();
-
+    public Player startGame() {
+        var player = new Player();
+        player.setName("NANI KORE");
+        return player;
     }
 
 
