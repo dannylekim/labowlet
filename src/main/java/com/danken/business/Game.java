@@ -35,9 +35,6 @@ public class Game {
     private Player currentGuesser;
 
     @JsonIgnore
-    private Team currentTeam;
-
-    @JsonIgnore
     private WordBowlInputState state;
 
     @JsonIgnore
@@ -112,17 +109,16 @@ public class Game {
         if (state.isReady()) {
             prepareRounds();
             this.currentRound = 0;
-            final var currentRoundTurn = rounds.get(currentRound).getTurns();
-            currentActor = teams.get(0).getTeamMembers().get(currentRoundTurn % 2);
+            setCurrentRoundActivePlayers();
         }
 
         return state.isReady();
     }
 
-    public void setCurrentRoundActivePlayers() {
-        final var currentRoundTurn = rounds.get(currentRound).getTurns();
-        currentActor = currentTeam.getTeamMembers().get(currentRoundTurn % 2);
-        currentGuesser = currentTeam.getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
+    private void setCurrentRoundActivePlayers() {
+        final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
+        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentRoundTurn % 2);
+        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
     }
 
 

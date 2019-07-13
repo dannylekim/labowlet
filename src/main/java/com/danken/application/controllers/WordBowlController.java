@@ -2,11 +2,7 @@ package com.danken.application.controllers;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import com.danken.application.config.MessageSocketSender;
 import com.danken.business.WordBowlInputState;
-import com.danken.sessions.GameSession;
 import com.danken.utility.SocketSessionUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -21,17 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WordBowlController {
 
-    private final GameSession gameSession;
-
-    private final MessageSocketSender sender;
-
-
-    @Inject
-    public WordBowlController(final GameSession userGameSession, final MessageSocketSender sender) {
-        this.gameSession = userGameSession;
-        this.sender = sender;
-    }
-
     @MessageMapping("/room/{code}/addWords")
     @SendTo("client/room/{code}/addWords")
     public WordBowlInputState addWords(@RequestBody List<String> inputWords, SimpMessageHeaderAccessor accessor) {
@@ -42,7 +27,7 @@ public class WordBowlController {
             throw new IllegalStateException("Game hasn't started yet");
         }
 
-        game.addWordBowl(inputWords, gameSession.getPlayer());
+        game.addWordBowl(inputWords, SocketSessionUtils.getSession(accessor).getPlayer());
         return game.getState();
     }
 
