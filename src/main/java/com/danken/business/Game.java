@@ -21,14 +21,17 @@ public class Game {
     @JsonIgnore
     private Map<Player, List<String>> wordsMadePerPlayer;
 
+    @JsonIgnore
     private List<Round> rounds;
 
+    @JsonIgnore
     private List<Team> teams;
 
     @JsonIgnore
     private int wordsPerPerson; // put this in the controller
 
-    private int currentRound; //index
+    @JsonIgnore
+    private int currentRoundIndex; //index
 
     private Player currentActor;
 
@@ -46,7 +49,7 @@ public class Game {
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
         this.wordBowl = new ArrayList<>();
-        this.currentRound = 1;
+        this.currentRoundIndex = 0;
 
         List<Player> players = new ArrayList<>();
         teams.forEach(team ->
@@ -55,6 +58,10 @@ public class Game {
 
         this.wordsPerPerson = wordsPerPerson;
         state = new WordBowlInputState(players);
+    }
+
+    public Round getCurrentRound() {
+        return rounds.get(currentRoundIndex);
     }
 
 
@@ -108,7 +115,6 @@ public class Game {
     public boolean startGame() {
         if (state.isReady()) {
             prepareRounds();
-            this.currentRound = 0;
             setCurrentRoundActivePlayers();
         }
 

@@ -21,6 +21,8 @@ public class Round {
 
     private int turns;
 
+    private String wordToGuess;
+
     @JsonIgnore
     private Random randomNumber = new Random();
 
@@ -38,12 +40,11 @@ public class Round {
         this.remainingWords = words;
     }
 
-    public String getRandomWord() {
+    public void getRandomWord() {
         int wordBowlSize = remainingWords.size();
         int randomIndex = randomNumber.nextInt(wordBowlSize - 1);
-        String randomWord = remainingWords.get(randomIndex);
-        log.info("Random word is " + randomWord);
-        return randomWord;
+        this.wordToGuess =  remainingWords.get(randomIndex);
+        log.info("Random word is " + wordToGuess);
     }
 
     public void removeWord(String word) {
