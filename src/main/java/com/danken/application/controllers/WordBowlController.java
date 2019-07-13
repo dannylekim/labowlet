@@ -2,6 +2,9 @@ package com.danken.application.controllers;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import com.danken.application.config.MessageSocketSender;
 import com.danken.business.Game;
 import com.danken.business.WordBowlInputState;
 import com.danken.utility.SocketSessionUtils;
@@ -18,6 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WordBowlController {
 
+    private final MessageSocketSender sender;
+
+    @Inject
+    public WordBowlController(final MessageSocketSender sender) {
+        this.sender = sender;
+    }
+
     @MessageMapping("/room/{code}/addWords")
     @SendTo("/client/room/{code}/addWords")
     public WordBowlInputState addWords(@RequestBody List<String> inputWords, SimpMessageHeaderAccessor accessor) {
@@ -32,8 +42,8 @@ public class WordBowlController {
         return game.getState();
     }
 
-    @MessageMapping("/room/{code}/skipWord")
-    @SendTo("/client/room/{code}/game")
+    @MessageMapping("/room/{code}/game/skipWord")
+    @SendTo("/client/room/{code}/game/word")
     public Game skipWord(SimpMessageHeaderAccessor accessor) {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         if (!currentRoom.getRoomSettings().isAllowSkips()) {
@@ -46,14 +56,17 @@ public class WordBowlController {
             throw new IllegalStateException("Only the actor can skip!");
         }
         final var currentRound = currentGame.getCurrentRound();
+
+        if (currentRound.getRemainingWords().size() <= 1) {
+            throw new IllegalStateException("Can not skip the last word!");
+        }
+
         currentRound.getRandomWord();
         return currentGame;
-
     }
 
-    @MessageMapping("/room/{code}/word")
-    @SendTo("/client/room/{code}/game")
-    public Game getNewWord(final String word, SimpMessageHeaderAccessor accessor) {
+    @MessageMapping("/room/{code}/game/newWord")
+    public void getNewWord(final String word, final SimpMessageHeaderAccessor accessor) {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var currentGame = currentRoom.getGame();
 
@@ -65,8 +78,36 @@ public class WordBowlController {
 
         final var currentRound = currentGame.getCurrentRound();
         currentRound.removeWord(word);
-        currentRound.getRandomWord();
-        return currentGame;
+
+        if (currentRound.getRemainingWords().size() == 0) {
+
+            if(currentGame.getCurrentRoundIndex() == currentGame.getRounds().size() - 1){
+                //TODO GAME OVER
+            }
+            else {
+                currentGame.setCurrentRoundIndex(currentGame.getCurrentRoundIndex() + 1);
+                //TODO stop timer
+            }
+        } else {
+            currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
+            sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
+        }
+
+    }
+
+    @MessageMapping("/room/{code}/game/startStep")
+    public void startStep(final SimpMessageHeaderAccessor accessor) throws InterruptedException {
+        var currentRoom = SocketSessionUtils.getRoom(accessor);
+        sender.sendWordMessage(currentRoom.getRoomCode(), currentRoom.getGame().getCurrentRound().getRandomWord());
+
+        int seconds = (int) currentRoom.getRoomSettings().getRoundTimeInSeconds();
+
+        //TODO figure this out later situation
+        while(seconds != 0){
+            Thread.sleep(1000);
+            sender.sendTimerMessage(currentRoom.getRoomCode(), --seconds);
+        }
+
     }
 
 

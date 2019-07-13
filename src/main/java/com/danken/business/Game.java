@@ -8,11 +8,13 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
 @Getter
+@Setter
 public class Game {
 
     @JsonIgnore
@@ -28,10 +30,10 @@ public class Game {
     private List<Team> teams;
 
     @JsonIgnore
-    private int wordsPerPerson; // put this in the controller
+    private int wordsPerPerson;
 
     @JsonIgnore
-    private int currentRoundIndex; //index
+    private int currentRoundIndex;
 
     private Player currentActor;
 
@@ -116,6 +118,7 @@ public class Game {
         if (state.isReady()) {
             prepareRounds();
             setCurrentRoundActivePlayers();
+            teams.stream().map(Team::getTeamScore).forEach(score -> score.setRoundScores(rounds));
         }
 
         return state.isReady();
@@ -125,6 +128,12 @@ public class Game {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
         currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentRoundTurn % 2);
         currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
+    }
+
+    @JsonIgnore
+    public Team getCurrentTeam() {
+        final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
+        return teams.get(currentRoundTurn % teams.size());
     }
 
 
