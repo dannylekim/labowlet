@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExpireSessionsFilter implements Filter {
 
-    LabowletState state = LabowletState.getInstance();
+    private LabowletState state = LabowletState.getInstance();
 
     @Override
     public void init(FilterConfig filterConfig) {

@@ -67,7 +67,6 @@ public class Game {
             throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
         }
 
-        //todo move this check into the controller
         if (inputWords.size() != wordsPerPerson) {
             log.warn("Missing word entries, you need to have {} entries", wordsPerPerson);
             throw new IllegalArgumentException("Missing word entries! You need to have " + wordsPerPerson + " entries!");
@@ -89,7 +88,7 @@ public class Game {
         log.info("Replacing the words inputted previously with the new ones");
         this.wordsMadePerPlayer.put(player, playerWordBowl);
 
-        var userStatus = state.usersStatus.stream().filter(status -> status.getPlayer().equals(player)).findFirst().orElse(null);
+        var userStatus = state.usersStatus.stream().filter(status -> status.getPlayer().equals(player)).findFirst().orElseThrow();
         userStatus.setCompleted(true);
     }
 

@@ -9,6 +9,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,9 @@ public class LabowletSessionRepository implements SessionRepository<Session> {
 
     private static final Logger logger = LoggerFactory.getLogger(LabowletSessionRepository.class);
 
-    private ConcurrentHashMap<String, Session> repository;
+    private ConcurrentMap<String, Session> repository;
 
-    public LabowletSessionRepository(ConcurrentHashMap<String, Session> repository) {
+    public LabowletSessionRepository(ConcurrentMap<String, Session> repository) {
         this.repository = repository;
     }
 
@@ -96,7 +97,7 @@ public class LabowletSessionRepository implements SessionRepository<Session> {
     @Override
     public void save(Session session) {
         String sessionId = session.getId();
-        if (!repository.contains(sessionId)) {
+        if (!repository.containsKey(sessionId)) {
             repository.put(session.getId(), session);
         }
     }

@@ -21,7 +21,7 @@ public class Round {
 
     private Random randomNumber = new Random();
 
-    public Round(String roundName) {
+    Round(String roundName) {
         this.remainingWords = new ArrayList<>();
         this.turns = 0;
         this.roundName = roundName;
@@ -30,7 +30,7 @@ public class Round {
 
     }
 
-    public void setRemainingWords(List<String> words) {
+    void setRemainingWords(List<String> words) {
         log.info("Setting these words {} into the {} round", Arrays.toString(words.toArray()), roundName);
         this.remainingWords = words;
     }

@@ -32,7 +32,7 @@ public class SessionConfig {
      * that in mind, if there is a solution to interact through the HttpSession and expiration then that will be the
      * preferred method.
      *
-     * @return
+     * @return the session repository
      */
     @Bean
     public LabowletSessionRepository sessionRepository() {

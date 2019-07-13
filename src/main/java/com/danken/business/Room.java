@@ -49,8 +49,6 @@ public class Room {
 
         log.info("Created a new room with {} and {}", host.getName(), host.getId());
 
-        //set State// //fixme move this into GameState
-
         createEmptyTeams(roomSettings.getMaxTeams());
 
     }
@@ -61,7 +59,6 @@ public class Room {
         }
 
         var rounds = getRoomSettings().getRoundTypes().stream().map(Round::new).collect(Collectors.toList());
-        var teams = getTeams();
 
         game = new Game(teams, rounds);
 
@@ -75,7 +72,7 @@ public class Room {
             if (teamMembers.size() == Team.MAX_TEAM_MEMBERS) {
                 teamsFilled++;
                 //if a team is not filled or empty, then it is missing players and cannot start
-            } else if (teamMembers.size() != 0) {
+            } else if (teamMembers.isEmpty()) {
                 return false;
             }
         }
@@ -259,7 +256,7 @@ public class Room {
             log.info("Checking for empty teams");
             var emptyTeams = teams.stream().filter(Team::isEmpty).collect(Collectors.toList());
 
-            if (emptyTeams.size() > 0) {
+            if (!emptyTeams.isEmpty()) {
                 teamToBench = emptyTeams.get(0);
             } else {
                 int lastJoinedTeamIndex;
@@ -280,7 +277,6 @@ public class Room {
     /***
      * Regenerates a new unique room code and sets it as this room's code.
      *
-     * @return
      */
     public void regenerateRoomCode() {
         this.roomCode = generateRoomCode();
