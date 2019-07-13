@@ -1,10 +1,17 @@
 package com.danken.filters;
 
-import com.danken.LabowletState;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.servlet.*;
 import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import com.danken.LabowletState;
+
+import lombok.extern.slf4j.Slf4j;
 
 /***
  *
@@ -15,9 +22,9 @@ import java.io.IOException;
  *
  */
 @Slf4j
-public class ExpireSessionsFilter implements Filter{
+public class ExpireSessionsFilter implements Filter {
 
-    LabowletState state = LabowletState.getInstance();
+    private LabowletState state = LabowletState.getInstance();
 
     @Override
     public void init(FilterConfig filterConfig) {

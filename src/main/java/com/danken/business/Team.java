@@ -1,23 +1,28 @@
 package com.danken.business;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
 @Slf4j
 @NoArgsConstructor
 public class Team {
+
     private String teamName;
+
     public static final int MAX_TEAM_MEMBERS = 2;
+
     private List<Player> teamMembers;
+
     private Score teamScore;
+
     private String teamId;
 
     public Team(String teamName) {
@@ -70,7 +75,7 @@ public class Team {
 
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return teamMembers.size() == 0;
     }
 

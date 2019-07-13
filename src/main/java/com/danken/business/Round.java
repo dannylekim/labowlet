@@ -1,22 +1,27 @@
 package com.danken.business;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class Round {
+
     private String roundName;
+
     @JsonIgnore
     private List<String> remainingWords;
+
     private int turns;
+
     private Random randomNumber = new Random();
 
-    public Round(String roundName) {
+    Round(String roundName) {
         this.remainingWords = new ArrayList<>();
         this.turns = 0;
         this.roundName = roundName;
@@ -25,7 +30,7 @@ public class Round {
 
     }
 
-    public void setRemainingWords(List<String> words) {
+    void setRemainingWords(List<String> words) {
         log.info("Setting these words {} into the {} round", Arrays.toString(words.toArray()), roundName);
         this.remainingWords = words;
     }

@@ -1,33 +1,44 @@
 package com.danken.business;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.*;
 
 
 @Slf4j
 @Getter
 public class Game {
+
     @JsonIgnore
     private List<String> wordBowl;
+
     @JsonIgnore
     private Map<Player, List<String>> wordsMadePerPlayer;
+
     private List<Round> rounds;
+
     private List<Team> teams;
+
     @JsonIgnore
     private int wordsPerPerson; // put this in the controller
+
     private int currentRound; //index
 
     private Player currentActor;
+
     private Player currentGuesser;
 
     @JsonIgnore
     private WordBowlInputState state;
 
 
-    public Game(List<Team> teams, List<Round> rounds){
+    public Game(List<Team> teams, List<Round> rounds) {
         this.teams = teams;
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
@@ -56,7 +67,6 @@ public class Game {
             throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
         }
 
-        //todo move this check into the controller
         if (inputWords.size() != wordsPerPerson) {
             log.warn("Missing word entries, you need to have {} entries", wordsPerPerson);
             throw new IllegalArgumentException("Missing word entries! You need to have " + wordsPerPerson + " entries!");
@@ -78,12 +88,12 @@ public class Game {
         log.info("Replacing the words inputted previously with the new ones");
         this.wordsMadePerPlayer.put(player, playerWordBowl);
 
-        var userStatus = state.usersStatus.stream().filter(status -> status.getPlayer().equals(player)).findFirst().orElse(null);
+        var userStatus = state.usersStatus.stream().filter(status -> status.getPlayer().equals(player)).findFirst().orElseThrow();
         userStatus.setCompleted(true);
     }
 
-    public void prepareRounds(){
-        if(wordsMadePerPlayer.size() != teams.size() * 2){
+    public void prepareRounds() {
+        if (wordsMadePerPlayer.size() != teams.size() * 2) {
             throw new IllegalStateException("Rounds cannot be prepared until all words have been inputted by each player");
         }
 

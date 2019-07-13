@@ -1,13 +1,16 @@
 package com.danken.business;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -16,17 +19,24 @@ public class Room {
 
     // -------- DATA MEMBERS ------------
     private List<Team> teams;
+
     private List<Player> benchPlayers;
+
     private Player host;
+
     private String roomCode; //given a setter to use for @RequestBody
+
     private RoomSettings roomSettings;
+
     @JsonIgnore
     @Setter
     private Game game;
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
+
     private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
+
     private static final int ROOM_CODE_LENGTH = 4;
 
     public Room(Player host, RoomSettings roomSettings) {
@@ -39,19 +49,16 @@ public class Room {
 
         log.info("Created a new room with {} and {}", host.getName(), host.getId());
 
-        //set State// //fixme move this into GameState
-
         createEmptyTeams(roomSettings.getMaxTeams());
 
     }
 
-    public Game createGame(){
+    public Game createGame() {
         if (!isCanStart()) {
             throw new IllegalStateException("Game cannot start.");
         }
 
         var rounds = getRoomSettings().getRoundTypes().stream().map(Round::new).collect(Collectors.toList());
-        var teams = getTeams();
 
         game = new Game(teams, rounds);
 
@@ -65,7 +72,7 @@ public class Room {
             if (teamMembers.size() == Team.MAX_TEAM_MEMBERS) {
                 teamsFilled++;
                 //if a team is not filled or empty, then it is missing players and cannot start
-            } else if (teamMembers.size() != 0) {
+            } else if (teamMembers.isEmpty()) {
                 return false;
             }
         }
@@ -249,7 +256,7 @@ public class Room {
             log.info("Checking for empty teams");
             var emptyTeams = teams.stream().filter(Team::isEmpty).collect(Collectors.toList());
 
-            if (emptyTeams.size() > 0) {
+            if (!emptyTeams.isEmpty()) {
                 teamToBench = emptyTeams.get(0);
             } else {
                 int lastJoinedTeamIndex;
@@ -270,7 +277,6 @@ public class Room {
     /***
      * Regenerates a new unique room code and sets it as this room's code.
      *
-     * @return
      */
     public void regenerateRoomCode() {
         this.roomCode = generateRoomCode();

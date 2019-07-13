@@ -1,23 +1,24 @@
 package com.danken.application.controllers;
 
+import java.util.Arrays;
+
+import javax.inject.Inject;
+
 import com.danken.LabowletState;
+import com.danken.application.config.MessageSocketSender;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
+import com.danken.sessions.GameSession;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
-import com.danken.sessions.GameSession;
-
-import javax.inject.Inject;
-
-import java.util.Arrays;
-
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 /***
  *
@@ -29,19 +30,21 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @RequestMapping("/rooms")
 public class RoomController {
 
-    private SimpMessagingTemplate template;
+    private final MessageSocketSender sender;
+
     private final LabowletState applicationState = LabowletState.getInstance();
-    private GameSession userGameSession;
+
+    private final GameSession userGameSession;
 
 
     //Retrieve Application State
     @Inject
-    public RoomController(SimpMessagingTemplate template, GameSession userGameSession) {
-        this.template = template;
+    public RoomController(final MessageSocketSender sender, final GameSession userGameSession) {
+        this.sender = sender;
         this.userGameSession = userGameSession;
     }
 
-    @RequestMapping(method = POST)
+    @PostMapping
     public Room createRoom(@RequestBody RoomSettings newRoomSettings) {
         log.info("Verifying the round types for " + Arrays.toString(newRoomSettings.getRoundTypes().toArray()));
         newRoomSettings.verifyRoundTypes();
@@ -50,7 +53,7 @@ public class RoomController {
         log.info("Creating new room for the host {}", host.getName());
         Room newRoom = new Room(host, newRoomSettings);
 
-        log.info("Verifying if the roomCode is unique");
+        log.info("Verifying if the code is unique");
         boolean isRoomCodeUnique = applicationState.isRoomCodeUnique(newRoom.getRoomCode());
 
         /*if the room code isn't unique, regenerate the room code and check again until there are no rooms with the same
@@ -66,22 +69,20 @@ public class RoomController {
         log.info("Adding newly formed room with room code {} as active for the session", newRoom.getRoomCode());
         applicationState.addActiveRoom(newRoom);
         userGameSession.setCurrentRoom(newRoom);
-
-        log.debug("Sending room to all sockets connecting into /room/{}", newRoom.getRoomCode());
-        template.convertAndSend("/room/" + newRoom.getRoomCode(), newRoom);
+        sender.sendRoomMessage(newRoom);
 
 
         return newRoom;
     }
 
 
-    @RequestMapping(method = PUT)
+    @PutMapping
     public Room joinRoom(@RequestBody RoomCode roomCode) {
         Player player = userGameSession.getPlayer();
-        Room roomToJoin = applicationState.getRoom(roomCode.getRoomCode());
+        Room roomToJoin = applicationState.getRoom(roomCode.getCode());
 
         if (roomToJoin == null) {
-            log.warn("Tried to access the room with room code: {}", roomCode.getRoomCode());
+            log.warn("Tried to access the room with room code: {}", roomCode.getCode());
             throw new IllegalArgumentException("There is no room with that room code. Please try again!");
 
         }
@@ -92,21 +93,18 @@ public class RoomController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}", roomToJoin.getRoomCode());
-        template.convertAndSend("/room/" + roomToJoin.getRoomCode(), roomToJoin);
+        sender.sendRoomMessage(roomToJoin);
 
 
         return roomToJoin;
     }
 
     static class RoomCode {
+
         @Getter
         @Setter
-        String roomCode;
-
-        public RoomCode() {
-        }
+        String code;
     }
-
 
 
 }

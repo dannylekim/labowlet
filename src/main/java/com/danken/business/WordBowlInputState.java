@@ -10,9 +10,9 @@ import java.util.List;
 public class WordBowlInputState {
 
     List<UserWordBowlStatus> usersStatus = new ArrayList<>();
-    boolean isReady = false;
+    private boolean ready = false;
 
-    public WordBowlInputState(List<Player> players){
+    WordBowlInputState(List<Player> players){
         players.forEach(player -> {
             var status = new UserWordBowlStatus();
             status.setPlayer(player);
@@ -20,7 +20,6 @@ public class WordBowlInputState {
         });
 
     }
-
 
 
     public boolean isReady() {

@@ -18,6 +18,8 @@ import com.danken.business.LabowletError;
  * 
  */
 public class JsonErrorResponseHandler {
+
+    private JsonErrorResponseHandler(){}
     
     
     /**
@@ -26,7 +28,7 @@ public class JsonErrorResponseHandler {
      * @param response the HttpServletResponse used to print out a reply to client
      * @param errorStatus an HttpStatus that should correspond to an error HttpStatus 
      * @param ex The runtime Exception used 
-     * @throws Exception 
+     * @throws IOException from the writer
      */
     public static void sendErrorResponse(HttpServletResponse response, HttpStatus errorStatus, Throwable ex) throws IOException{
         LabowletError error = new LabowletError(errorStatus, ex);
