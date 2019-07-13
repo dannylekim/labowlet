@@ -3,7 +3,15 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
 
-    <springProfile name="dev">
+    <springProfile name="heroku">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        <root level="ERROR">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+
+    <springProfile name="local-dev">
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
         <appender name="ROLLING-FILE"
                   class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -21,7 +29,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="prod">
+    <springProfile name="local-prod">
         <appender name="ROLLING-FILE"
                   class="ch.qos.logback.core.rolling.RollingFileAppender">
             <encoder>
