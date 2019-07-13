@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.danken.application.config.MessageSocketSender;
 import com.danken.business.WordBowlInputState;
 import com.danken.sessions.GameSession;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -21,13 +21,13 @@ public class WordBowlController {
 
     private final GameSession gameSession;
 
-    private final SimpMessagingTemplate template;
+    private final MessageSocketSender sender;
 
 
     @Inject
-    public WordBowlController(GameSession userGameSession, final SimpMessagingTemplate simpMessagingTemplate) {
+    public WordBowlController(final GameSession userGameSession, final MessageSocketSender sender) {
         this.gameSession = userGameSession;
-        this.template = simpMessagingTemplate;
+        this.sender = sender;
     }
 
     @MessageMapping("/room/{code}/addWords")
@@ -41,7 +41,7 @@ public class WordBowlController {
         }
 
         game.addWordBowl(inputWords, gameSession.getPlayer());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode() + "/game", game.getState());
+        sender.sendStateMessage(currentRoom.getRoomCode(), game.getState());
 
         return game.getState();
     }
