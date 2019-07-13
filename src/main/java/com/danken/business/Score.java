@@ -20,10 +20,6 @@ public class Score {
         return 0;
     }
 
-    public int getTotalScore(){
-        return totalScore;
-    }
-
     public void addPoint(String roundName, String word){
         //todo
     }

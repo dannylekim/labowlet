@@ -28,17 +28,18 @@ bootJar {
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('org.springframework.boot:spring-boot-starter-websocket')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation('org.springframework.boot:spring-boot-starter-websocket')
 	compile ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.6")
 	runtime('org.springframework.boot:spring-boot-devtools')
 	compile group: 'javax.inject', name: 'javax.inject', version: '1'
-	compile('org.springframework.session:spring-session-core')
+	implementation('org.springframework.session:spring-session-core')
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation('org.junit.jupiter:junit-jupiter-api')
 	testRuntime('org.junit.jupiter:junit-jupiter-engine')
 	compileOnly 'org.projectlombok:lombok:1.18.2'
+	compile group: 'org.mockito', name: 'mockito-core', version: '2.22.0'
 }
 
 test {
