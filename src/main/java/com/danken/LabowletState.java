@@ -1,16 +1,15 @@
 package com.danken;
 
-import com.danken.sessions.GameSession;
-import com.danken.business.Room;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.danken.sessions.LabowletSessionRepository;
-
-import org.springframework.session.Session;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.danken.business.Room;
+import com.danken.sessions.GameSession;
+import com.danken.sessions.LabowletSessionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.session.Session;
 
 /***
  *  This is the state of the com.danken.application at all times. Essentially, the in-memory database implementation for Labowlet.
@@ -23,9 +22,13 @@ import java.util.Map;
 public class LabowletState {
 
     private static LabowletState labowletState = null;
+
     private LabowletSessionRepository labowletSessionRepository;
+
     private Map<String, Room> activeRooms;
+
     private Map<String, List<String>> activeSockets; //todo sockets/roomId
+
     private static final Logger logger = LoggerFactory.getLogger(LabowletState.class);
 
 

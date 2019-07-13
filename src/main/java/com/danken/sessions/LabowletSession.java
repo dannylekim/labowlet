@@ -1,9 +1,5 @@
 package com.danken.sessions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.session.Session;
-
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
@@ -14,6 +10,10 @@ import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.session.Session;
 
 
 /***
@@ -29,16 +29,22 @@ public class LabowletSession implements Session, Serializable {
     // ---------- STATIC CONSTANTS ------------------- //
 
     private static final Duration DEFAULT_MAX_INACTIVE_INTERVAL = Duration.ofHours(1);
+
     private static final Logger logger = LoggerFactory.getLogger(LabowletSession.class);
 
 
     // ------------ Sessions Implementation ----------- //
 
     private String sessionId;
+
     private HashMap<String, Object> attributes; //used to store extra information
+
     private Instant creationTime;
+
     private Instant lastAccessedTime;
+
     private Duration maxInactiveInterval;
+
     private boolean isExpired;
 
 
@@ -59,7 +65,7 @@ public class LabowletSession implements Session, Serializable {
         logger.debug("Session created {} at {} with {} hour(s) as max time before expiry",
                 this.sessionId,
                 LocalDateTime.ofInstant(this.creationTime,
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+                        ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
                 this.maxInactiveInterval.toHours());
     }
 

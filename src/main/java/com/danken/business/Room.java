@@ -1,13 +1,16 @@
 package com.danken.business;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -16,17 +19,24 @@ public class Room {
 
     // -------- DATA MEMBERS ------------
     private List<Team> teams;
+
     private List<Player> benchPlayers;
+
     private Player host;
+
     private String roomCode; //given a setter to use for @RequestBody
+
     private RoomSettings roomSettings;
+
     @JsonIgnore
     @Setter
     private Game game;
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
+
     private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ234567890";
+
     private static final int ROOM_CODE_LENGTH = 4;
 
     public Room(Player host, RoomSettings roomSettings) {
@@ -45,7 +55,7 @@ public class Room {
 
     }
 
-    public Game createGame(){
+    public Game createGame() {
         if (!isCanStart()) {
             throw new IllegalStateException("Game cannot start.");
         }

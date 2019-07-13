@@ -1,17 +1,20 @@
 package com.danken.application.controllers;
 
+import javax.inject.Inject;
+
+import com.danken.application.config.MessageSocketSender;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.Team;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import lombok.extern.slf4j.Slf4j;
 
 //todo rather than in every method check if the room is null, have it inside a filter that verifies these paths.
 
@@ -25,44 +28,42 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @RequestMapping("/teams")
 public class TeamController {
 
-    private SimpMessagingTemplate template;
-    private GameSession userGameSession;
+    private final MessageSocketSender sender;
+
+    private final GameSession userGameSession;
 
     //Retrieve Application State
     @Inject
-    public TeamController(SimpMessagingTemplate template, GameSession userGameSession) {
-        this.template = template;
+    public TeamController(final MessageSocketSender sender, final GameSession userGameSession) {
+        this.sender = sender;
         this.userGameSession = userGameSession;
     }
 
-    @RequestMapping(method = POST)
+    @PostMapping
     public Room createTeam(@RequestBody Team teamWithOnlyTeamName) {
-        Player player = userGameSession.getPlayer();
-        Room currentRoom = userGameSession.getCurrentRoom();
+        final Player player = userGameSession.getPlayer();
+        final Room currentRoom = userGameSession.getCurrentRoom();
 
         log.info("Creating a team with team name {} and the player {}", teamWithOnlyTeamName.getTeamName(), player.getName());
         currentRoom.createTeam(teamWithOnlyTeamName.getTeamName(), player);
 
-        //Sending the room in a message to allow everyone connected to the socket to be able sync
-        log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), currentRoom);
+        sender.sendRoomMessage(currentRoom);
 
         return currentRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/{teamId}") //add a teamId param
+    @PutMapping("/{teamId}") //add a teamId param
     public Room updateTeam(@RequestBody Team teamWithOnlyTeamName, @PathVariable("teamId") String teamId) throws Exception {
 
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
 
-        if(teamId.equalsIgnoreCase("bench")){
+        if (teamId.equalsIgnoreCase("bench")) {
             boolean isPlayerRemoved = currentRoom.removePlayer(player);
-            if(isPlayerRemoved){
+            if (isPlayerRemoved) {
                 currentRoom.addPlayerToBench(player);
             }
-        }
-        else {
+        } else {
             Team team = currentRoom.getTeam(teamId);
             if (team == null) {
                 log.warn("Tried to join a team with team id {} and the current Room Code: {} ", teamId, currentRoom.getRoomCode());
@@ -76,20 +77,18 @@ public class TeamController {
                 log.info("Setting the team name from {} to {}", team.getTeamName(), teamWithOnlyTeamName.getTeamName());
                 team.setTeamName(teamWithOnlyTeamName.getTeamName()); //you are only allowed to update teamName if you are ALREADY inside the team
             } else if (!isPlayerInTeam) {
-                log.info("Adding the player {} to the team ", player.getName(), team.getTeamName());
+                log.info("Adding the player {} to the team {}", player.getName(), team.getTeamName());
                 currentRoom.addPlayerToTeam(team, player);
             } else {
                 //this is an error that should not occur, and if it does then you have to fail gracefully
-                log.error("Unknown Error. Team name parameter is {}, and the team's current players are: {}" , teamWithOnlyTeamName.getTeamName(), team.getTeamMembers());
-                throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team.");
+                log.error("Unknown Error. The team's current players are: {}", team.getTeamMembers());
+                throw new IllegalStateException("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team.");
             }
 
         }
 
 
-        //Sending the room in a message to allow everyone connected to the socket to be able sync
-        log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(),currentRoom);
+        sender.sendRoomMessage(currentRoom);
         return currentRoom;
     }
 

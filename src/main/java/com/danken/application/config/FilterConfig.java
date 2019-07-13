@@ -15,7 +15,7 @@ public class FilterConfig {
 
     //Expire Sessions Filter to all paths
     @Bean
-    public FilterRegistrationBean<ExpireSessionsFilter> expireSessionsFilter(){
+    public FilterRegistrationBean<ExpireSessionsFilter> expireSessionsFilter() {
         FilterRegistrationBean<ExpireSessionsFilter> registrationBean
                 = new FilterRegistrationBean<>();
 

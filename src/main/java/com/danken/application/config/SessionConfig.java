@@ -1,6 +1,9 @@
 package com.danken.application.config;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.danken.LabowletState;
+import com.danken.sessions.LabowletSessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -8,10 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
-import com.danken.sessions.LabowletSessionRepository;
-
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /***
  * This class handles all configurations that deal with the com.danken.application state and com.danken.sessions.
@@ -36,7 +35,7 @@ public class SessionConfig {
      * @return
      */
     @Bean
-    public LabowletSessionRepository sessionRepository(){
+    public LabowletSessionRepository sessionRepository() {
         logger.info("Creating a session repository and setting it to the com.danken.application state.");
         LabowletSessionRepository labowletSessionRepository = new LabowletSessionRepository(new ConcurrentHashMap<>());
         LabowletState applicationState = LabowletState.getInstance();
@@ -51,7 +50,7 @@ public class SessionConfig {
      * @return the HttpSessionIdResolver with a specified strategy, in this case x-auth-token in the header.
      */
     @Bean
-    public HttpSessionIdResolver httpSessionIdResolver(){
+    public HttpSessionIdResolver httpSessionIdResolver() {
         return HeaderHttpSessionIdResolver.xAuthToken();
     }
 

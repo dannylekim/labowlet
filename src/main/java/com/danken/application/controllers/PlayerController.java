@@ -1,16 +1,16 @@
 package com.danken.application.controllers;
 
-import com.danken.business.Player;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.danken.sessions.GameSession;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import javax.inject.Inject;
 
+import com.danken.business.Player;
+import com.danken.sessions.GameSession;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import lombok.extern.slf4j.Slf4j;
 
 /***
  *
@@ -29,8 +29,8 @@ public class PlayerController {
         this.gameSession = gameSession;
     }
 
-    @RequestMapping(method=POST)
-    public Player createPlayer(@RequestBody Player player){
+    @RequestMapping(method = POST)
+    public Player createPlayer(@RequestBody Player player) {
         //A game session creates a player on instantiation.
         gameSession.setPlayer(player);
         return gameSession.getPlayer();

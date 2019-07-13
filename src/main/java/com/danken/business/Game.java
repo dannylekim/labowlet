@@ -1,33 +1,44 @@
 package com.danken.business;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.*;
 
 
 @Slf4j
 @Getter
 public class Game {
+
     @JsonIgnore
     private List<String> wordBowl;
+
     @JsonIgnore
     private Map<Player, List<String>> wordsMadePerPlayer;
+
     private List<Round> rounds;
+
     private List<Team> teams;
+
     @JsonIgnore
     private int wordsPerPerson; // put this in the controller
+
     private int currentRound; //index
 
     private Player currentActor;
+
     private Player currentGuesser;
 
     @JsonIgnore
     private WordBowlInputState state;
 
 
-    public Game(List<Team> teams, List<Round> rounds){
+    public Game(List<Team> teams, List<Round> rounds) {
         this.teams = teams;
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
@@ -82,8 +93,8 @@ public class Game {
         userStatus.setCompleted(true);
     }
 
-    public void prepareRounds(){
-        if(wordsMadePerPlayer.size() != teams.size() * 2){
+    public void prepareRounds() {
+        if (wordsMadePerPlayer.size() != teams.size() * 2) {
             throw new IllegalStateException("Rounds cannot be prepared until all words have been inputted by each player");
         }
 

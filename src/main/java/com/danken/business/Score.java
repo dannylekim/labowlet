@@ -1,30 +1,32 @@
 package com.danken.business;
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+
 public class Score {
+
     private Map<String, List<String>> roundScores;
+
     @Getter
     private int totalScore;
 
-    public Score(){
+    public Score() {
         totalScore = 0;
         roundScores = new HashMap<>(); //todo initialize knowing the rounds
     }
 
-    public int getRoundScore(String roundName){
+    public int getRoundScore(String roundName) {
         return 0;
     }
 
-    public void addPoint(String roundName, String word){
+    public void addPoint(String roundName, String word) {
         //todo
     }
 
-    public void removePoint(String roundName, String word){
+    public void removePoint(String roundName, String word) {
         //todo
     }
 
@@ -33,7 +35,7 @@ public class Score {
         //todo
     }
 
-    public Map getScoreBoard(){
+    public Map getScoreBoard() {
         return null;
 
         //todo
