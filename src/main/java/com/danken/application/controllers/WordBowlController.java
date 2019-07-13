@@ -31,7 +31,7 @@ public class WordBowlController {
     }
 
     @MessageMapping("/room/{code}/addWords")
-    @SendTo("/room/{code}/addWords")
+    @SendTo("client/room/{code}/addWords")
     public WordBowlInputState addWords(@RequestBody List<String> inputWords) {
         var currentRoom = gameSession.getCurrentRoom();
         var game = currentRoom.getGame();
@@ -41,8 +41,6 @@ public class WordBowlController {
         }
 
         game.addWordBowl(inputWords, gameSession.getPlayer());
-        sender.sendStateMessage(currentRoom.getRoomCode(), game.getState());
-
         return game.getState();
     }
 
