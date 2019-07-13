@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.danken.application.config.MessageSocketSender;
 import com.danken.business.WordBowlInputState;
 import com.danken.sessions.GameSession;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -21,17 +21,17 @@ public class WordBowlController {
 
     private final GameSession gameSession;
 
-    private final MessageSocketSender sender;
+    private final SimpMessagingTemplate template;
 
 
     @Inject
-    public WordBowlController(final GameSession userGameSession, final MessageSocketSender sender) {
+    public WordBowlController(GameSession userGameSession, final SimpMessagingTemplate simpMessagingTemplate) {
         this.gameSession = userGameSession;
-        this.sender = sender;
+        this.template = simpMessagingTemplate;
     }
 
     @MessageMapping("/room/{code}/addWords")
-    @SendTo("client/room/{code}/addWords")
+    @SendTo("/room/{code}/addWords")
     public WordBowlInputState addWords(@RequestBody List<String> inputWords) {
         var currentRoom = gameSession.getCurrentRoom();
         var game = currentRoom.getGame();
@@ -41,6 +41,8 @@ public class WordBowlController {
         }
 
         game.addWordBowl(inputWords, gameSession.getPlayer());
+        template.convertAndSend("/room/" + currentRoom.getRoomCode() + "/game", game.getState());
+
         return game.getState();
     }
 

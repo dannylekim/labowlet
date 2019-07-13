@@ -54,21 +54,23 @@ public class RoomSettings {
      * Used to verify that the round types are part of the enumeration. Used in a controller context to catch the error
      *
      *
-     * @throws IllegalArgumentException when there exists an unvalid room type
+     * @throws IllegalArgumentException
      */
-    public void verifyRoundTypes() {
-        if (!roundTypes.isEmpty()) {
+    public void verifyRoundTypes() throws IllegalArgumentException {
+        if (roundTypes.size() > 0) {
             roundTypes.forEach(roundType -> {
                 log.debug("Verifying if " + roundType + " is a valid input");
                 if (!roundTypeEnums.contains(roundType)) {
-                    String msg = (roundType + " is not a valid input. It must be one of these possible" +
-                            " choices: ") +
-                            Arrays.toString(roundTypeEnums.toArray());
+                    StringBuilder msgBuilder = new StringBuilder();
+                    msgBuilder.append(roundType + " is not a valid input. It must be one of these possible" +
+                            " choices: ");
+                    msgBuilder.append(Arrays.toString(roundTypeEnums.toArray()));
+                    String msg = msgBuilder.toString();
                     log.warn(msg);
                     throw new IllegalArgumentException(msg);
                 }
             });
-        } else {
+        } else if (roundTypeEnums.size() > 0) {
             log.warn("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(roundTypeEnums.toArray()));
             throw new IllegalArgumentException("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(roundTypeEnums.toArray()));
         }

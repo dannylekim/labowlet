@@ -27,6 +27,8 @@ public class LabowletState {
 
     private Map<String, Room> activeRooms;
 
+    private Map<String, List<String>> activeSockets; //todo sockets/roomId
+
     private static final Logger logger = LoggerFactory.getLogger(LabowletState.class);
 
 
