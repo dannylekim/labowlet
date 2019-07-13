@@ -35,13 +35,16 @@ public class Game {
     private Player currentGuesser;
 
     @JsonIgnore
+    private Team currentTeam;
+
+    @JsonIgnore
     private WordBowlInputState state;
 
     @JsonIgnore
     private boolean started;
 
 
-    Game(List<Team> teams, List<Round> rounds) {
+    Game(List<Team> teams, List<Round> rounds, int wordsPerPerson) {
         this.teams = teams;
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
@@ -53,6 +56,7 @@ public class Game {
                 players.addAll(team.getTeamMembers())
         );
 
+        this.wordsPerPerson = wordsPerPerson;
         state = new WordBowlInputState(players);
     }
 
@@ -83,7 +87,7 @@ public class Game {
             //checking for uniqueness
             if (playerWordBowl.contains(word)) {
                 log.warn("Cannot have two of the same entries in the word bowl");
-                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
+                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl! Please remove " + word);
             }
             playerWordBowl.add(word);
         });
@@ -107,9 +111,18 @@ public class Game {
     public boolean startGame() {
         if (state.isReady()) {
             prepareRounds();
+            this.currentRound = 0;
+            final var currentRoundTurn = rounds.get(currentRound).getTurns();
+            currentActor = teams.get(0).getTeamMembers().get(currentRoundTurn % 2);
         }
 
         return state.isReady();
+    }
+
+    public void setCurrentRoundActivePlayers() {
+        final var currentRoundTurn = rounds.get(currentRound).getTurns();
+        currentActor = currentTeam.getTeamMembers().get(currentRoundTurn % 2);
+        currentGuesser = currentTeam.getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
     }
 
 

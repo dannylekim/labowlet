@@ -7,8 +7,10 @@ import javax.inject.Inject;
 import com.danken.application.config.MessageSocketSender;
 import com.danken.business.WordBowlInputState;
 import com.danken.sessions.GameSession;
+import com.danken.utility.SocketSessionUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,8 +34,8 @@ public class WordBowlController {
 
     @MessageMapping("/room/{code}/addWords")
     @SendTo("client/room/{code}/addWords")
-    public WordBowlInputState addWords(@RequestBody List<String> inputWords) {
-        var currentRoom = gameSession.getCurrentRoom();
+    public WordBowlInputState addWords(@RequestBody List<String> inputWords, SimpMessageHeaderAccessor accessor) {
+        var currentRoom = SocketSessionUtils.getRoom(accessor);
         var game = currentRoom.getGame();
 
         if (game == null) {

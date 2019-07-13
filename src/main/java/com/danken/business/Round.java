@@ -7,9 +7,11 @@ import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Getter
 public class Round {
 
     private String roundName;
@@ -19,6 +21,7 @@ public class Round {
 
     private int turns;
 
+    @JsonIgnore
     private Random randomNumber = new Random();
 
     Round(String roundName) {
