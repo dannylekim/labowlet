@@ -16,11 +16,14 @@ public class MessageSocketSender {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    private static final String ROOM_ENDPOINT = "/room/";
+    private static final String ROOM_ENDPOINT = "/client/room/";
 
     private static final String GAME_ENDPOINT = "/game";
 
     private static final String STATE_ENDPOINT = "/state";
+
+    private static final String WORD_ENDPOINT = "/word";
+
 
     @Inject
     public MessageSocketSender(final SimpMessagingTemplate simpMessagingTemplate) {
@@ -37,9 +40,14 @@ public class MessageSocketSender {
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT, game);
     }
 
-    public void sendStateMessage(final String roomCode, final WordBowlInputState state) {
-        log.debug("Sending state to all sockets connecting into /room/{}/state", roomCode);
-        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT, state);
+    public void sendWordStateMessage(final String roomCode, final WordBowlInputState state) {
+        log.debug("Sending word state to all sockets connecting into /room/{}/state/word", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT + WORD_ENDPOINT, state);
+    }
+
+    public void sendGameStateMessage(final String roomCode, final boolean didGameStart) {
+        log.debug("Sending game state to all sockets connecting into /room/{}/state/game", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT + GAME_ENDPOINT, didGameStart);
 
     }
 

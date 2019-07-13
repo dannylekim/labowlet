@@ -10,7 +10,7 @@ import java.util.List;
 public class WordBowlInputState {
 
     List<UserWordBowlStatus> usersStatus = new ArrayList<>();
-    boolean isReady = false;
+    private boolean ready = false;
 
     WordBowlInputState(List<Player> players){
         players.forEach(player -> {
