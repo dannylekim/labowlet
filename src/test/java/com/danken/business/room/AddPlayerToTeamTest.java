@@ -23,7 +23,7 @@ public class AddPlayerToTeamTest {
     Room room;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         host = mock(Player.class);
         roomSettings = mock(RoomSettings.class);
         team = mock(Team.class);
@@ -39,12 +39,12 @@ public class AddPlayerToTeamTest {
      *
      */
     @Test
-    public void returnTrueIfPlayerInBench() throws Exception{
+    public void returnTrueIfPlayerInBench() throws Exception {
         //creating players
         Player teamPlayer = mock(Player.class);
         Player benchPlayer = mock(Player.class);
-        Team testTeam = new Team("test", teamPlayer);
-
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(teamPlayer);
         //Teams and BenchPlayers must all be added to validate through
         room.getTeams().add(testTeam);
         room.getBenchPlayers().add(benchPlayer);
@@ -52,11 +52,9 @@ public class AddPlayerToTeamTest {
         //should be successful and not throw
         room.addPlayerToTeam(testTeam, benchPlayer);
 
-        assertAll(() -> {
-            assertTrue(testTeam.getTeamMember1() == benchPlayer || testTeam.getTeamMember2() == benchPlayer);
-            assertEquals(room.getBenchPlayers().size(), 1); //assuming that the host is automatically added in
-        });
-      
+        assertTrue(testTeam.getTeamMembers().contains(benchPlayer));
+        assertEquals(room.getBenchPlayers().size(), 1); //assuming that the host is automatically added in
+
     }
 
     /***
@@ -66,11 +64,13 @@ public class AddPlayerToTeamTest {
      * happening
      */
     @Test
-    public void returnTrueIfPlayerInTeam() throws Exception{
-        Team hostTeam = new Team("one", host);
+    public void returnTrueIfPlayerInTeam() throws Exception {
+        Team hostTeam = new Team("one");
+        hostTeam.addPlayerInTeam(host);
 
         Player initialTeamMember = mock(Player.class);
-        Team testTeam = new Team("two", initialTeamMember);
+        Team testTeam = new Team("two");
+        testTeam.addPlayerInTeam(initialTeamMember);
 
         //the host should no longer be found in the bench
         room.getBenchPlayers().remove(host);
@@ -82,21 +82,19 @@ public class AddPlayerToTeamTest {
 
         assertTrue(room.getTeams().size() == 2);
 
-        assertAll(() -> {
-            //the player should only be found in 1 team.
-            assertTrue(room
-            .getTeams()
-            .stream()
-            .filter(team -> team.getTeamMember2() == host || team.getTeamMember1() == host)
-            .collect(toList())
-            .size() == 1);
 
-            //the player should be found in the team that he was supposed to be added in
-            assertTrue(testTeam.getTeamMember2() == host || testTeam.getTeamMember1() == host);
-        });
+        //the player should only be found in 1 team.
+        assertTrue(room
+                .getTeams()
+                .stream()
+                .filter(team -> team.isPlayerInTeam(host))
+                .collect(toList())
+                .size() == 1);
 
-        
-    
+        //the player should be found in the team that he was supposed to be added in
+        assertTrue(testTeam.isPlayerInTeam(host));
+
+
     }
 
 
@@ -107,25 +105,26 @@ public class AddPlayerToTeamTest {
      * happening
      */
     @Test
-    public void throwErrorIfPlayerNotInRoom() throws Exception{
-        Player playerNotInRoom = new Player("notInRoom");
-        Team testTeam = new Team("test", new Player("playerInTeam"));
+    public void throwErrorIfPlayerNotInRoom() throws Exception {
+        Player playerNotInRoom = new Player();
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(new Player());
         room.getTeams().add(testTeam);
         assertThrows(IllegalStateException.class, () -> room.addPlayerToTeam(testTeam, playerNotInRoom));
     }
 
 
     /**
-     *
      * Throw an error because the player is trying to join a full room
      *
      * @throws Exception occur when something major prevented the code from happening. Should never be
-     * happening
+     *                   happening
      */
     @Test
-    public void throwErrorIfNoOpenSlot() throws Exception{
-        Team fullTeam = new Team("fullTeam",  new Player("one"));
-        fullTeam.addPlayerInTeam(new Player("anotherOne"));
+    public void throwErrorIfNoOpenSlot() throws Exception {
+        Team fullTeam = new Team("fullTeam");
+        fullTeam.addPlayerInTeam(new Player());
+        fullTeam.addPlayerInTeam(new Player());
         room.getTeams().add(fullTeam);
         assertThrows(IllegalStateException.class, () -> room.addPlayerToTeam(fullTeam, host));
 
@@ -141,31 +140,15 @@ public class AddPlayerToTeamTest {
      * happening
      */
     @Test
-    public void throwErrorIfPlayerAlreadyInTeam() throws Exception{
-        Player somePlayerAlreadyInTeam = new Player("in");
-        Team testTeam = new Team("test", somePlayerAlreadyInTeam);
+    public void throwErrorIfPlayerAlreadyInTeam() throws Exception {
+        Player somePlayerAlreadyInTeam = new Player();
+        Team testTeam = new Team("test");
+        testTeam.addPlayerInTeam(somePlayerAlreadyInTeam);
         room.getTeams().add(testTeam);
 
-        assertThrows(IllegalArgumentException.class,() -> room.addPlayerToTeam(testTeam, somePlayerAlreadyInTeam));
+        assertThrows(IllegalArgumentException.class, () -> room.addPlayerToTeam(testTeam, somePlayerAlreadyInTeam));
     }
 
-    /***
-     *
-     * If for some reason the player could not be removed, you must throw a general exception. This case should never
-     * happen.
-     *
-     * @throws Exception occur when something major prevented the code from happening. Should never be
-     * happening
-     */
-    @Test
-    public void throwErrorIfPlayerNotRemoved() throws Exception{
-        doReturn(false).when(room).removePlayer(any()); //player could not be removed for some reason
-        Player somePlayerAlreadyInTeam = new Player("in");
-        Team testTeam = new Team("test", somePlayerAlreadyInTeam);
-        room.getTeams().add(testTeam);
-
-        assertThrows(Exception.class, () -> room.addPlayerToTeam(testTeam, host));
-    }
 
     /***
      *  If for some reason the player could not be added after going through all the hoops, then there is another
@@ -174,11 +157,12 @@ public class AddPlayerToTeamTest {
      * happening
      */
     @Test
-    public void throwErrorIfPlayerCouldNotBeAdded() throws Exception{
+    public void throwErrorIfPlayerCouldNotBeAdded() throws Exception {
         doReturn(true).when(room).removePlayer(any()); //able to remove the player
 
-        Player somePlayerAlreadyInTeam = new Player("in");
-        Team testTeam = spy(new Team("test", somePlayerAlreadyInTeam));
+        Player somePlayerAlreadyInTeam = new Player();
+        Team testTeam = spy(new Team("test"));
+        testTeam.addPlayerInTeam(somePlayerAlreadyInTeam);
         doReturn(false).when(testTeam).addPlayerInTeam(any()); //but somehow could not be added to a team
         room.getTeams().add(testTeam);
 

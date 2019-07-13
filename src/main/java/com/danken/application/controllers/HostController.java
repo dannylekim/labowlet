@@ -1,20 +1,17 @@
 package com.danken.application.controllers;
 
-import com.danken.application.LabowletState;
-import com.danken.business.OutputMessage;
-import com.danken.business.Room;
-import com.danken.business.RoomSettings;
+import com.danken.business.*;
 import com.danken.sessions.GameSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
+import javax.inject.Inject;
 import java.util.Arrays;
 
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @Slf4j
@@ -23,37 +20,39 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class HostController {
 
     private SimpMessagingTemplate template;
-    private final LabowletState applicationState = LabowletState.getInstance();
-    HttpSession session;
+    private GameSession userGameSession;
 
     //Retrieve Application State
-    @Autowired
-    public HostController(HttpSession session, SimpMessagingTemplate template) {
+    @Inject
+    public HostController(SimpMessagingTemplate template, GameSession userGameSession) {
         this.template = template;
-        this.session = session;
+        this.userGameSession = userGameSession;
     }
 
     @RequestMapping(method = PUT, value = "/rooms")
-    public Room updateRoom(@RequestBody RoomSettings updatedRoomSettings){
+    public Room updateRoom(@RequestBody RoomSettings updatedRoomSettings) {
 
         log.info("Verifying the round types for {}", Arrays.toString(updatedRoomSettings.getRoundTypes().toArray()));
         updatedRoomSettings.verifyRoundTypes();
-        GameSession userGameSession = applicationState.getGameSession(session);
         Room currentRoom = userGameSession.getCurrentRoom();
         currentRoom.updateRoom(updatedRoomSettings);
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}", currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), currentRoom);
 
         return currentRoom;
     }
 
-    @RequestMapping(method = PUT, value = "/rooms/states")
-    public Room updateRoomState(@RequestBody Room roomWithState){
-        return null;
-    }
+    @RequestMapping(method = POST, value = "/gamestart")
+    public WordBowlInputState startGame() {
+        Room currentRoom = userGameSession.getCurrentRoom();
+        var game = currentRoom.createGame();
 
+        template.convertAndSend("/room/" + currentRoom.getRoomCode() + "/game", game.getState());
+        return game.getState();
+
+    }
 
 
 }

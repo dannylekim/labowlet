@@ -7,10 +7,11 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.danken.application.LabowletState;
+import com.danken.LabowletState;
 import com.danken.business.Room;
 import com.danken.sessions.GameSession;
 import com.danken.utility.JsonErrorResponseHandler;
@@ -20,7 +21,14 @@ import com.danken.utility.JsonErrorResponseHandler;
  * This interceptor is simply to verify the existence of a Room for the request that is it mapped to as well as to check if you're able to do requests onto this path.
  * 
  */
+@Component
 public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
+
+    private GameSession userSession;
+
+    public RoomExistenceInterceptor(GameSession gameSession){
+        this.userSession = gameSession;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(RoomExistenceInterceptor.class);
     
@@ -44,7 +52,6 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
         if( !requestMethod.equals("OPTIONS")) {
             HttpSession session = request.getSession(false);
             LabowletState applicationState = LabowletState.getInstance();
-            GameSession userSession = applicationState.getGameSession(session);
             Room currentRoom = userSession.getCurrentRoom();
             
             //There needs to be a room associated to the session to be able to call these methods
@@ -59,13 +66,6 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
             if(!isRoomActive){
                 logger.info("{} is trying to access a room call where the room is no longer active", session.getId());
                 JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.GONE, new IllegalStateException("You cannot perform this request because the room you are in is no longer active!"));
-                return false;
-            }
-
-            //Check if the room is in play or locked
-            if(currentRoom.isInPlay() || currentRoom.isLocked()) {
-                logger.info("{} is trying to access a room call where the room has already started or is locked.", session.getId());
-                JsonErrorResponseHandler.sendErrorResponse(response, HttpStatus.CONFLICT, new IllegalStateException("Cannot execute this request as the game has already started for this room."));
                 return false;
             }
 

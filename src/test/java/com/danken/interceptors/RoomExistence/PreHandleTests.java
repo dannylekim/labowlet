@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.danken.application.LabowletState;
+import com.danken.LabowletState;
 import com.danken.business.Room;
 import com.danken.interceptors.RoomExistenceInterceptor;
 import com.danken.sessions.GameSession;
@@ -51,7 +51,7 @@ public class PreHandleTests {
         doReturn("test").when(mockRoom).getRoomCode();
         state.addActiveRoom(mockRoom);
 
-        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
+        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor(userSession);
         
         assertTrue(interceptor.preHandle(request, response, null));
     }
@@ -62,7 +62,7 @@ public class PreHandleTests {
         doReturn("PUT").when(request).getMethod();
         doReturn("room").when(request).getRequestURI();
 
-        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
+        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor(userSession);
         
         assertFalse(interceptor.preHandle(request, response, null));
     }
@@ -74,7 +74,7 @@ public class PreHandleTests {
         doReturn("TEST").when(request).getMethod();
         doReturn("team").when(request).getRequestURI();
 
-        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
+        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor(userSession);
         
         assertFalse(interceptor.preHandle(request, response, null));
     }
@@ -86,7 +86,7 @@ public class PreHandleTests {
         doReturn(room).when(userSession).getCurrentRoom();
         doReturn("PUT").when(request).getMethod();
         doReturn("room").when(request).getRequestURI();
-        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor();
+        RoomExistenceInterceptor interceptor = new RoomExistenceInterceptor(userSession);
         
         assertFalse(interceptor.preHandle(request, response, null));
 

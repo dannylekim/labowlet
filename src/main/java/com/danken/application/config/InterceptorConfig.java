@@ -9,19 +9,24 @@ import com.danken.interceptors.*;
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
+    private RoomExistenceInterceptor roomExistenceInterceptor;
+    private HostAuthInterceptor hostAuthInterceptor;
+
+
+    public InterceptorConfig(RoomExistenceInterceptor roomExistenceInterceptor, HostAuthInterceptor hostAuthInterceptor) {
+        this.roomExistenceInterceptor = roomExistenceInterceptor;
+        this.hostAuthInterceptor = hostAuthInterceptor;
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        registry.addInterceptor(new ValidSessionInterceptor())
-                .excludePathPatterns("/players");
-
-        registry.addInterceptor(new RoomExistenceInterceptor())
+        registry.addInterceptor(roomExistenceInterceptor)
                 .addPathPatterns("/host/rooms")
                 .addPathPatterns("/teams")
                 .addPathPatterns("teams/*");
 
-        registry.addInterceptor(new HostAuthInterceptor()).addPathPatterns("/host/rooms");
-
+        registry.addInterceptor(hostAuthInterceptor).addPathPatterns("/host/rooms");
 
 
     }

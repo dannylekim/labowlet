@@ -1,16 +1,19 @@
 package com.danken.interceptors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.Host;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.danken.application.LabowletState;
+import com.danken.LabowletState;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.sessions.GameSession;
@@ -22,10 +25,18 @@ import com.danken.utility.JsonErrorResponseHandler;
  * the host of the room for whatever paths it is configured to.
  *
  */
+
+@Component
 public class HostAuthInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(HostAuthInterceptor.class);
-    
+    private GameSession userSession;
+
+    @Inject
+    public HostAuthInterceptor(GameSession userGameSession){
+        this.userSession = userGameSession;
+    }
+
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object Handler, Exception exception) throws Exception{}
     
@@ -41,8 +52,6 @@ public class HostAuthInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpSession session = request.getSession(false);
-        GameSession userSession = LabowletState.getInstance().getGameSession(session);
         Room currentRoom = userSession.getCurrentRoom();
         Player host = currentRoom.getHost();
         Player currentPlayer = userSession.getPlayer();

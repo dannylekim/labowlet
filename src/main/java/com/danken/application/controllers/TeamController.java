@@ -1,17 +1,14 @@
 package com.danken.application.controllers;
 
-import com.danken.application.LabowletState;
-import com.danken.business.OutputMessage;
 import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.Team;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import com.danken.sessions.GameSession;
 
-import javax.servlet.http.HttpSession;
+import javax.inject.Inject;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -29,20 +26,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class TeamController {
 
     private SimpMessagingTemplate template;
-    private final LabowletState applicationState = LabowletState.getInstance();
-    HttpSession session;
-
+    private GameSession userGameSession;
 
     //Retrieve Application State
-    @Autowired
-    public TeamController(HttpSession session, SimpMessagingTemplate template) {
-        this.session = session;
+    @Inject
+    public TeamController(SimpMessagingTemplate template, GameSession userGameSession) {
         this.template = template;
+        this.userGameSession = userGameSession;
     }
 
     @RequestMapping(method = POST)
     public Room createTeam(@RequestBody Team teamWithOnlyTeamName) {
-        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
 
@@ -51,7 +45,7 @@ public class TeamController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(), currentRoom);
 
         return currentRoom;
     }
@@ -59,7 +53,6 @@ public class TeamController {
     @RequestMapping(method = PUT, value = "/{teamId}") //add a teamId param
     public Room updateTeam(@RequestBody Team teamWithOnlyTeamName, @PathVariable("teamId") String teamId) throws Exception {
 
-        GameSession userGameSession = applicationState.getGameSession(session);
         Player player = userGameSession.getPlayer();
         Room currentRoom = userGameSession.getCurrentRoom();
 
@@ -87,7 +80,7 @@ public class TeamController {
                 currentRoom.addPlayerToTeam(team, player);
             } else {
                 //this is an error that should not occur, and if it does then you have to fail gracefully
-                log.error("Unknown Error. Team name parameter is {}, and the team's current players are {} and {}", teamWithOnlyTeamName.getTeamName(), team.getTeamMember1(), team.getTeamMember2());
+                log.error("Unknown Error. Team name parameter is {}, and the team's current players are: {}" , teamWithOnlyTeamName.getTeamName(), team.getTeamMembers());
                 throw new Exception("Unknown Error. This will only occur if for some reason the team name is non-existent and that there are players in the team.");
             }
 
@@ -96,7 +89,7 @@ public class TeamController {
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}" + currentRoom.getRoomCode());
-        template.convertAndSend("/room/" + currentRoom.getRoomCode(), new OutputMessage("ROOM", currentRoom));
+        template.convertAndSend("/room/" + currentRoom.getRoomCode(),currentRoom);
         return currentRoom;
     }
 

@@ -47,7 +47,7 @@ public class PreHandleTests {
         doReturn(room).when(userSession).getCurrentRoom();
         doReturn(host).when(userSession).getPlayer();
 
-        HostAuthInterceptor interceptor = new HostAuthInterceptor();
+        HostAuthInterceptor interceptor = new HostAuthInterceptor(userSession);
         
         assertTrue(interceptor.preHandle(request, response, null));
     }
@@ -61,7 +61,7 @@ public class PreHandleTests {
         doReturn(room).when(userSession).getCurrentRoom();
         doReturn(playerNotInside).when(userSession).getPlayer();
 
-        HostAuthInterceptor interceptor = new HostAuthInterceptor();
+        HostAuthInterceptor interceptor = new HostAuthInterceptor(userSession);
         
         assertFalse(interceptor.preHandle(request, response, null));
     }

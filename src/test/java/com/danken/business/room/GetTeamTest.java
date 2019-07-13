@@ -36,10 +36,12 @@ public class GetTeamTest {
      */
     @Test
     public void getTeamInside(){
-        Team teamToBeFound = new Team("findMe", host);
+        Team teamToBeFound = new Team("findMe");
+        teamToBeFound.addPlayerInTeam(host);
 
         for(int i =0; i < 10; i++){
-            Team randomTeam = new Team("" + i, mock(Player.class));
+            Team randomTeam = new Team("" + i);
+            randomTeam.addPlayerInTeam(mock(Player.class));
             room.getTeams().add(randomTeam);
         }
 
@@ -55,7 +57,8 @@ public class GetTeamTest {
      */
     @Test
     public void returnNullIfNone(){
-        Team teamToNotBeFound = new Team("returnNull", host);
+        Team teamToNotBeFound = new Team("returnNull");
+        teamToNotBeFound.addPlayerInTeam(host);
         assertNull(room.getTeam(teamToNotBeFound.getTeamId()));
 
     }

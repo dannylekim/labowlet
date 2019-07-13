@@ -2,14 +2,12 @@ package com.danken.application.controllers;
 
 import com.danken.business.Player;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.danken.application.LabowletState;
 import com.danken.sessions.GameSession;
 
-import javax.servlet.http.HttpSession;
+import javax.inject.Inject;
 
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -24,19 +22,18 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/players")
 public class PlayerController {
 
-    HttpSession session;
-    @Autowired
-    public PlayerController(HttpSession session) {
-        this.session = session;
+    private GameSession gameSession;
+
+    @Inject
+    public PlayerController(GameSession gameSession) {
+        this.gameSession = gameSession;
     }
 
     @RequestMapping(method=POST)
-    public Player createPlayer(@RequestBody Player playerWithJustName){
+    public Player createPlayer(@RequestBody Player player){
         //A game session creates a player on instantiation.
-        log.info("Creating userGame session for {} with the name {}", session.getId(), playerWithJustName.getName());
-        GameSession userGameSession = new GameSession(playerWithJustName.getName());
-        session.setAttribute("gameSession", userGameSession);
-        return userGameSession.getPlayer();
+        gameSession.setPlayer(player);
+        return gameSession.getPlayer();
     }
 
 }

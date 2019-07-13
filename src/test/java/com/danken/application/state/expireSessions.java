@@ -1,6 +1,7 @@
 package com.danken.application.state;
 
-import com.danken.application.LabowletState;
+import com.danken.LabowletState;
+import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,10 @@ public class expireSessions {
     public void removeOneRoom() {
         //
         Session session = new LabowletSession();
-        GameSession userGameSession = new GameSession("test");
+        GameSession userGameSession = new GameSession();
+        var player = new Player();
+        player.setName("test");
+        userGameSession.setPlayer(player);
         session.setAttribute("gameSession", userGameSession);
         session.setLastAccessedTime(Instant.now().minus(Duration.ofHours(2)));
         repo.save(session);
@@ -58,7 +62,7 @@ public class expireSessions {
     public void noRoomExpireSessions(){
         //
         Session session = new LabowletSession();
-        GameSession userGameSession = new GameSession("test");
+        GameSession userGameSession = new GameSession();
         session.setAttribute("gameSession", userGameSession);
         session.setLastAccessedTime(Instant.now().minus(Duration.ofHours(2)));
         repo.save(session);
@@ -78,7 +82,11 @@ public class expireSessions {
     public void sessionWhereUserNotHost(){
         //Host player with a non-expired session
         Session session = new LabowletSession();
-        GameSession userGameSession = new GameSession("testHost");
+        GameSession userGameSession = new GameSession();
+        Player player = new Player();
+        userGameSession.setPlayer(player);
+        player.setName("test");
+
         session.setAttribute("gameSession", userGameSession);
         session.setLastAccessedTime(Instant.now());
         repo.save(session);
@@ -86,7 +94,7 @@ public class expireSessions {
 
         //Expire Session who isn't the host of the room
         Session expiredSession = new LabowletSession();
-        GameSession expireGameSession = new GameSession("testPlayer");
+        GameSession expireGameSession = new GameSession();
         expiredSession.setAttribute("gameSession", expireGameSession);
         expiredSession.setLastAccessedTime(Instant.now().minus(Duration.ofHours(5)));
         repo.save(expiredSession);

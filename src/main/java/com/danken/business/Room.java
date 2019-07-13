@@ -1,32 +1,28 @@
 package com.danken.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
 @Slf4j
 public class Room {
 
-    // -------- DATA CONSTANTS ------------
+    // -------- DATA MEMBERS ------------
     private List<Team> teams;
     private List<Player> benchPlayers;
     private Player host;
-    @Setter private String roomCode; //given a setter to use for @RequestBody
+    private String roomCode; //given a setter to use for @RequestBody
     private RoomSettings roomSettings;
-    private List<String> wordBowl;
-    private Map<Player, List<String>> wordsMadePerPlayer;
-    private List<Round> rounds;
-
-    //Game state -> fixme should this be refactored into its own object
+    @JsonIgnore
     @Setter
-    private boolean isLocked; //Locked in players and now must input words
-    private boolean canStart; //All the words have now been inputted and all the players have readied up
-    private boolean isInPlay; //Is the game in play
-
+    private Game game;
 
     // ------- STATIC CONSTANTS --------------------- //
     private static final Random RANDOM = new Random();
@@ -37,9 +33,6 @@ public class Room {
         teams = new ArrayList<>();
         benchPlayers = new ArrayList<>();
         benchPlayers.add(host);
-        wordBowl = new ArrayList<>();
-        wordsMadePerPlayer = new HashMap<>();
-        rounds = new ArrayList<>(); //should be moved into game state
         this.host = host;
         this.roomCode = generateRoomCode();
         this.roomSettings = roomSettings;
@@ -47,12 +40,38 @@ public class Room {
         log.info("Created a new room with {} and {}", host.getName(), host.getId());
 
         //set State// //fixme move this into GameState
-        isInPlay = false;
-        canStart = false; //todo set
 
         createEmptyTeams(roomSettings.getMaxTeams());
 
-        isLocked = false;
+    }
+
+    public Game createGame(){
+        if (!isCanStart()) {
+            throw new IllegalStateException("Game cannot start.");
+        }
+
+        var rounds = getRoomSettings().getRoundTypes().stream().map(Round::new).collect(Collectors.toList());
+        var teams = getTeams();
+
+        game = new Game(teams, rounds);
+
+        return this.game;
+    }
+
+    public boolean isCanStart() {
+        int teamsFilled = 0;
+        for (Team team : teams) {
+            List<Player> teamMembers = team.getTeamMembers();
+            if (teamMembers.size() == Team.MAX_TEAM_MEMBERS) {
+                teamsFilled++;
+                //if a team is not filled or empty, then it is missing players and cannot start
+            } else if (teamMembers.size() != 0) {
+                return false;
+            }
+        }
+
+        //can't play with just one team
+        return teamsFilled > 1;
     }
 
     /* public methods */
@@ -68,7 +87,10 @@ public class Room {
     public void createTeam(String teamName, Player player) {
         log.info("Trying to create a team with  " + teamName + " and player " + player.getName() + " and ID " + player.getId());
         //Cannot have more teams than the max teams
-        if (teams.size() >= roomSettings.getMaxTeams()) {
+
+        var emptyTeam = teams.stream().filter(Team::isEmpty).findFirst().orElse(null);
+
+        if (emptyTeam == null) {
             log.warn("Trying to add a team when the room can no longer take any more. Max is:  {}", roomSettings.getMaxTeams());
             throw new IllegalStateException("Can no longer add any more teams in this room!");
         }
@@ -90,8 +112,11 @@ public class Room {
         //remove the player from previous team or bench
         removePlayer(player);
         log.info("Team has been added");
-        Team newTeam = new Team(teamName, player);
+        teams.remove(emptyTeam);
+        var newTeam = new Team(teamName);
+        newTeam.addPlayerInTeam(player);
         teams.add(newTeam);
+
     }
 
     public void addPlayerToBench(Player player) {
@@ -111,7 +136,7 @@ public class Room {
         boolean isPlayerInRoom = isPlayerInRoom(player);
         log.info("Trying to add player {} with ID {} to join {} with name {}", player.getName(), player.getId(), team.getTeamId(), team.getTeamName());
 
-        if (team.getTeamMember1() != null && team.getTeamMember2() != null) {
+        if (team.getTeamMembers().size() >= 2) {
             log.warn("The team is full");
             throw new IllegalStateException("This team is already full!");
         }
@@ -189,60 +214,6 @@ public class Room {
 
 
     /***
-     *  Creates a new word bowl with the input. Verifies that all the words are unique.
-     *
-     * @param inputWords This is a list of words that the user has made to be placed in the word bowl
-     */
-
-    public void addWordBowl(List<String> inputWords, Player player) {
-
-        log.info("Player {} with ID {} is trying to input these words: {}", player.getName(), player.getId(), ((inputWords != null) ? Arrays.toString(inputWords.toArray()) : "null"));
-
-        if (!isPlayerInATeam(player)) {
-            log.warn("Player is not part a team, can not input words until then.");
-            throw new IllegalStateException("This player is not part a team. You cannot input words until you have joined a team.");
-        }
-
-        if (!isLocked) {
-            log.warn("Cannot input words until the game has started.");
-            throw new IllegalStateException("The host hasn't started the game yet! You can't input words until then.");
-        }
-
-        if (isInPlay) {
-            log.warn("Cannot input words, the game has started.");
-            throw new IllegalStateException("The game has already started, cannot input words at this time!");
-        }
-
-        if (inputWords == null) {
-            log.warn("Missing word entries, cannot input a null object");
-            throw new IllegalArgumentException("Missing word entries! Cannot input a null object.");
-        }
-
-        if (inputWords.size() != roomSettings.getWordsPerPerson()) {
-            log.warn("Missing word entries, you need to have {} entries", roomSettings.getWordsPerPerson());
-            throw new IllegalArgumentException("Missing word entries! You need to have " + roomSettings.getWordsPerPerson() + " entries!");
-        }
-
-
-        List<String> playerWordBowl = new ArrayList<>();
-
-        inputWords.stream().forEach(word -> {
-
-            //checking for uniqueness
-            if (playerWordBowl.contains(word)) {
-                log.warn("Cannot have two of the same entries in the word bowl");
-                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
-            }
-            playerWordBowl.add(word);
-        });
-
-        log.info("Replacing the words inputted previously with the new ones");
-        this.wordsMadePerPlayer.remove(player);
-        this.wordsMadePerPlayer.put(player, playerWordBowl);
-
-    }
-
-    /***
      *
      * This method is to update a room with the new settings. Can not update if game is locked or already in play.
      * If the room settings changes max amount of teams and there are more teams than the max, it will bench the
@@ -254,10 +225,6 @@ public class Room {
     public void updateRoom(RoomSettings roomSettings) {
 
         log.info("Starting to update the room...");
-        if (this.isInPlay || this.isLocked) {
-            log.warn("Cannot update the room, the game has been locked or already in play!");
-            throw new IllegalStateException("Can not update the room, the game has been locked or already in play!");
-        }
 
         this.roomSettings = roomSettings;
 
@@ -265,41 +232,54 @@ public class Room {
         //If there are more teams than the new updated Max Teams, you must bench the newly joined ones until
         //it is of equal sizing
         int maxTeams = roomSettings.getMaxTeams();
-        int lastJoinedTeamIndex;
-        Team teamToBench;
         log.info("Removing the last joined members and teams if needed...");
 
-        if(maxTeams > teams.size()){
+        if (maxTeams > teams.size()) {
             createEmptyTeams(maxTeams - teams.size());
         }
 
-        while (teams.size() > maxTeams) {
-            log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
-            lastJoinedTeamIndex = teams.size() - 1;
-            teamToBench = teams.get(lastJoinedTeamIndex);
-            benchPlayers.add(teamToBench.getTeamMember1());
-            benchPlayers.add(teamToBench.getTeamMember2());
+        removeLastTeams(maxTeams);
+    }
 
-            log.debug("Benched {} and {}", teamToBench.getTeamMember1(), teamToBench.getTeamMember2());
+    private void removeLastTeams(int maxTeams) {
+
+        Team teamToBench;
+        while (teams.size() > maxTeams) {
+
+            log.info("Checking for empty teams");
+            var emptyTeams = teams.stream().filter(Team::isEmpty).collect(Collectors.toList());
+
+            if (emptyTeams.size() > 0) {
+                teamToBench = emptyTeams.get(0);
+            } else {
+                int lastJoinedTeamIndex;
+                log.debug("Size of the team {} is still bigger than max teams set by settings {}", teams.size(), maxTeams);
+                lastJoinedTeamIndex = teams.size() - 1;
+                teamToBench = teams.get(lastJoinedTeamIndex);
+                List<Player> players = teamToBench.getTeamMembers();
+                benchPlayers.addAll(players);
+                log.debug("Benched {}", players);
+            }
+
             log.debug("Removing team {} with ID {}", teamToBench.getTeamName(), teamToBench.getTeamId());
             teams.remove(teamToBench);
         }
     }
+
 
     /***
      * Regenerates a new unique room code and sets it as this room's code.
      *
      * @return
      */
-    public String regenerateRoomCode() {
+    public void regenerateRoomCode() {
         this.roomCode = generateRoomCode();
-        return roomCode;
     }
 
     //========== private methods ================/
 
-    private void createEmptyTeams(int numOfTeams){
-        for(int i = 1; i <= numOfTeams; i++){
+    private void createEmptyTeams(int numOfTeams) {
+        for (int i = 1; i <= numOfTeams; i++) {
             Team newTeam = new Team("Empty Slot");
             this.teams.add(newTeam);
         }
