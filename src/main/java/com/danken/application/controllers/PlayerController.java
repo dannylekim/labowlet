@@ -1,10 +1,11 @@
 package com.danken.application.controllers;
 
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 import javax.inject.Inject;
 
 import com.danken.business.Player;
 import com.danken.sessions.GameSession;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ public class PlayerController {
         this.gameSession = gameSession;
     }
 
-    @PostMapping
+    @RequestMapping(method = POST)
     public Player createPlayer(@RequestBody Player player) {
         //A game session creates a player on instantiation.
         gameSession.setPlayer(player);

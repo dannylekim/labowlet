@@ -45,23 +45,14 @@ public class HostController {
         return currentRoom;
     }
 
-    @PostMapping("/setupGame")
-    public WordBowlInputState startWordInputState() {
+    @PostMapping("/gamestart")
+    public WordBowlInputState startGame() {
         Room currentRoom = userGameSession.getCurrentRoom();
         var game = currentRoom.createGame();
 
-        sender.sendWordStateMessage(currentRoom.getRoomCode(), game.getState());
+        sender.sendStateMessage(currentRoom.getRoomCode() + "/game", game.getState());
         return game.getState();
 
-    }
-
-    @PostMapping("/startGame")
-    public boolean gameStart() {
-        var currentRoom = userGameSession.getCurrentRoom();
-        final var game = currentRoom.getGame();
-        final var didGameStart = game.startGame();
-        sender.sendGameMessage(currentRoom.getRoomCode(), game);
-        return didGameStart;
     }
 
 
