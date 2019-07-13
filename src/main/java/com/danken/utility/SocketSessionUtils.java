@@ -15,7 +15,7 @@ public class SocketSessionUtils {
     private SocketSessionUtils() {}
 
     public static Room getRoom(final SimpMessageHeaderAccessor accessor) {
-        final Optional<Room> room = Optional.ofNullable(getSession(accessor)).map(GameSession::getCurrentRoom);
+        final Optional<Room> room = Optional.ofNullable(accessor).map(SimpMessageHeaderAccessor::getSessionAttributes).map(map -> map.get("session")).map(GameSession.class::cast).map(GameSession::getCurrentRoom);
 
         if (room.isEmpty()) {
             throw new IllegalStateException("You cannot perform this request because you haven't joined or created a room yet!");
@@ -29,10 +29,5 @@ public class SocketSessionUtils {
         }
 
         return room.get();
-    }
-
-    public static GameSession getSession(final SimpMessageHeaderAccessor accessor) {
-        return Optional.ofNullable(accessor).map(SimpMessageHeaderAccessor::getSessionAttributes).map(map -> map.get("session")).map(GameSession.class::cast).orElse(null);
-
     }
 }

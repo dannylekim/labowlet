@@ -26,9 +26,8 @@ public class WebSocketSessionInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor =
                 MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            final var session = Optional.ofNullable(accessor.getNativeHeader("x-auth-token")).map(list -> list.get(0)).map(state::getSessionById).orElse(null);
-            final GameSession gameSession = state.getGameSessionFromSession(session);
-            accessor.getSessionAttributes().put("session", gameSession);
+            final GameSession session = Optional.ofNullable(accessor.getNativeHeader("x-auth-token")).map(list -> list.get(0)).map(state::getGameSessionBySessionId).orElse(null);
+            accessor.getSessionAttributes().put("session", session);
         }
         return message;
     }
