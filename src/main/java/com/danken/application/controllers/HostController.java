@@ -60,7 +60,6 @@ public class HostController {
         var currentRoom = userGameSession.getCurrentRoom();
         final var game = currentRoom.getGame();
         final var didGameStart = game.startGame();
-        sender.sendGameStateMessage(currentRoom.getRoomCode(), didGameStart);
         sender.sendGameMessage(currentRoom.getRoomCode(), game);
         return didGameStart;
     }
