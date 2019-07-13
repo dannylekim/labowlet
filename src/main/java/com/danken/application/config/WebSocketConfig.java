@@ -13,10 +13,11 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/room");
+        config.setApplicationDestinationPrefixes("/server");
     }
 
     @Override
     protected void configureStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/labowlet").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/client").setAllowedOrigins("*").withSockJS();
     }
 }
