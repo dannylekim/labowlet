@@ -17,8 +17,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.danken'
 version = '0.0.10-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_1_10
-targetCompatibility = JavaVersion.VERSION_1_10
+sourceCompatibility = '12'
 
 repositories {
 	mavenCentral()
