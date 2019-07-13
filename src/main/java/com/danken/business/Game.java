@@ -37,8 +37,11 @@ public class Game {
     @JsonIgnore
     private WordBowlInputState state;
 
+    @JsonIgnore
+    private boolean started;
 
-    public Game(List<Team> teams, List<Round> rounds) {
+
+    Game(List<Team> teams, List<Round> rounds) {
         this.teams = teams;
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
@@ -92,7 +95,7 @@ public class Game {
         userStatus.setCompleted(true);
     }
 
-    public void prepareRounds() {
+    private void prepareRounds() {
         if (wordsMadePerPlayer.size() != teams.size() * 2) {
             throw new IllegalStateException("Rounds cannot be prepared until all words have been inputted by each player");
         }
@@ -100,4 +103,14 @@ public class Game {
         var allWords = wordsMadePerPlayer.values().stream().collect(ArrayList<String>::new, ArrayList::addAll, ArrayList::addAll);
         rounds.forEach(round -> round.setRemainingWords(allWords));
     }
+
+    public boolean startGame() {
+        if (state.isReady()) {
+            prepareRounds();
+        }
+
+        return state.isReady();
+    }
+
+
 }

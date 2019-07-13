@@ -45,7 +45,7 @@ public class HostController {
         return currentRoom;
     }
 
-    @PostMapping("/wordState")
+    @PostMapping("/setupGame")
     public WordBowlInputState startWordInputState() {
         Room currentRoom = userGameSession.getCurrentRoom();
         var game = currentRoom.createGame();
@@ -55,11 +55,14 @@ public class HostController {
 
     }
 
-    @PostMapping("/gameState")
-    public boolean gameStart(){
+    @PostMapping("/startGame")
+    public boolean gameStart() {
         var currentRoom = userGameSession.getCurrentRoom();
-        sender.sendGameStateMessage(currentRoom.getRoomCode(), false);
-        return false;
+        final var game = currentRoom.getGame();
+        final var didGameStart = game.startGame();
+        sender.sendGameStateMessage(currentRoom.getRoomCode(), didGameStart);
+        sender.sendGameMessage(currentRoom.getRoomCode(), game);
+        return didGameStart;
     }
 
 
