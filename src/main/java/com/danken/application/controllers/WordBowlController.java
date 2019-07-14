@@ -79,12 +79,12 @@ public class WordBowlController {
 
         final var currentRound = currentGame.getCurrentRound();
         currentRound.removeWord(word);
+        currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
 
         if (currentRound.getRemainingWords().isEmpty()) {
 
             handleGameChange(currentRoom, currentGame);
         } else {
-            currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
             sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
         }
 
