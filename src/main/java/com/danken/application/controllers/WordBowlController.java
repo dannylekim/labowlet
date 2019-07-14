@@ -8,6 +8,7 @@ import com.danken.application.config.MessageSocketSender;
 import com.danken.business.Game;
 import com.danken.business.Room;
 import com.danken.business.WordBowlInputState;
+import com.danken.business.WordMessage;
 import com.danken.utility.SocketSessionUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -45,7 +46,7 @@ public class WordBowlController {
 
     @MessageMapping("/room/{code}/game/skipWord")
     @SendTo("/client/room/{code}/game/word")
-    public Game skipWord(SimpMessageHeaderAccessor accessor) {
+    public WordMessage skipWord(SimpMessageHeaderAccessor accessor) {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         if (!currentRoom.getRoomSettings().isAllowSkips()) {
             throw new IllegalStateException("No skipping allowed!");
@@ -62,8 +63,7 @@ public class WordBowlController {
             throw new IllegalStateException("Can not skip the last word!");
         }
 
-        currentRound.getRandomWord();
-        return currentGame;
+        return new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size());
     }
 
     @MessageMapping("/room/{code}/game/newWord")
@@ -84,7 +84,7 @@ public class WordBowlController {
         if (currentRound.getRemainingWords().isEmpty()) {
             handleGameChange(currentRoom, currentGame);
         } else {
-            sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
+            sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
         }
 
     }
@@ -110,7 +110,8 @@ public class WordBowlController {
     public void startStep(final SimpMessageHeaderAccessor accessor) throws InterruptedException {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
-        sender.sendWordMessage(currentRoom.getRoomCode(), game.getCurrentRound().getRandomWord());
+        var currentRound = game.getCurrentRound();
+        sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
 
         setGameTimeRemaining(currentRoom, game);
 
