@@ -214,10 +214,6 @@ public class Room {
         return isPlayerRemoved;
     }
 
-    public Score fetchScoreboard() {
-        return null;
-        //todo, return a scoreboard, not a score
-    }
 
 
     /***

@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import com.danken.application.config.MessageSocketSender;
 import com.danken.business.Game;
+import com.danken.business.Room;
 import com.danken.business.WordBowlInputState;
 import com.danken.utility.SocketSessionUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -81,33 +82,49 @@ public class WordBowlController {
 
         if (currentRound.getRemainingWords().size() == 0) {
 
-            if(currentGame.getCurrentRoundIndex() == currentGame.getRounds().size() - 1){
-                //TODO GAME OVER
-            }
-            else {
-                currentGame.setCurrentRoundIndex(currentGame.getCurrentRoundIndex() + 1);
-                //TODO stop timer
-            }
+            handleGameChange(currentRoom, currentGame);
         } else {
             currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
             sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
         }
 
     }
+    private void handleGameChange(Room currentRoom, Game currentGame) {
+        if (currentGame.getCurrentRoundIndex() == currentGame.getRounds().size() - 1) {
+            sender.sendGameOverMessage(currentRoom.getRoomCode(), currentGame.fetchScoreboard());
+        } else {
+            sendNewRound(currentGame, currentRoom);
+        }
+    }
+    private void sendNewRound(final Game currentGame, final Room currentRoom) {
+        currentGame.setCurrentRoundIndex(currentGame.getCurrentRoundIndex() + 1);
+        currentGame.setTimeRemaining(-1);
+        currentGame.setCurrentRoundActivePlayers();
+        sender.sendGameMessage(currentRoom.getRoomCode(), currentGame);
+    }
 
     @MessageMapping("/room/{code}/game/startStep")
     public void startStep(final SimpMessageHeaderAccessor accessor) throws InterruptedException {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
-        sender.sendWordMessage(currentRoom.getRoomCode(), currentRoom.getGame().getCurrentRound().getRandomWord());
+        final var game = currentRoom.getGame();
+        sender.sendWordMessage(currentRoom.getRoomCode(), game.getCurrentRound().getRandomWord());
 
-        int seconds = (int) currentRoom.getRoomSettings().getRoundTimeInSeconds();
-
-        //TODO figure this out later situation
-        while(seconds != 0){
+        while (game.getTimeRemaining() <= 0) {
             Thread.sleep(1000);
-            sender.sendTimerMessage(currentRoom.getRoomCode(), --seconds);
+            int timeRemaining = game.getTimeRemaining();
+            sender.sendTimerMessage(currentRoom.getRoomCode(), --timeRemaining);
+            game.setTimeRemaining(timeRemaining);
         }
 
+        handleNextTurn(currentRoom, game);
+
+    }
+    private void handleNextTurn(Room currentRoom, Game game) {
+        if (game.getTimeRemaining() == 0) {
+            game.setCurrentRoundIndex(game.getCurrentRoundIndex() + 1);
+            game.setCurrentRoundActivePlayers();
+            sender.sendGameMessage(currentRoom.getRoomCode(), game);
+        }
     }
 
 

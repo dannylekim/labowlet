@@ -26,7 +26,6 @@ public class Game {
     @JsonIgnore
     private List<Round> rounds;
 
-    @JsonIgnore
     private List<Team> teams;
 
     @JsonIgnore
@@ -38,6 +37,9 @@ public class Game {
     private Player currentActor;
 
     private Player currentGuesser;
+
+    @JsonIgnore
+    private int timeRemaining;
 
     @JsonIgnore
     private WordBowlInputState state;
@@ -114,6 +116,11 @@ public class Game {
         rounds.forEach(round -> round.setRemainingWords(allWords));
     }
 
+    public Score fetchScoreboard() {
+        return null;
+    }
+
+
     public boolean startGame() {
         if (state.isReady()) {
             prepareRounds();
@@ -124,7 +131,7 @@ public class Game {
         return state.isReady();
     }
 
-    private void setCurrentRoundActivePlayers() {
+    public void setCurrentRoundActivePlayers() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
         currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentRoundTurn % 2);
         currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
