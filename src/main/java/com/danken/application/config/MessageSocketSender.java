@@ -6,6 +6,7 @@ import com.danken.business.Game;
 import com.danken.business.Room;
 import com.danken.business.Scoreboard;
 import com.danken.business.WordBowlInputState;
+import com.danken.business.WordMessage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -48,9 +49,9 @@ public class MessageSocketSender {
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT + WORD_ENDPOINT, state);
     }
 
-    public void sendWordMessage(final String roomCode, String word) {
+    public void sendWordMessage(final String roomCode, WordMessage wordMessage) {
         log.debug("Sending word to all sockets connecting into /room/{}/game/word", roomCode);
-        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + WORD_ENDPOINT, word);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + WORD_ENDPOINT, wordMessage);
     }
 
     public void sendTimerMessage(final String roomCode, final int seconds) {

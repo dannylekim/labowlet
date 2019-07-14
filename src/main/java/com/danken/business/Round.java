@@ -39,10 +39,6 @@ public class Round {
         this.remainingWords = words;
     }
 
-    public int getRemainingWordCound() {
-        return remainingWords.size();
-    }
-
     @JsonIgnore
     public String getRandomWord() {
         int wordBowlSize = remainingWords.size();
