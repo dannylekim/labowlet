@@ -50,17 +50,17 @@ public class MessageSocketSender {
     }
 
     public void sendWordMessage(final String roomCode, String word) {
-        log.debug("Sending word state to all sockets connecting into /room/{}/game/word", roomCode);
+        log.debug("Sending word to all sockets connecting into /room/{}/game/word", roomCode);
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + WORD_ENDPOINT, word);
     }
 
     public void sendTimerMessage(final String roomCode, final int seconds) {
-        log.debug("Sending word state to all sockets connecting into /room/{}/game/word", roomCode);
+        log.debug("Sending timer to all sockets connecting into /room/{}/game/timer", roomCode);
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + TIMER_ENDPOINT, seconds);
     }
 
     public void sendGameOverMessage(final String roomCode, Map<String, Integer> scoreboard) {
-        log.debug("Sending word state to all sockets connecting into /room/{}/game/over", roomCode);
+        log.debug("Sending game over to all sockets connecting into /room/{}/game/over", roomCode);
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + "/over", scoreboard);
     }
 

@@ -124,9 +124,8 @@ public class WordBowlController {
 
     }
     private void handleNextTurn(Room currentRoom, Game game) {
-        game.setCurrentRoundIndex(game.getCurrentRoundIndex() + 1);
-        game.setCurrentRoundActivePlayers();
         game.getCurrentRound().increaseTurnCounter();
+        game.setCurrentRoundActivePlayers();
         sender.sendGameMessage(currentRoom.getRoomCode(), game);
     }
 
