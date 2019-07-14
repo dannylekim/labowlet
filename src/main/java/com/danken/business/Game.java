@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
 @Getter
+@Setter
 public class Game {
 
     @JsonIgnore
@@ -21,36 +24,51 @@ public class Game {
     @JsonIgnore
     private Map<Player, List<String>> wordsMadePerPlayer;
 
+    @JsonIgnore
     private List<Round> rounds;
 
     private List<Team> teams;
 
     @JsonIgnore
-    private int wordsPerPerson; // put this in the controller
+    private int wordsPerPerson;
 
-    private int currentRound; //index
+    @JsonIgnore
+    private int currentRoundIndex;
 
     private Player currentActor;
 
     private Player currentGuesser;
 
     @JsonIgnore
+    private int timeRemaining;
+
+    @JsonIgnore int timeToCarryOver;
+
+    @JsonIgnore
     private WordBowlInputState state;
 
+    @JsonIgnore
+    private boolean started;
 
-    public Game(List<Team> teams, List<Round> rounds) {
+
+    Game(List<Team> teams, List<Round> rounds, int wordsPerPerson) {
         this.teams = teams;
         this.rounds = rounds;
         this.wordsMadePerPlayer = new HashMap<>();
         this.wordBowl = new ArrayList<>();
-        this.currentRound = 1;
+        this.currentRoundIndex = 0;
 
         List<Player> players = new ArrayList<>();
         teams.forEach(team ->
                 players.addAll(team.getTeamMembers())
         );
 
+        this.wordsPerPerson = wordsPerPerson;
         state = new WordBowlInputState(players);
+    }
+
+    public Round getCurrentRound() {
+        return rounds.get(currentRoundIndex);
     }
 
 
@@ -80,7 +98,7 @@ public class Game {
             //checking for uniqueness
             if (playerWordBowl.contains(word)) {
                 log.warn("Cannot have two of the same entries in the word bowl");
-                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl!");
+                throw new IllegalArgumentException("Cannot have two of the same entries in your word bowl! Please remove " + word);
             }
             playerWordBowl.add(word);
         });
@@ -92,12 +110,41 @@ public class Game {
         userStatus.setCompleted(true);
     }
 
-    public void prepareRounds() {
+    private void prepareRounds() {
         if (wordsMadePerPlayer.size() != teams.size() * 2) {
             throw new IllegalStateException("Rounds cannot be prepared until all words have been inputted by each player");
         }
 
         var allWords = wordsMadePerPlayer.values().stream().collect(ArrayList<String>::new, ArrayList::addAll, ArrayList::addAll);
-        rounds.forEach(round -> round.setRemainingWords(allWords));
+        rounds.forEach(round -> round.setRemainingWords((List<String>) allWords.clone()));
     }
+
+    public Scoreboard fetchScoreboard() {
+        return new Scoreboard(this.teams.stream().map(team -> new TeamScore(team.getTeamName(), team.getTeamScore().getTotalScore())).collect(Collectors.toList()));
+    }
+
+
+    public boolean startGame() {
+        if (state.isReady()) {
+            prepareRounds();
+            setCurrentRoundActivePlayers();
+            teams.stream().map(Team::getTeamScore).forEach(score -> score.setRoundScores(rounds));
+        }
+
+        return state.isReady();
+    }
+
+    public void setCurrentRoundActivePlayers() {
+        final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
+        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentRoundTurn % 2);
+        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
+    }
+
+    @JsonIgnore
+    public Team getCurrentTeam() {
+        final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
+        return teams.get(currentRoundTurn % teams.size());
+    }
+
+
 }

@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import com.danken.business.Game;
 import com.danken.business.Room;
+import com.danken.business.Scoreboard;
 import com.danken.business.WordBowlInputState;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -23,6 +24,8 @@ public class MessageSocketSender {
     private static final String STATE_ENDPOINT = "/state";
 
     private static final String WORD_ENDPOINT = "/word";
+
+    private static final String TIMER_ENDPOINT = "/timer";
 
 
     @Inject
@@ -45,10 +48,19 @@ public class MessageSocketSender {
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT + WORD_ENDPOINT, state);
     }
 
-    public void sendGameStateMessage(final String roomCode, final boolean didGameStart) {
-        log.debug("Sending game state to all sockets connecting into /room/{}/state/game", roomCode);
-        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT + GAME_ENDPOINT, didGameStart);
+    public void sendWordMessage(final String roomCode, String word) {
+        log.debug("Sending word to all sockets connecting into /room/{}/game/word", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + WORD_ENDPOINT, word);
+    }
 
+    public void sendTimerMessage(final String roomCode, final int seconds) {
+        log.debug("Sending timer to all sockets connecting into /room/{}/game/timer", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + TIMER_ENDPOINT, seconds);
+    }
+
+    public void sendGameOverMessage(final String roomCode, Scoreboard scoreboard) {
+        log.debug("Sending game over to all sockets connecting into /room/{}/game/over", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + "/over", scoreboard);
     }
 
 }

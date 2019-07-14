@@ -23,16 +23,16 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 @Component
 public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
 
-    private GameSession userSession;
+    private final GameSession userSession;
 
-    public RoomExistenceInterceptor(GameSession gameSession) {
+    public RoomExistenceInterceptor(final GameSession gameSession) {
         this.userSession = gameSession;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RoomExistenceInterceptor.class);
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object Handler, Exception exception) throws Exception {}
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handle, Exception exception) throws Exception {}
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
@@ -60,7 +60,7 @@ public class RoomExistenceInterceptor extends HandlerInterceptorAdapter {
                 return false;
             }
 
-            //Check if the room is active in the com.danken.application state
+            //Check if the room is active in the state
             boolean isRoomActive = (applicationState.getRoom(currentRoom.getRoomCode()) != null);
             if (!isRoomActive) {
                 logger.info("{} is trying to access a room call where the room is no longer active", session.getId());

@@ -3,6 +3,7 @@ package com.danken;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.danken.business.Room;
 import com.danken.sessions.GameSession;
@@ -85,6 +86,14 @@ public class LabowletState {
 
     private void removeActiveRoom(Room room) {
         activeRooms.remove(room.getRoomCode());
+    }
+
+    public Session getSessionById(final String sessionId) {
+        return Optional.ofNullable(labowletSessionRepository.findById(sessionId)).orElse(null);
+    }
+
+    public GameSession getGameSessionFromSession(final Session session) {
+        return (GameSession) Optional.ofNullable(session).map(s -> s.getAttribute("scopedTarget.gameSession")).orElse(null);
     }
 
 

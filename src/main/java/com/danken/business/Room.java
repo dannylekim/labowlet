@@ -60,7 +60,7 @@ public class Room {
 
         var rounds = getRoomSettings().getRoundTypes().stream().map(Round::new).collect(Collectors.toList());
 
-        game = new Game(teams, rounds);
+        game = new Game(teams, rounds, roomSettings.getWordsPerPerson());
 
         return this.game;
     }
@@ -214,10 +214,6 @@ public class Room {
         return isPlayerRemoved;
     }
 
-    public Score fetchScoreboard() {
-        return null;
-        //todo, return a scoreboard, not a score
-    }
 
 
     /***

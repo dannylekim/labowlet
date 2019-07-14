@@ -7,9 +7,11 @@ import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Getter
 public class Round {
 
     private String roundName;
@@ -17,8 +19,10 @@ public class Round {
     @JsonIgnore
     private List<String> remainingWords;
 
+    @JsonIgnore
     private int turns;
 
+    @JsonIgnore
     private Random randomNumber = new Random();
 
     Round(String roundName) {
@@ -35,12 +39,13 @@ public class Round {
         this.remainingWords = words;
     }
 
+    @JsonIgnore
     public String getRandomWord() {
         int wordBowlSize = remainingWords.size();
-        int randomIndex = randomNumber.nextInt(wordBowlSize - 1);
-        String randomWord = remainingWords.get(randomIndex);
-        log.info("Random word is " + randomWord);
-        return randomWord;
+        int randomIndex = (wordBowlSize == 1) ? 0 : randomNumber.nextInt(wordBowlSize - 1);
+        String wordToGuess = remainingWords.get(randomIndex);
+        log.info("Random word is " + wordToGuess);
+        return wordToGuess;
     }
 
     public void removeWord(String word) {
