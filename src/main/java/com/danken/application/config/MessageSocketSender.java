@@ -57,4 +57,9 @@ public class MessageSocketSender {
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + TIMER_ENDPOINT, seconds);
     }
 
+    public void sendGameOverMessage(final String roomCode, Object scoreboard) {
+        log.debug("Sending word state to all sockets connecting into /room/{}/game/over", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + "/over", scoreboard);
+    }
+
 }

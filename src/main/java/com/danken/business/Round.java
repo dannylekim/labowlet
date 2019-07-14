@@ -19,6 +19,7 @@ public class Round {
     @JsonIgnore
     private List<String> remainingWords;
 
+    @JsonIgnore
     private int turns;
 
     @JsonIgnore
@@ -38,6 +39,7 @@ public class Round {
         this.remainingWords = words;
     }
 
+    @JsonIgnore
     public String getRandomWord() {
         int wordBowlSize = remainingWords.size();
         int randomIndex = randomNumber.nextInt(wordBowlSize - 1);
