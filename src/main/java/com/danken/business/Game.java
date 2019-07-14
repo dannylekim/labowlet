@@ -116,8 +116,10 @@ public class Game {
         rounds.forEach(round -> round.setRemainingWords(allWords));
     }
 
-    public Score fetchScoreboard() {
-        return null;
+    public Map<String, Integer> fetchScoreboard() {
+        Map<String, Integer> scoreboard = new HashMap<>();
+        this.teams.stream().map(team -> Map.of(team.getTeamName(), team.getTeamScore().getTotalScore())).forEach(scoreboard::putAll);
+        return scoreboard;
     }
 
 
