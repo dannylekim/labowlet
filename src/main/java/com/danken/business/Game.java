@@ -115,7 +115,7 @@ public class Game {
         }
 
         var allWords = wordsMadePerPlayer.values().stream().collect(ArrayList<String>::new, ArrayList::addAll, ArrayList::addAll);
-        rounds.forEach(round -> round.setRemainingWords(allWords));
+        rounds.forEach(round -> round.setRemainingWords((List<String>) allWords.clone()));
     }
 
     public Map<String, Integer> fetchScoreboard() {
