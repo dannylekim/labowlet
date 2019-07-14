@@ -42,7 +42,8 @@ public class Game {
     @JsonIgnore
     private int timeRemaining;
 
-    @JsonIgnore int timeToCarryOver;
+    @JsonIgnore
+    int timeToCarryOver;
 
     @JsonIgnore
     private WordBowlInputState state;
@@ -136,8 +137,8 @@ public class Game {
 
     public void setCurrentRoundActivePlayers() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
-        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentRoundTurn % 2);
-        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs((currentRoundTurn % 2) - 1));
+        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get((currentRoundTurn / teams.size()) % 2);
+        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get((currentRoundTurn / teams.size()) % 2);
     }
 
     @JsonIgnore

@@ -32,7 +32,7 @@ public class RoomSettings {
 
 
     //all the round types available
-    private static List<String> roundTypeEnums = new ArrayList<>() {
+    private static List<String> allowedRoundTypes = new ArrayList<>() {
         {
             add("DESCRIBE_IT");
             add("ONE_WORD_DESCRIPTION");
@@ -60,17 +60,17 @@ public class RoomSettings {
         if (!roundTypes.isEmpty()) {
             roundTypes.forEach(roundType -> {
                 log.debug("Verifying if " + roundType + " is a valid input");
-                if (!roundTypeEnums.contains(roundType)) {
+                if (!allowedRoundTypes.contains(roundType)) {
                     String msg = (roundType + " is not a valid input. It must be one of these possible" +
                             " choices: ") +
-                            Arrays.toString(roundTypeEnums.toArray());
+                            Arrays.toString(allowedRoundTypes.toArray());
                     log.warn(msg);
                     throw new IllegalArgumentException(msg);
                 }
             });
         } else {
-            log.warn("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(roundTypeEnums.toArray()));
-            throw new IllegalArgumentException("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(roundTypeEnums.toArray()));
+            log.warn("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(allowedRoundTypes.toArray()));
+            throw new IllegalArgumentException("Cannot have an empty list of roundTypes. You must have at least one of these possible choices: " + Arrays.toString(allowedRoundTypes.toArray()));
         }
 
     }
