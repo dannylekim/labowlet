@@ -111,7 +111,7 @@ public class WordBowlController {
 
         game.setTimeRemaining((int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
-        while (game.getTimeRemaining() <= 0) {
+        while (game.getTimeRemaining() > 0) {
             Thread.sleep(1000);
             int timeRemaining = game.getTimeRemaining();
             sender.sendTimerMessage(currentRoom.getRoomCode(), --timeRemaining);
