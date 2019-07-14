@@ -123,6 +123,7 @@ public class WordBowlController {
         if (game.getTimeRemaining() == 0) {
             game.setCurrentRoundIndex(game.getCurrentRoundIndex() + 1);
             game.setCurrentRoundActivePlayers();
+            game.getCurrentRound().increaseTurnCounter();
             sender.sendGameMessage(currentRoom.getRoomCode(), game);
         }
     }
