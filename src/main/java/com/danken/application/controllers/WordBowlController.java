@@ -85,7 +85,7 @@ public class WordBowlController {
             handleGameChange(currentRoom, currentGame);
         } else {
             currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
-            sender.sendWordMessage(currentRoom.getRoomCode(), (String) accessor.getSessionAttributes().get("sessionId"), currentRound.getRandomWord());
+            sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
         }
 
     }
@@ -107,7 +107,7 @@ public class WordBowlController {
     public void startStep(final SimpMessageHeaderAccessor accessor) throws InterruptedException {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
-        sender.sendWordMessage(currentRoom.getRoomCode(), (String) accessor.getSessionAttributes().get("sessionId"), game.getCurrentRound().getRandomWord());
+        sender.sendWordMessage(currentRoom.getRoomCode(), game.getCurrentRound().getRandomWord());
 
         game.setTimeRemaining((int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
