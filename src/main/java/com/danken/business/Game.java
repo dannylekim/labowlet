@@ -41,6 +41,8 @@ public class Game {
     @JsonIgnore
     private int timeRemaining;
 
+    @JsonIgnore int timeToCarryOver;
+
     @JsonIgnore
     private WordBowlInputState state;
 

@@ -91,6 +91,7 @@ public class WordBowlController {
     }
     private void handleGameChange(Room currentRoom, Game currentGame) {
         if (currentGame.getCurrentRoundIndex() == currentGame.getRounds().size() - 1) {
+            currentGame.setTimeRemaining(-1);
             sender.sendGameOverMessage(currentRoom.getRoomCode(), currentGame.fetchScoreboard());
         } else {
             sendNewRound(currentGame, currentRoom);
@@ -98,6 +99,7 @@ public class WordBowlController {
     }
     private void sendNewRound(final Game currentGame, final Room currentRoom) {
         currentGame.setCurrentRoundIndex(currentGame.getCurrentRoundIndex() + 1);
+        currentGame.setTimeToCarryOver(currentGame.getTimeRemaining());
         currentGame.setTimeRemaining(-1);
         currentGame.setCurrentRoundActivePlayers();
         sender.sendGameMessage(currentRoom.getRoomCode(), currentGame);
@@ -109,7 +111,7 @@ public class WordBowlController {
         final var game = currentRoom.getGame();
         sender.sendWordMessage(currentRoom.getRoomCode(), game.getCurrentRound().getRandomWord());
 
-        game.setTimeRemaining((int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
+        setGameTimeRemaining(currentRoom, game);
 
         while (game.getTimeRemaining() > 0) {
             Thread.sleep(1000);
@@ -123,9 +125,19 @@ public class WordBowlController {
 
 
     }
+    private void setGameTimeRemaining(Room currentRoom, Game game) {
+        if (game.getTimeToCarryOver() > 0) {
+            game.setTimeRemaining(game.getTimeToCarryOver());
+            game.setTimeToCarryOver(0);
+        } else {
+            game.setTimeRemaining((int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
+
+        }
+    }
     private void handleNextTurn(Room currentRoom, Game game) {
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
+        game.setTimeToCarryOver(0);
         sender.sendGameMessage(currentRoom.getRoomCode(), game);
     }
 
