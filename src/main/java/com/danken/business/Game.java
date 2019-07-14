@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -118,10 +119,8 @@ public class Game {
         rounds.forEach(round -> round.setRemainingWords((List<String>) allWords.clone()));
     }
 
-    public Map<String, Integer> fetchScoreboard() {
-        Map<String, Integer> scoreboard = new HashMap<>();
-        this.teams.stream().map(team -> Map.of(team.getTeamName(), team.getTeamScore().getTotalScore())).forEach(scoreboard::putAll);
-        return scoreboard;
+    public Scoreboard fetchScoreboard() {
+        return new Scoreboard(this.teams.stream().map(team -> new TeamScore(team.getTeamName(), team.getTeamScore().getTotalScore())).collect(Collectors.toList()));
     }
 
 

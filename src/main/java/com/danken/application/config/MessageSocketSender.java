@@ -1,11 +1,10 @@
 package com.danken.application.config;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import com.danken.business.Game;
 import com.danken.business.Room;
+import com.danken.business.Scoreboard;
 import com.danken.business.WordBowlInputState;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -59,7 +58,7 @@ public class MessageSocketSender {
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + TIMER_ENDPOINT, seconds);
     }
 
-    public void sendGameOverMessage(final String roomCode, Map<String, Integer> scoreboard) {
+    public void sendGameOverMessage(final String roomCode, Scoreboard scoreboard) {
         log.debug("Sending game over to all sockets connecting into /room/{}/game/over", roomCode);
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + "/over", scoreboard);
     }
