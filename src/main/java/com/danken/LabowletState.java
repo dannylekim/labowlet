@@ -88,8 +88,12 @@ public class LabowletState {
         activeRooms.remove(room.getRoomCode());
     }
 
-    public GameSession getGameSessionBySessionId(final String sessionId) {
-        return (GameSession) Optional.ofNullable(labowletSessionRepository.findById(sessionId)).map(session -> session.getAttribute("scopedTarget.gameSession")).orElse(null);
+    public Session getSessionById(final String sessionId) {
+        return Optional.ofNullable(labowletSessionRepository.findById(sessionId)).orElse(null);
+    }
+
+    public GameSession getGameSessionFromSession(final Session session) {
+        return (GameSession) Optional.ofNullable(session).map(s -> s.getAttribute("scopedTarget.gameSession")).orElse(null);
     }
 
 

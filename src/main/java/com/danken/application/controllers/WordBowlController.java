@@ -80,12 +80,12 @@ public class WordBowlController {
         final var currentRound = currentGame.getCurrentRound();
         currentRound.removeWord(word);
 
-        if (currentRound.getRemainingWords().size() == 0) {
+        if (currentRound.getRemainingWords().isEmpty()) {
 
             handleGameChange(currentRoom, currentGame);
         } else {
             currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
-            sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
+            sender.sendWordMessage(currentRoom.getRoomCode(), (String) accessor.getSessionAttributes().get("sessionId"), currentRound.getRandomWord());
         }
 
     }
@@ -107,7 +107,9 @@ public class WordBowlController {
     public void startStep(final SimpMessageHeaderAccessor accessor) throws InterruptedException {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
-        sender.sendWordMessage(currentRoom.getRoomCode(), game.getCurrentRound().getRandomWord());
+        sender.sendWordMessage(currentRoom.getRoomCode(), (String) accessor.getSessionAttributes().get("sessionId"), game.getCurrentRound().getRandomWord());
+
+        game.setTimeRemaining((int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
         while (game.getTimeRemaining() <= 0) {
             Thread.sleep(1000);
@@ -115,17 +117,17 @@ public class WordBowlController {
             sender.sendTimerMessage(currentRoom.getRoomCode(), --timeRemaining);
             game.setTimeRemaining(timeRemaining);
         }
+        if (game.getTimeRemaining() == 0) {
+            handleNextTurn(currentRoom, game);
+        }
 
-        handleNextTurn(currentRoom, game);
 
     }
     private void handleNextTurn(Room currentRoom, Game game) {
-        if (game.getTimeRemaining() == 0) {
-            game.setCurrentRoundIndex(game.getCurrentRoundIndex() + 1);
-            game.setCurrentRoundActivePlayers();
-            game.getCurrentRound().increaseTurnCounter();
-            sender.sendGameMessage(currentRoom.getRoomCode(), game);
-        }
+        game.setCurrentRoundIndex(game.getCurrentRoundIndex() + 1);
+        game.setCurrentRoundActivePlayers();
+        game.getCurrentRound().increaseTurnCounter();
+        sender.sendGameMessage(currentRoom.getRoomCode(), game);
     }
 
 

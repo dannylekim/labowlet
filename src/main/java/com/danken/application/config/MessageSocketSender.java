@@ -49,9 +49,9 @@ public class MessageSocketSender {
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + STATE_ENDPOINT + WORD_ENDPOINT, state);
     }
 
-    public void sendWordMessage(final String roomCode, final String word) {
+    public void sendWordMessage(final String roomCode, final String sessionId, String word) {
         log.debug("Sending word state to all sockets connecting into /room/{}/game/word", roomCode);
-        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + WORD_ENDPOINT, word);
+        simpMessagingTemplate.convertAndSendToUser(sessionId, ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + WORD_ENDPOINT, word);
     }
 
     public void sendTimerMessage(final String roomCode, final int seconds) {
