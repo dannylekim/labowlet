@@ -82,7 +82,6 @@ public class WordBowlController {
         currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
 
         if (currentRound.getRemainingWords().isEmpty()) {
-
             handleGameChange(currentRoom, currentGame);
         } else {
             sender.sendWordMessage(currentRoom.getRoomCode(), currentRound.getRandomWord());
@@ -93,6 +92,7 @@ public class WordBowlController {
         if (currentGame.getCurrentRoundIndex() == currentGame.getRounds().size() - 1) {
             currentGame.setTimeRemaining(-1);
             sender.sendGameOverMessage(currentRoom.getRoomCode(), currentGame.fetchScoreboard());
+            sender.sendTimerMessage(currentRoom.getRoomCode(), -1);
         } else {
             sendNewRound(currentGame, currentRoom);
         }
@@ -102,6 +102,7 @@ public class WordBowlController {
         currentGame.setTimeToCarryOver(currentGame.getTimeRemaining());
         currentGame.setTimeRemaining(-1);
         currentGame.setCurrentRoundActivePlayers();
+        sender.sendTimerMessage(currentRoom.getRoomCode(), -1);
         sender.sendGameMessage(currentRoom.getRoomCode(), currentGame);
     }
 
