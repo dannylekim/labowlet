@@ -13,4 +13,8 @@ public class FullGameState {
 
     private WordBowlInputState wordState;
 
+    private Team team;
+
+    private String currentlyIn;
+
 }

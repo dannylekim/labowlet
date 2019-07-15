@@ -130,9 +130,10 @@ public class Game {
             prepareRounds();
             setCurrentRoundActivePlayers();
             teams.stream().map(Team::getTeamScore).forEach(score -> score.setRoundScores(rounds));
+            setStarted(true);
         }
 
-        return state.isReady();
+        return started;
     }
 
     public void setCurrentRoundActivePlayers() {
