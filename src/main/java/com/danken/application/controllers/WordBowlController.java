@@ -122,11 +122,22 @@ public class WordBowlController {
             game.setTimeRemaining(timeRemaining);
         }
         if (game.getTimeRemaining() == 0) {
-            handleNextTurn(currentRoom, game);
+            handleNextTurn(game);
+            sender.sendGameMessage(currentRoom.getRoomCode(), game);
         }
+    }
 
+    @MessageMapping("/room/{code}/game/endTurn")
+    @SendTo("/client/room/{code}/game")
+    public Game endTurn(final SimpMessageHeaderAccessor accessor) {
+        var currentRoom = SocketSessionUtils.getRoom(accessor);
+        final var game = currentRoom.getGame();
+        handleNextTurn(game);
+
+        return game;
 
     }
+
     private void setGameTimeRemaining(Room currentRoom, Game game) {
         if (game.getTimeToCarryOver() > 0) {
             game.setTimeRemaining(game.getTimeToCarryOver());
@@ -136,11 +147,10 @@ public class WordBowlController {
 
         }
     }
-    private void handleNextTurn(Room currentRoom, Game game) {
+    private void handleNextTurn(Game game) {
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
-        sender.sendGameMessage(currentRoom.getRoomCode(), game);
     }
 
 
