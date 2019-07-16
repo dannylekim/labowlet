@@ -51,6 +51,9 @@ public class Game {
     @JsonIgnore
     private boolean started;
 
+    @JsonIgnore
+    private boolean gameOver;
+
 
     Game(List<Team> teams, List<Round> rounds, int wordsPerPerson) {
         this.teams = teams;
