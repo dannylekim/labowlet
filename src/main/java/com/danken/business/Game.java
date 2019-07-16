@@ -64,6 +64,8 @@ public class Game {
                 players.addAll(team.getTeamMembers())
         );
 
+        players.forEach(player -> wordsMadePerPlayer.put(player, new ArrayList<>()));
+
         this.wordsPerPerson = wordsPerPerson;
         state = new WordBowlInputState(players);
     }
@@ -91,8 +93,13 @@ public class Game {
             throw new IllegalArgumentException("Missing word entries! You need to have " + wordsPerPerson + " entries!");
         }
 
+        if(!wordsMadePerPlayer.containsKey(player)){
+            throw new IllegalStateException("A player without a team cannot add words!");
+        }
+
 
         List<String> playerWordBowl = new ArrayList<>();
+
 
         inputWords.forEach(word -> {
 

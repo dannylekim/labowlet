@@ -39,8 +39,9 @@ public class WordBowlController {
         if (game == null) {
             throw new IllegalStateException("Game hasn't started yet");
         }
+        final var player = SocketSessionUtils.getSession(accessor).getPlayer();
 
-        game.addWordBowl(inputWords, SocketSessionUtils.getSession(accessor).getPlayer());
+        game.addWordBowl(inputWords, player);
         return game.getState();
     }
 
