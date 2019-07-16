@@ -104,7 +104,7 @@ public class RoomController {
     }
 
     @MessageMapping("/room/{code}/leaveRoom")
-    @SendTo("/room/{code}")
+    @SendTo("/client/room/{code}")
     public Room leaveRoom(final SimpMessageHeaderAccessor accessor) {
         final GameSession session = SocketSessionUtils.getSession(accessor);
         final Player player = session.getPlayer();
