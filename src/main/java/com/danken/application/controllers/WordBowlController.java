@@ -138,6 +138,15 @@ public class WordBowlController {
 
     }
 
+    @MessageMapping("/room/{code}/game/resetGame")
+    public void resetGame(final SimpMessageHeaderAccessor accessor) {
+        final var currentRoom = SocketSessionUtils.getRoom(accessor);
+        currentRoom.setGame(null);
+        sender.sendGameMessage(currentRoom.getRoomCode(), null);
+        sender.sendWordStateMessage(currentRoom.getRoomCode(), null);
+        sender.sendRoomMessage(currentRoom);
+    }
+
     private void setGameTimeRemaining(Room currentRoom, Game game) {
         if (game.getTimeToCarryOver() > 0) {
             game.setTimeRemaining(game.getTimeToCarryOver());
