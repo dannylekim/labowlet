@@ -10,8 +10,10 @@ import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.RoomSettings;
 import com.danken.sessions.GameSession;
+import com.danken.utility.SocketSessionUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -103,9 +105,10 @@ public class RoomController {
 
     @MessageMapping("/room/{code}/leaveRoom")
     @SendTo("/room/{code}")
-    public Room leaveRoom() {
-        final Player player = userGameSession.getPlayer();
-        final Room roomToLeave = userGameSession.getCurrentRoom();
+    public Room leaveRoom(final SimpMessageHeaderAccessor accessor) {
+        final GameSession session = SocketSessionUtils.getSession(accessor);
+        final Player player = session.getPlayer();
+        final Room roomToLeave = session.getCurrentRoom();
         roomToLeave.removePlayer(player);
 
         return roomToLeave;
