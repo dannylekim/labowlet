@@ -3,6 +3,7 @@ package com.danken.application.config;
 import javax.inject.Inject;
 
 import com.danken.business.Game;
+import com.danken.business.LabowletError;
 import com.danken.business.Room;
 import com.danken.business.Scoreboard;
 import com.danken.business.WordBowlInputState;
@@ -20,6 +21,8 @@ public class MessageSocketSender {
 
     private static final String ROOM_ENDPOINT = "/client/room/";
 
+    private static final String PLAYER_ENDPOINT = "/client/player/";
+
     private static final String GAME_ENDPOINT = "/game";
 
     private static final String STATE_ENDPOINT = "/state";
@@ -28,6 +31,7 @@ public class MessageSocketSender {
 
     private static final String TIMER_ENDPOINT = "/timer";
 
+    private static final String ERROR_ENDPOINT = "/error";
 
     @Inject
     public MessageSocketSender(final SimpMessagingTemplate simpMessagingTemplate) {
@@ -62,6 +66,12 @@ public class MessageSocketSender {
     public void sendGameOverMessage(final String roomCode, Scoreboard scoreboard) {
         log.debug("Sending game over to all sockets connecting into /room/{}/game/over", roomCode);
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + "/over", scoreboard);
+    }
+
+    public void sendErrorMessage(final String playerId, LabowletError error) {
+        log.warn("Sending error message to all sockets connecting into /player/{}/error", playerId);
+        simpMessagingTemplate.convertAndSend(PLAYER_ENDPOINT + playerId + ERROR_ENDPOINT, error);
+
     }
 
 }
