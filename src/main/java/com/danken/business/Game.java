@@ -51,6 +51,9 @@ public class Game {
     @JsonIgnore
     private boolean started;
 
+    @JsonIgnore
+    private boolean gameOver;
+
 
     Game(List<Team> teams, List<Round> rounds, int wordsPerPerson) {
         this.teams = teams;
@@ -63,6 +66,8 @@ public class Game {
         teams.forEach(team ->
                 players.addAll(team.getTeamMembers())
         );
+
+        players.forEach(player -> wordsMadePerPlayer.put(player, new ArrayList<>()));
 
         this.wordsPerPerson = wordsPerPerson;
         state = new WordBowlInputState(players);
@@ -91,8 +96,13 @@ public class Game {
             throw new IllegalArgumentException("Missing word entries! You need to have " + wordsPerPerson + " entries!");
         }
 
+        if (!wordsMadePerPlayer.containsKey(player)) {
+            throw new IllegalStateException("A player without a team cannot add words!");
+        }
+
 
         List<String> playerWordBowl = new ArrayList<>();
+
 
         inputWords.forEach(word -> {
 
@@ -130,15 +140,17 @@ public class Game {
             prepareRounds();
             setCurrentRoundActivePlayers();
             teams.stream().map(Team::getTeamScore).forEach(score -> score.setRoundScores(rounds));
+            setStarted(true);
         }
 
-        return state.isReady();
+        return started;
     }
 
     public void setCurrentRoundActivePlayers() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
-        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get((currentRoundTurn / teams.size()) % 2);
-        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get((currentRoundTurn / teams.size()) % 2);
+        final int currentPlayerIndex = (currentRoundTurn / teams.size()) % 2;
+        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentPlayerIndex);
+        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs(currentPlayerIndex - 1));
     }
 
     @JsonIgnore

@@ -39,8 +39,9 @@ public class WordBowlController {
         if (game == null) {
             throw new IllegalStateException("Game hasn't started yet");
         }
+        final var player = SocketSessionUtils.getSession(accessor).getPlayer();
 
-        game.addWordBowl(inputWords, SocketSessionUtils.getSession(accessor).getPlayer());
+        game.addWordBowl(inputWords, player);
         return game.getState();
     }
 
@@ -91,8 +92,10 @@ public class WordBowlController {
     private void handleGameChange(Room currentRoom, Game currentGame) {
         if (currentGame.getCurrentRoundIndex() == currentGame.getRounds().size() - 1) {
             currentGame.setTimeRemaining(-1);
+            currentGame.setGameOver(true);
             sender.sendGameOverMessage(currentRoom.getRoomCode(), currentGame.fetchScoreboard());
             sender.sendTimerMessage(currentRoom.getRoomCode(), -1);
+
         } else {
             sendNewRound(currentGame, currentRoom);
         }
@@ -122,11 +125,36 @@ public class WordBowlController {
             game.setTimeRemaining(timeRemaining);
         }
         if (game.getTimeRemaining() == 0) {
-            handleNextTurn(currentRoom, game);
+            handleNextTurn(game);
+            sender.sendGameMessage(currentRoom.getRoomCode(), game);
+        }
+    }
+
+    @MessageMapping("/room/{code}/game/endTurn")
+    @SendTo("/client/room/{code}/game")
+    public Game endTurn(final SimpMessageHeaderAccessor accessor) {
+        var currentRoom = SocketSessionUtils.getRoom(accessor);
+        final var game = currentRoom.getGame();
+        handleNextTurn(game);
+
+        return game;
+
+    }
+
+    @MessageMapping("/room/{code}/game/resetGame")
+    public void resetGame(final SimpMessageHeaderAccessor accessor) {
+        final var currentRoom = SocketSessionUtils.getRoom(accessor);
+
+        if (currentRoom.getGame() != null && currentRoom.getGame().isGameOver()) {
+            currentRoom.setGame(null);
+            sender.sendGameMessage(currentRoom.getRoomCode(), null);
+            sender.sendWordStateMessage(currentRoom.getRoomCode(), null);
+            sender.sendRoomMessage(currentRoom);
         }
 
 
     }
+
     private void setGameTimeRemaining(Room currentRoom, Game game) {
         if (game.getTimeToCarryOver() > 0) {
             game.setTimeRemaining(game.getTimeToCarryOver());
@@ -136,11 +164,10 @@ public class WordBowlController {
 
         }
     }
-    private void handleNextTurn(Room currentRoom, Game game) {
+    private void handleNextTurn(Game game) {
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
-        sender.sendGameMessage(currentRoom.getRoomCode(), game);
     }
 
 
