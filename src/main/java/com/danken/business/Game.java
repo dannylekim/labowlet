@@ -96,7 +96,7 @@ public class Game {
             throw new IllegalArgumentException("Missing word entries! You need to have " + wordsPerPerson + " entries!");
         }
 
-        if(!wordsMadePerPlayer.containsKey(player)){
+        if (!wordsMadePerPlayer.containsKey(player)) {
             throw new IllegalStateException("A player without a team cannot add words!");
         }
 
@@ -148,8 +148,9 @@ public class Game {
 
     public void setCurrentRoundActivePlayers() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
-        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get((currentRoundTurn / teams.size()) % 2);
-        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get((currentRoundTurn / teams.size()) % 2);
+        final int currentPlayerIndex = (currentRoundTurn / teams.size()) % 2;
+        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentPlayerIndex);
+        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs(currentPlayerIndex - 1));
     }
 
     @JsonIgnore
