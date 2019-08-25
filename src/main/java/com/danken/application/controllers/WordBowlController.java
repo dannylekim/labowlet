@@ -147,8 +147,7 @@ public class WordBowlController {
 
         if (currentRoom.getGame() != null && currentRoom.getGame().isGameOver()) {
             currentRoom.setGame(null);
-            sender.sendGameMessage(currentRoom.getRoomCode(), null);
-            sender.sendWordStateMessage(currentRoom.getRoomCode(), null);
+            sender.sendResetMessage(currentRoom.getRoomCode());
             sender.sendRoomMessage(currentRoom);
         }
 

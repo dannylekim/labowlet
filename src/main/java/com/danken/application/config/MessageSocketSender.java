@@ -71,7 +71,11 @@ public class MessageSocketSender {
     public void sendErrorMessage(final String playerId, LabowletError error) {
         log.warn("Sending error message to all sockets connecting into /player/{}/error", playerId);
         simpMessagingTemplate.convertAndSend(PLAYER_ENDPOINT + playerId + ERROR_ENDPOINT, error);
+    }
 
+    public void sendResetMessage(final String roomCode) {
+        log.debug("Sending reset message to all sockets connecting into /room/{}/game/reset", roomCode);
+        simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + "/reset", "reset");
     }
 
 }
