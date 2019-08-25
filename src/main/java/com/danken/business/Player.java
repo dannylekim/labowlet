@@ -15,6 +15,9 @@ public class Player {
 
     private String id;
 
+    @Setter
+    private int uniqueIconReference;
+
     public Player() {
         this.id = UUID.randomUUID().toString();
     }

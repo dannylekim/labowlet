@@ -29,6 +29,9 @@ public class Room {
     private RoomSettings roomSettings;
 
     @JsonIgnore
+    private List<Integer> usedIconReferences = new ArrayList<>();
+
+    @JsonIgnore
     @Setter
     private Game game;
 
@@ -214,6 +217,20 @@ public class Room {
         return isPlayerRemoved;
     }
 
+    @JsonIgnore
+    public int getUniqueIconReference() {
+        int randomInt;
+
+        do {
+            randomInt = RANDOM.nextInt(30);
+        }
+        while (usedIconReferences.contains(randomInt));
+
+        usedIconReferences.add(randomInt);
+
+        log.info("Unique ID for Icons Generated: " + randomInt);
+        return randomInt;
+    }
 
 
     /***
