@@ -44,7 +44,7 @@ public class SessionController {
             if (game.isStarted()) {
                 fullGameState.setCurrentlyIn("GAME");
             } else {
-                fullGameState.setCurrentlyIn("WORD");
+                fullGameState.setCurrentlyIn("BOWL");
             }
         });
 
