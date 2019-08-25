@@ -133,6 +133,7 @@ public class WordBowlController {
     @MessageMapping("/room/{code}/game/endTurn")
     @SendTo("/client/room/{code}/game")
     public Game endTurn(final SimpMessageHeaderAccessor accessor) {
+        log.info("Ending turn...");
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
         handleNextTurn(game);
