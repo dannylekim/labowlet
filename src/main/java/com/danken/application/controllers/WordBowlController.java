@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import com.danken.application.config.MessageSocketSender;
 import com.danken.business.Game;
+import com.danken.business.Player;
 import com.danken.business.Room;
 import com.danken.business.WordBowlInputState;
 import com.danken.business.WordMessage;
@@ -144,11 +145,11 @@ public class WordBowlController {
     @MessageMapping("/room/{code}/game/resetGame")
     public void resetGame(final SimpMessageHeaderAccessor accessor) {
         final var currentRoom = SocketSessionUtils.getRoom(accessor);
+        final Player player = SocketSessionUtils.getSession(accessor).getPlayer();
 
-        if (currentRoom.getGame() != null && currentRoom.getGame().isGameOver()) {
+        if (currentRoom.getGame() != null && currentRoom.getGame().isGameOver() && player.equals(currentRoom.getHost())) {
             currentRoom.setGame(null);
-            sender.sendGameMessage(currentRoom.getRoomCode(), null);
-            sender.sendWordStateMessage(currentRoom.getRoomCode(), null);
+            sender.sendResetMessage(currentRoom.getRoomCode());
             sender.sendRoomMessage(currentRoom);
         }
 

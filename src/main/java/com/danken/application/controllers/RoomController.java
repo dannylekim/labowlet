@@ -73,6 +73,7 @@ public class RoomController {
         log.info("Adding newly formed room with room code {} as active for the session", newRoom.getRoomCode());
         applicationState.addActiveRoom(newRoom);
         userGameSession.setCurrentRoom(newRoom);
+        host.setUniqueIconReference(newRoom.getUniqueIconReference());
         sender.sendRoomMessage(newRoom);
 
 
@@ -94,6 +95,8 @@ public class RoomController {
         log.info("Adding player {} to the list of bench players and setting their current room to the session,", player.getName());
         roomToJoin.addPlayerToBench(player);
         userGameSession.setCurrentRoom(roomToJoin);
+        player.setUniqueIconReference(roomToJoin.getUniqueIconReference());
+
 
         //Sending the room in a message to allow everyone connected to the socket to be able sync
         log.debug("Sending room to all sockets connecting into /room/{}", roomToJoin.getRoomCode());
