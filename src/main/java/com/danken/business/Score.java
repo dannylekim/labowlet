@@ -29,4 +29,9 @@ public class Score {
         roundScores.get(roundName).add(word);
     }
 
+    public int getTotalScore() {
+        return roundScores.keySet().stream().mapToInt(this::getRoundScore).sum();
+    }
+
+
 }
