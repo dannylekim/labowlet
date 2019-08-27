@@ -41,6 +41,8 @@ public class Game {
 
     private Team currentTeam;
 
+    private Scoreboard currentScores;
+
     @JsonIgnore
     private int timeRemaining;
 
@@ -133,7 +135,28 @@ public class Game {
     }
 
     public Scoreboard fetchScoreboard() {
-        return new Scoreboard(this.teams.stream().map(team -> new TeamScore(team.getTeamName(), team.getTeamScore().getTotalScore())).collect(Collectors.toList()));
+        return new Scoreboard(this.teams.stream()
+                .map(this::getTeamScore)
+                .collect(Collectors.toList()));
+    }
+
+    private TeamScore getTeamScore(final Team team) {
+
+        final Score teamScore = team.getTeamScore();
+        int previousScore = 0;
+        int currentTotal = 0;
+        for (int i = 0; i < rounds.size(); i++) {
+            final int roundScore = teamScore.getRoundScore(rounds.get(i).getRoundName());
+            //assume that the scoreboard is always updated before this
+            if (i != currentRoundIndex - 1) {
+                previousScore += roundScore;
+            }
+            currentTotal += roundScore;
+        }
+
+        return new TeamScore(team.getTeamName(), previousScore, currentTotal);
+
+
     }
 
 
