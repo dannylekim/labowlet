@@ -39,8 +39,6 @@ public class Game {
 
     private Player currentGuesser;
 
-    private Team currentTeam;
-
     private Scoreboard currentScores;
 
     @JsonIgnore
@@ -174,7 +172,7 @@ public class Game {
     public void setCurrentRoundActivePlayers() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
         final int currentPlayerIndex = (currentRoundTurn / teams.size()) % 2;
-        currentTeam = teams.get(currentRoundTurn % teams.size());
+        final var currentTeam = teams.get(currentRoundTurn % teams.size());
         currentActor = currentTeam.getTeamMembers().get(currentPlayerIndex);
         currentGuesser = currentTeam.getTeamMembers().get(Math.abs(currentPlayerIndex - 1));
     }
