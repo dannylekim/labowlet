@@ -138,6 +138,7 @@ public class WordBowlController {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
         handleNextTurn(game);
+        game.setTimeRemaining(0);
 
         return game;
 
@@ -170,7 +171,6 @@ public class WordBowlController {
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
-        game.setTimeRemaining(0);
     }
 
 
