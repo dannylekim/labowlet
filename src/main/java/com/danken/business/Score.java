@@ -29,18 +29,7 @@ public class Score {
         roundScores.get(roundName).add(word);
     }
 
-    public void removePoint(String roundName, String word) {
-        roundScores.get(roundName).remove(word);
-    }
-
-    @JsonIgnore
-    public Map<String, Integer> getRoundScoreBoard() {
-        Map<String, Integer> scoreboard = new HashMap<>();
-        roundScores.forEach((k, v) -> scoreboard.put(k, v.size()));
-        return scoreboard;
-    }
-
-    public int getTotalScore(){
+    public int getTotalScore() {
         return roundScores.keySet().stream().mapToInt(this::getRoundScore).sum();
     }
 

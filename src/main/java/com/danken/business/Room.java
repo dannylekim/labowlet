@@ -224,7 +224,7 @@ public class Room {
         do {
             randomInt = RANDOM.nextInt(30);
         }
-        while (usedIconReferences.contains(randomInt));
+        while (usedIconReferences.contains(randomInt) && usedIconReferences.size() != 30);
 
         usedIconReferences.add(randomInt);
 

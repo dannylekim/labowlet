@@ -106,6 +106,7 @@ public class WordBowlController {
         currentGame.setTimeToCarryOver(currentGame.getTimeRemaining());
         currentGame.setTimeRemaining(-1);
         currentGame.setCurrentRoundActivePlayers();
+        currentGame.setCurrentScores(currentGame.fetchScoreboard());
         sender.sendTimerMessage(currentRoom.getRoomCode(), -1);
         sender.sendGameMessage(currentRoom.getRoomCode(), currentGame);
     }
@@ -169,6 +170,7 @@ public class WordBowlController {
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
+        game.setTimeRemaining(0);
     }
 
 

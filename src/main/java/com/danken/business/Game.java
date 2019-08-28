@@ -39,6 +39,8 @@ public class Game {
 
     private Player currentGuesser;
 
+    private Scoreboard currentScores;
+
     @JsonIgnore
     private int timeRemaining;
 
@@ -131,7 +133,28 @@ public class Game {
     }
 
     public Scoreboard fetchScoreboard() {
-        return new Scoreboard(this.teams.stream().map(team -> new TeamScore(team.getTeamName(), team.getTeamScore().getTotalScore())).collect(Collectors.toList()));
+        return new Scoreboard(this.teams.stream()
+                .map(this::getTeamScore)
+                .collect(Collectors.toList()));
+    }
+
+    private TeamScore getTeamScore(final Team team) {
+
+        final Score teamScore = team.getTeamScore();
+        int previousScore = 0;
+        int currentTotal = 0;
+        for (int i = 0; i < rounds.size(); i++) {
+            final int roundScore = teamScore.getRoundScore(rounds.get(i).getRoundName());
+            //assume that the scoreboard is always updated before this
+            if (i != currentRoundIndex - 1) {
+                previousScore += roundScore;
+            }
+            currentTotal += roundScore;
+        }
+
+        return new TeamScore(team.getTeamName(), previousScore, currentTotal);
+
+
     }
 
 
@@ -149,8 +172,9 @@ public class Game {
     public void setCurrentRoundActivePlayers() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
         final int currentPlayerIndex = (currentRoundTurn / teams.size()) % 2;
-        currentActor = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(currentPlayerIndex);
-        currentGuesser = teams.get(currentRoundTurn % teams.size()).getTeamMembers().get(Math.abs(currentPlayerIndex - 1));
+        final var currentTeam = teams.get(currentRoundTurn % teams.size());
+        currentActor = currentTeam.getTeamMembers().get(currentPlayerIndex);
+        currentGuesser = currentTeam.getTeamMembers().get(Math.abs(currentPlayerIndex - 1));
     }
 
     @JsonIgnore

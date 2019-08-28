@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class Scoreboard {
 
+
     private final List<TeamScore> scores;
 
 }
@@ -15,6 +16,8 @@ public class Scoreboard {
 class TeamScore {
 
     private final String teamName;
+
+    private final int previousScore;
 
     private final int totalScore;
 }
