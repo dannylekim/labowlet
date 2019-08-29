@@ -177,7 +177,6 @@ public class Game {
         currentGuesser = currentTeam.getTeamMembers().get(Math.abs(currentPlayerIndex - 1));
     }
 
-    @JsonIgnore
     public Team getCurrentTeam() {
         final var currentRoundTurn = rounds.stream().mapToInt(Round::getTurns).sum();
         return teams.get(currentRoundTurn % teams.size());
