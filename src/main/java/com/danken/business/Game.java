@@ -152,7 +152,7 @@ public class Game {
             currentTotal += roundScore;
         }
 
-        return new TeamScore(team.getTeamName(), previousScore, currentTotal);
+        return new TeamScore(team.getTeamId(), team.getTeamName(), previousScore, currentTotal);
 
 
     }
