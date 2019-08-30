@@ -171,6 +171,7 @@ public class WordBowlController {
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
+        game.setTimeRemaining(0);
     }
 
 
