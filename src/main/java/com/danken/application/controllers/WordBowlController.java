@@ -144,6 +144,26 @@ public class WordBowlController {
 
     }
 
+    @MessageMapping("/room/{code}/game/nextRound")
+    @SendTo("/client/room/{code}/game")
+    public Game giveGameObjectWithNullCurrentScores(final SimpMessageHeaderAccessor accessor) {
+        var currentRoom = SocketSessionUtils.getRoom(accessor);
+
+        if (!SocketSessionUtils.getSession(accessor).getPlayer().equals(currentRoom.getHost())) {
+            throw new IllegalStateException("Only the host can call this endpoint!");
+        }
+
+        final Game game = currentRoom.getGame();
+        if (game.getCurrentRound().getRemainingWords().isEmpty()) {
+            throw new IllegalStateException("Cannot retrieve object until round is over");
+        }
+
+        game.setCurrentScores(null);
+
+        return game;
+
+    }
+
     @MessageMapping("/room/{code}/game/resetGame")
     public void resetGame(final SimpMessageHeaderAccessor accessor) {
         final var currentRoom = SocketSessionUtils.getRoom(accessor);
