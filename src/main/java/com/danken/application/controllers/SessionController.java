@@ -41,7 +41,9 @@ public class SessionController {
         currentRoom.map(Room::getGame).ifPresent(game -> {
             fullGameState.setWordState(game.getState());
             fullGameState.setGame(game);
-            if (game.isStarted()) {
+            if (game.isStarted() && game.getCurrentScores() != null) {
+                fullGameState.setCurrentlyIn("SUMMARY");
+            } else if (game.isStarted()) {
                 fullGameState.setCurrentlyIn("GAME");
             } else {
                 fullGameState.setCurrentlyIn("BOWL");
