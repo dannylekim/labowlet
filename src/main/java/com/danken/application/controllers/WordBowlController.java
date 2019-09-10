@@ -159,6 +159,7 @@ public class WordBowlController {
         }
 
         game.setCurrentScores(null);
+        sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
         return game;
 
