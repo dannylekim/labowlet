@@ -128,6 +128,7 @@ public class WordBowlController {
         }
         if (game.getTimeRemaining() == 0) {
             handleNextTurn(game);
+            sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
             sender.sendGameMessage(currentRoom.getRoomCode(), game);
         }
     }
@@ -139,6 +140,7 @@ public class WordBowlController {
         final var game = currentRoom.getGame();
         handleNextTurn(game);
         game.setTimeRemaining(0);
+        sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
         return game;
 
@@ -193,6 +195,7 @@ public class WordBowlController {
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
         game.setTimeRemaining(0);
+
     }
 
 
