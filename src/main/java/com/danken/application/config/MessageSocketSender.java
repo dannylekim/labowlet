@@ -44,7 +44,7 @@ public class MessageSocketSender {
     }
 
     public void sendGameMessage(final String roomCode, final Game game) {
-        log.debug("Sending game to all sockets connecting into /room/{}/game", roomCode);
+        log.debug("Sending game to all sockets connecting into /room/{}/game with timer {}", roomCode, game.getTimeRemaining());
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT, game);
     }
 
@@ -59,7 +59,7 @@ public class MessageSocketSender {
     }
 
     public void sendTimerMessage(final String roomCode, final int seconds) {
-        log.debug("Sending timer to all sockets connecting into /room/{}/game/timer", roomCode);
+        log.debug("Sending timer to all sockets connecting into /room/{}/game/timer with time {}", roomCode, seconds);
         simpMessagingTemplate.convertAndSend(ROOM_ENDPOINT + roomCode + GAME_ENDPOINT + TIMER_ENDPOINT, seconds);
     }
 
