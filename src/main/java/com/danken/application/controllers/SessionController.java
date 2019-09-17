@@ -45,6 +45,7 @@ public class SessionController {
                 fullGameState.setCurrentlyIn("SUMMARY");
             } else if (game.isStarted()) {
                 fullGameState.setCurrentlyIn("GAME");
+                fullGameState.setCurrentTime(game.getTimeRemaining());
             } else {
                 fullGameState.setCurrentlyIn("BOWL");
             }
