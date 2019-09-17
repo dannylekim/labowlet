@@ -80,13 +80,14 @@ public class WordBowlController {
         }
 
         final var currentRound = currentGame.getCurrentRound();
-        currentRound.removeWord(word);
-        currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
+        if (currentRound.removeWord(word)) {
+            currentGame.getCurrentTeam().getTeamScore().addPoint(currentRound.getRoundName(), word);
 
-        if (currentRound.getRemainingWords().isEmpty()) {
-            handleGameChange(currentRoom, currentGame);
-        } else {
-            sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
+            if (currentRound.getRemainingWords().isEmpty()) {
+                handleGameChange(currentRoom, currentGame);
+            } else {
+                sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
+            }
         }
 
     }
@@ -112,25 +113,47 @@ public class WordBowlController {
     }
 
     @MessageMapping("/room/{code}/game/startStep")
-    public void startStep(final SimpMessageHeaderAccessor accessor) throws InterruptedException {
+    public void startStep(final SimpMessageHeaderAccessor accessor) {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
+
+        if (game.isTurnStarted()) {
+            return;
+        }
+
         var currentRound = game.getCurrentRound();
         sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
 
         setGameTimeRemaining(currentRoom, game);
 
-        while (game.getTimeRemaining() > 0) {
-            Thread.sleep(1000);
-            int timeRemaining = game.getTimeRemaining();
-            sender.sendTimerMessage(currentRoom.getRoomCode(), --timeRemaining);
-            game.setTimeRemaining(timeRemaining);
-        }
-        if (game.getTimeRemaining() == 0) {
-            handleNextTurn(game);
-            sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
-            sender.sendGameMessage(currentRoom.getRoomCode(), game);
-        }
+        handleTimingEvents(currentRoom, game);
+
+        game.setTurnStarted(true);
+
+
+    }
+
+    private void handleTimingEvents(Room currentRoom, Game game) {
+        final Runnable r = () -> {
+            while (game.getTimeRemaining() > 0) {
+                try {
+                    Thread.sleep(1000);
+                    int timeRemaining = game.getTimeRemaining();
+                    sender.sendTimerMessage(currentRoom.getRoomCode(), --timeRemaining);
+                    game.setTimeRemaining(timeRemaining);
+                } catch (Exception ex) {
+                    log.error(ex.getMessage(), ex);
+                }
+
+            }
+            if (game.getTimeRemaining() == 0) {
+                handleNextTurn(game);
+                sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
+                sender.sendGameMessage(currentRoom.getRoomCode(), game);
+            }
+        };
+
+        new Thread(r).start();
     }
 
     @MessageMapping("/room/{code}/game/endTurn")
@@ -195,6 +218,7 @@ public class WordBowlController {
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
         game.setTimeRemaining(0);
+        game.setTurnStarted(false);
 
     }
 

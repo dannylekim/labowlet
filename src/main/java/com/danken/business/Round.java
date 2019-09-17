@@ -48,8 +48,8 @@ public class Round {
         return wordToGuess;
     }
 
-    public void removeWord(String word) {
-        remainingWords.remove(word);
+    public boolean removeWord(String word) {
+        return remainingWords.remove(word);
     }
 
     public void increaseTurnCounter() {
