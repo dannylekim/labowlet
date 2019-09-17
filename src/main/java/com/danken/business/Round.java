@@ -16,6 +16,8 @@ public class Round {
 
     private String roundName;
 
+    private String currentWord;
+
     @JsonIgnore
     private List<String> remainingWords;
 
@@ -45,6 +47,7 @@ public class Round {
         int randomIndex = (wordBowlSize == 1) ? 0 : randomNumber.nextInt(wordBowlSize - 1);
         String wordToGuess = remainingWords.get(randomIndex);
         log.info("Random word is " + wordToGuess);
+        currentWord = wordToGuess;
         return wordToGuess;
     }
 
