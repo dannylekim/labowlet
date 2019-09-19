@@ -56,6 +56,9 @@ public class Game {
     @JsonIgnore
     private boolean gameOver;
 
+    @JsonIgnore
+    private boolean turnStarted;
+
 
     Game(List<Team> teams, List<Round> rounds, int wordsPerPerson) {
         this.teams = teams;
@@ -153,7 +156,6 @@ public class Game {
         }
 
         return new TeamScore(team, previousScore, currentTotal);
-
 
 
     }

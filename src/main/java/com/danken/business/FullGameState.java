@@ -17,4 +17,6 @@ public class FullGameState {
 
     private String currentlyIn;
 
+    private int currentTime;
+
 }
