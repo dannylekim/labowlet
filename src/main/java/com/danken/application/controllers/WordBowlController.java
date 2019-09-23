@@ -185,7 +185,8 @@ public class WordBowlController {
         }
 
         game.setCurrentScores(null);
-        sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
+        this.setGameTimeRemaining(currentRoom, game);
+        sender.sendTimerMessage(currentRoom.getRoomCode(), game.getTimeRemaining());
 
         return game;
 

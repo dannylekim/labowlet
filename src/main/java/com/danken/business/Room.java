@@ -85,7 +85,7 @@ public class Room {
         }
 
         //can't play with just one team
-        return filledTeams > 0;
+        return filledTeams > 1;
     }
 
     /* public methods */
