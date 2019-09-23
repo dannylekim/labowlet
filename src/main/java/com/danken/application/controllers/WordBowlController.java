@@ -185,7 +185,11 @@ public class WordBowlController {
         }
 
         game.setCurrentScores(null);
-        this.setGameTimeRemaining(currentRoom, game);
+
+        if (game.getTimeToCarryOver() > 0) {
+            game.setTimeRemaining(game.getTimeToCarryOver());
+        }
+
         sender.sendTimerMessage(currentRoom.getRoomCode(), game.getTimeRemaining());
 
         return game;
