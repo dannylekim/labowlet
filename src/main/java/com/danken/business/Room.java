@@ -69,14 +69,23 @@ public class Room {
     }
 
     public boolean isCanStart() {
+        int filledTeams = 0;
         for (Team team : teams) {
-            if (!team.isEmpty() && team.getTeamMembers().size() != Team.MAX_TEAM_MEMBERS) {
+            final boolean isFilled = team.getTeamMembers().size() == Team.MAX_TEAM_MEMBERS;
+
+            if (isFilled) {
+                filledTeams++;
+                continue;
+            }
+
+            if (!team.isEmpty()) {
                 return false;
             }
+
         }
 
         //can't play with just one team
-        return teams.size() > 1;
+        return filledTeams > 0;
     }
 
     /* public methods */
