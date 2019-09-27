@@ -163,7 +163,8 @@ public class Game {
 
     public boolean startGame() {
         if (state.isReady()) {
-            teams.stream().filter(Team::isEmpty).forEach(teams::remove);
+            final List<Team> emptyTeams = teams.stream().filter(Team::isEmpty).collect(Collectors.toList());
+            emptyTeams.forEach(teams::remove);
             prepareRounds();
             setCurrentRoundActivePlayers();
             teams.stream().map(Team::getTeamScore).forEach(score -> score.setRoundScores(rounds));
