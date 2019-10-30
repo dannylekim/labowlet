@@ -9,7 +9,10 @@ import com.danken.sessions.GameSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 public class SessionController {
 
     private final GameSession gameSession;
@@ -21,6 +24,7 @@ public class SessionController {
     @GetMapping("/game/session")
     public FullGameState getFullGame() {
 
+        log.info("Reconnecting...");
         final var player = gameSession.getPlayer();
         if (player == null) {
             return null;
@@ -50,6 +54,8 @@ public class SessionController {
                 fullGameState.setCurrentlyIn("BOWL");
             }
         });
+
+        log.info("Reconnected with: " + player + " and in: " + fullGameState.getCurrentlyIn());
 
         return fullGameState;
     }

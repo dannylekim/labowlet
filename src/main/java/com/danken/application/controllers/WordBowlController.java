@@ -49,6 +49,7 @@ public class WordBowlController {
     @MessageMapping("/room/{code}/game/skipWord")
     @SendTo("/client/room/{code}/game/word")
     public WordMessage skipWord(SimpMessageHeaderAccessor accessor) {
+        log.info("Attempting to skip word...");
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         if (!currentRoom.getRoomSettings().isAllowSkips()) {
             throw new IllegalStateException("No skipping allowed!");
@@ -70,6 +71,7 @@ public class WordBowlController {
 
     @MessageMapping("/room/{code}/game/newWord")
     public void getNewWord(final String word, final SimpMessageHeaderAccessor accessor) {
+        log.info("Get new word...");
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var currentGame = currentRoom.getGame();
 
@@ -117,12 +119,14 @@ public class WordBowlController {
     public void startStep(final SimpMessageHeaderAccessor accessor) {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
+        var currentRound = game.getCurrentRound();
+
+        log.info("Started new step with gameTurnStarted: " + game.isTurnStarted() + " on round: " + currentRound.getRoundName());
 
         if (game.isTurnStarted()) {
             return;
         }
 
-        var currentRound = game.getCurrentRound();
         sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
 
         setGameTimeRemaining(currentRoom, game);
@@ -135,6 +139,7 @@ public class WordBowlController {
     }
 
     private void handleTimingEvents(Room currentRoom, Game game) {
+        log.debug("Starting new timing events");
         final Runnable r = () -> {
             while (game.getTimeRemaining() > 0) {
                 try {
@@ -148,6 +153,7 @@ public class WordBowlController {
 
             }
             if (game.getTimeRemaining() == 0) {
+                log.debug("Time set to 0, now resetting to 0, carry to 0 and going to next turn.");
                 handleNextTurn(game);
                 sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
                 sender.sendGameMessage(currentRoom.getRoomCode(), game);
@@ -160,10 +166,10 @@ public class WordBowlController {
     @MessageMapping("/room/{code}/game/endTurn")
     @SendTo("/client/room/{code}/game")
     public Game endTurn(final SimpMessageHeaderAccessor accessor) {
+        log.info("Ending the turn...");
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
         handleNextTurn(game);
-        game.setTimeRemaining(0);
         sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
         return game;
@@ -174,6 +180,8 @@ public class WordBowlController {
     @SendTo("/client/room/{code}/game")
     public Game giveGameObjectWithNullCurrentScores(final SimpMessageHeaderAccessor accessor) {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
+
+        log.info("Getting null score game object");
 
         if (!SocketSessionUtils.getSession(accessor).getPlayer().equals(currentRoom.getHost())) {
             throw new IllegalStateException("Only the host can call this endpoint!");
@@ -187,6 +195,7 @@ public class WordBowlController {
         game.setCurrentScores(null);
 
         if (game.getTimeToCarryOver() > 0) {
+            log.debug("Carrying over the time remaining: " + game.getTimeToCarryOver());
             game.setTimeRemaining(game.getTimeToCarryOver());
         }
 
@@ -198,6 +207,7 @@ public class WordBowlController {
 
     @MessageMapping("/room/{code}/game/resetGame")
     public void resetGame(final SimpMessageHeaderAccessor accessor) {
+        log.info("Resetting game");
         final var currentRoom = SocketSessionUtils.getRoom(accessor);
         final Player player = SocketSessionUtils.getSession(accessor).getPlayer();
 
@@ -214,12 +224,15 @@ public class WordBowlController {
         if (game.getTimeToCarryOver() > 0) {
             game.setTimeRemaining(game.getTimeToCarryOver());
             game.setTimeToCarryOver(0);
+            log.info("Round time remaining: " + game.getTimeRemaining());
         } else {
+            log.info("Round time remaining: " + game.getTimeRemaining());
             game.setTimeRemaining((int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
         }
     }
     private void handleNextTurn(Game game) {
+        log.info("Handling next turn operations");
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
