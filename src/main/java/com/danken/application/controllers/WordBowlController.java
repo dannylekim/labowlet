@@ -120,20 +120,24 @@ public class WordBowlController {
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
         var currentRound = game.getCurrentRound();
+        var gameSession = SocketSessionUtils.getSession(accessor);
+
+        if (!gameSession.getPlayer().equals(game.getCurrentActor())) {
+            throw new IllegalStateException("Only the actor can start the step!");
+        }
 
         log.info("Started new step with gameTurnStarted: " + game.isTurnStarted() + " on round: " + currentRound.getRoundName());
 
-        if (game.isTurnStarted()) {
-            return;
+        synchronized (game) {
+            if (game.isTurnStarted()) {
+                return;
+            }
+
+            game.setTurnStarted(true);
+            sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
+            setGameTimeRemaining(currentRoom, game);
+            handleTimingEvents(currentRoom, game);
         }
-
-        sender.sendWordMessage(currentRoom.getRoomCode(), new WordMessage(currentRound.getRandomWord(), currentRound.getRemainingWords().size()));
-
-        setGameTimeRemaining(currentRoom, game);
-
-        handleTimingEvents(currentRoom, game);
-
-        game.setTurnStarted(true);
 
 
     }
@@ -141,22 +145,34 @@ public class WordBowlController {
     private void handleTimingEvents(Room currentRoom, Game game) {
         log.debug("Starting new timing events");
         final Runnable r = () -> {
-            while (game.getTimeRemaining() > 0) {
-                try {
+            try {
+                while (true) {
                     Thread.sleep(1000);
-                    int timeRemaining = game.getTimeRemaining();
-                    sender.sendTimerMessage(currentRoom.getRoomCode(), --timeRemaining);
-                    game.setTimeRemaining(timeRemaining);
-                } catch (Exception ex) {
-                    log.error(ex.getMessage(), ex);
+                    int timeRemaining;
+                    synchronized (game) {
+                        if (!game.isTurnStarted()) {
+                            return; // Turn already ended elsewhere
+                        }
+                        timeRemaining = game.getTimeRemaining() - 1;
+                        game.setTimeRemaining(timeRemaining);
+                    }
+                    sender.sendTimerMessage(currentRoom.getRoomCode(), timeRemaining);
+                    if (timeRemaining <= 0) {
+                        break;
+                    }
                 }
 
-            }
-            if (game.getTimeRemaining() == 0) {
-                log.debug("Time set to 0, now resetting to 0, carry to 0 and going to next turn.");
-                handleNextTurn(game);
+                synchronized (game) {
+                    if (!game.isTurnStarted()) {
+                        return;
+                    }
+                    log.debug("Time set to 0, now resetting to 0, carry to 0 and going to next turn.");
+                    handleNextTurn(game);
+                }
                 sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
                 sender.sendGameMessage(currentRoom.getRoomCode(), game);
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
             }
         };
 
@@ -169,7 +185,9 @@ public class WordBowlController {
         log.info("Ending the turn...");
         var currentRoom = SocketSessionUtils.getRoom(accessor);
         final var game = currentRoom.getGame();
-        handleNextTurn(game);
+        synchronized (game) {
+            handleNextTurn(game);
+        }
         sender.sendTimerMessage(currentRoom.getRoomCode(), (int) currentRoom.getRoomSettings().getRoundTimeInSeconds());
 
         return game;
@@ -233,6 +251,9 @@ public class WordBowlController {
     }
     private void handleNextTurn(Game game) {
         log.info("Handling next turn operations");
+        if (!game.isTurnStarted()) {
+            return;
+        }
         game.getCurrentRound().increaseTurnCounter();
         game.setCurrentRoundActivePlayers();
         game.setTimeToCarryOver(0);
